@@ -73,7 +73,7 @@ export function SchoolYearsManager() {
     await load();
   }
 
-  return <section className="panel settings-panel">
+  return <section id="annees-scolaires" className="panel settings-panel">
     <div className="panel-heading">
       <div><h2><CalendarDays size={19}/> Années scolaires</h2><p>Conservez l’historique, préparez l’année suivante et choisissez l’année utilisée par défaut pour les nouvelles inscriptions.</p></div>
       <div className="heading-actions">
@@ -95,7 +95,7 @@ export function SchoolYearsManager() {
             <td><span className={`status-pill ${item.is_closed ? 'status-warn' : item.is_current ? 'status-good' : 'status-info'}`}><i/>{item.is_closed ? 'Clôturée' : item.is_current ? 'Active' : 'Préparée'}</span></td>
             <td>{!isReadOnly && !item.is_closed ? <button type="button" className="button button-secondary" onClick={() => startEdit(item)}><Edit3 size={15}/>{item.is_current ? 'Modifier' : 'Modifier / activer'}</button> : <span>—</span>}</td>
           </tr>)}
-          {years.length === 0 && <tr><td colSpan={5} className="empty-cell">{loading ? 'Chargement des années…' : 'Aucune année scolaire enregistrée.'}</td></tr>}
+          {years.length === 0 && <tr><td colSpan={5} className="empty-cell">{loading ? 'Chargement des années…' : 'Aucune année scolaire enregistrée. Cliquez sur « Nouvelle année » pour en créer une, puis cochez « Définir cette année comme année active ». '}</td></tr>}
         </tbody>
       </table>
     </div>

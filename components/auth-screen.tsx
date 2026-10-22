@@ -55,10 +55,25 @@ export default function AuthScreen() {
     if (!isSupabaseConfigured()) { setError('Configuration Supabase absente côté navigateur. Vérifiez NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (ou NEXT_PUBLIC_SUPABASE_ANON_KEY) dans Vercel, puis redéployez.'); return; }
     setLoading(true);
     try {
-      const response = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fullName, email, password, code: adminCode }) });
+      const response = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: adminCode }) });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'La création du compte a échoué.');
-      setNotice('Compte créé. Vous pouvez maintenant vous connecter avec votre adresse e-mail et votre mot de passe.');
+      if (!response.ok) throw new Error(result.error || 'La vérification du code d’accès a échoué.');
+      const client = supabase();
+      if (!client) throw new Error('La configuration Supabase est indisponible.');
+      const { data, error: signUpError } = await client.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: {
+          data: { full_name: fullName.trim() },
+          emailRedirectTo: `${window.location.origin}/login?confirmed=1`,
+        },
+      });
+      if (signUpError) throw new Error(signUpError.message.includes('already registered') ? 'Cette adresse e-mail possède déjà un compte. Connectez-vous ou utilisez « Mot de passe oublié ». ' : 'Impossible de créer le compte. Vérifiez l’adresse e-mail et la configuration de confirmation dans Supabase.');
+      if (data.session) {
+        setNotice('Compte créé. Votre adresse est déjà confirmée ; vous pouvez vous connecter.');
+      } else {
+        setNotice('Votre demande d’inscription a été enregistrée. Consultez votre boîte e-mail et cliquez sur « Confirmer mon adresse e-mail » pour activer votre compte. Vérifiez aussi les courriers indésirables.');
+      }
       setPassword(''); setConfirmPassword(''); setAdminCode('');
     } catch (e) { setError(e instanceof Error ? e.message : 'Une erreur est survenue.'); }
     finally { setLoading(false); }

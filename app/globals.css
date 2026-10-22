@@ -246,3 +246,6 @@ th{font-size:11px}td{font-size:12px}
 .auth-form-wrap .input-with-icon:focus-within{border-color:var(--brand-green);box-shadow:0 0 0 3px rgba(12,105,0,.09)}
 .login-security{border-color:#e5f0e2}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* EPC BETHEL v1.10.0: prevent settings status messages from overlapping nearby content. */
+.settings-panel .panel-heading{margin-bottom:18px}.settings-panel .settings-form{row-gap:18px}.settings-panel .inline-notice{position:relative;display:flex;align-items:flex-start;gap:9px;min-height:42px;padding:12px 14px;margin:0;line-height:1.5;white-space:normal;overflow-wrap:anywhere}.settings-panel .inline-notice svg{flex:0 0 auto;margin-top:1px}.settings-panel .form-footnote{line-height:1.65;margin:0}.settings-panel .input-with-icon{min-width:0}.settings-panel .input-with-icon input{min-width:0}
