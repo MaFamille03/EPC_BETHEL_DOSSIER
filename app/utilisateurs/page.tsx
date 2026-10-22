@@ -81,13 +81,13 @@ export default function UsersPage() {
     {!isSupabaseConfigured() && <div className="inline-notice"><ShieldCheck size={16}/> Mode aperçu : connectez Supabase pour gérer des comptes réels.</div>}
     {error && <div className="inline-notice"><AlertCircle size={16}/>{error}</div>}
     {notice && <div className="inline-notice"><CheckCircle2 size={16}/>{notice}</div>}
-    <section className="panel form-panel"><div className="panel-heading"><div><h2>Inviter un utilisateur</h2><p>Un lien d’activation sera envoyé par e-mail. Tous les nouveaux comptes commencent en lecture seule.</p></div><UserPlus size={22}/></div>
+    <section className="panel form-panel"><div className="panel-heading"><div><h2>Inviter un utilisateur</h2><p>Invitez un membre de l’équipe par e-mail. Chaque nouveau compte commence en lecture seule et peut être ajusté ensuite.</p></div><UserPlus size={22}/></div>
       <form className="admin-invite-form" onSubmit={invite}>
         <label className="form-field"><span>Nom complet</span><input required maxLength={120} value={form.full_name} onChange={e => setForm({ ...form, full_name: e.target.value })} placeholder="Nom et prénoms"/></label>
         <label className="form-field"><span>Adresse e-mail</span><input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value.trim() })} placeholder="prenom@exemple.com"/></label>
         <button className="button button-primary" disabled={saving || !isSupabaseConfigured()}>{saving ? 'Envoi…' : <><Mail size={16}/> Envoyer l’invitation</>}</button>
       </form>
-      <p className="form-footnote">La clé <code>SUPABASE_SERVICE_ROLE_KEY</code> doit rester côté serveur. Le code de création de compte est configuré séparément dans <code>EPC_BETHEL_REGISTRATION_CODE</code>.</p>
+      <p className="form-footnote"><strong>Configuration technique</strong><span>La clé serveur Supabase doit rester secrète dans Vercel. Le code d’inscription est un réglage distinct ; il ne sert pas à se connecter.</span></p>
     </section>
     <section className="panel table-panel"><div className="panel-toolbar"><div><h2>Comptes enregistrés</h2><p>{rows.length} compte{rows.length > 1 ? 's' : ''} chargé{rows.length > 1 ? 's' : ''}</p></div></div>
       <div className="table-scroll"><table><thead><tr><th>Utilisateur</th><th>Autorisation</th><th>État du compte</th><th>Inscription</th><th>Actions</th></tr></thead><tbody>

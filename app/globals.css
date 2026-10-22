@@ -271,3 +271,33 @@ th{font-size:11px}td{font-size:12px}
 .page-content,.login-page,.reset-page{position:relative;}
 .page-content>* ,.login-page>* ,.reset-page>*{position:relative;z-index:1;}
 @media(max-width:760px){.page-content::before,.login-page::before,.reset-page::before{left:50%;width:min(48vw,300px);height:min(48vw,300px);opacity:.06;}.login-page::before,.reset-page::before{width:min(58vw,360px);height:min(58vw,360px);opacity:.075;}}
+
+
+/* V1.10.5 — robustesse des mises en page et formulaires d’administration */
+.panel, .form-panel, .table-panel, .panel-heading, .panel-heading > div { min-width: 0; }
+.panel-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.panel-heading > div { flex:1 1 280px; }
+.panel-heading h2, .panel-heading p { overflow-wrap:anywhere; }
+.admin-invite-form { grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; align-items:end; }
+.admin-invite-form > * { min-width:0; }
+.admin-invite-form .form-field { display:flex; flex-direction:column; gap:8px; }
+.admin-invite-form .form-field input { width:100%; min-width:0; }
+.admin-invite-form .button { grid-column:1/-1; justify-self:start; max-width:100%; white-space:normal; }
+.form-footnote { display:flex; flex-direction:column; gap:5px; margin:14px 0 0; color:#68776c; font-size:12px; line-height:1.6; overflow-wrap:anywhere; }
+.form-footnote strong { color:#405447; }
+.form-footnote code { overflow-wrap:anywhere; }
+.inline-notice { min-width:0; overflow-wrap:anywhere; white-space:normal; line-height:1.55; }
+.inline-notice svg { flex:0 0 auto; }
+.page-heading { min-width:0; flex-wrap:wrap; }
+.page-heading > div { min-width:0; flex:1 1 360px; }
+.page-heading h1, .page-heading p { overflow-wrap:anywhere; }
+.table-scroll { max-width:100%; overflow-x:auto; }
+input, select, textarea, button { max-width:100%; }
+@media(max-width:760px) {
+  .admin-invite-form { grid-template-columns:minmax(0,1fr); gap:14px; }
+  .admin-invite-form > *, .admin-invite-form .button { grid-column:1; width:100%; }
+  .panel-heading { gap:10px; }
+  .page-heading { gap:14px; margin-bottom:20px; }
+  .page-heading h1 { font-size:23px; }
+  .form-footnote { font-size:11px; }
+}

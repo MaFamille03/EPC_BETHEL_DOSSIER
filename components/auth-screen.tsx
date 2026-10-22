@@ -37,9 +37,17 @@ export default function AuthScreen() {
       setError('Connexion impossible. Vérifiez votre e-mail et votre mot de passe. Si votre compte vient d’être créé, vérifiez aussi la configuration de Supabase Auth.'); return;
     }
     const { data: profile, error: profileError } = await client.from('profiles').select('role,is_active').eq('id', data.user.id).maybeSingle();
-    if (profileError || !profile || !profile.is_active) {
+    if (profileError) {
       await client.auth.signOut(); setLoading(false);
-      setError('Votre authentification fonctionne, mais votre profil EPC BETHEL est absent ou inactif. Exécutez la migration d’initialisation de l’administrateur puis réessayez.'); return;
+      setError('Impossible de vérifier votre autorisation pour le moment. Réessayez dans quelques instants ou contactez le responsable informatique si le problème persiste.'); return;
+    }
+    if (!profile) {
+      await client.auth.signOut(); setLoading(false);
+      setError('Votre compte d’authentification existe, mais aucun profil EPC BETHEL ne lui est associé. Contactez l’administrateur de l’établissement pour faire vérifier votre compte.'); return;
+    }
+    if (!profile.is_active) {
+      await client.auth.signOut(); setLoading(false);
+      setError('Votre accès à EPC BETHEL a été désactivé par l’administrateur de l’établissement. Vous ne pouvez plus vous connecter. Si vous pensez qu’il s’agit d’une erreur, veuillez contacter l’administration.'); return;
     }
     if (normalized === 'minnhindje@gmail.com' && profile.role !== 'admin') {
       await client.auth.signOut(); setLoading(false);
