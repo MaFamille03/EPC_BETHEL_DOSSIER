@@ -176,9 +176,9 @@ test('le mode aperçu explique qu’aucune donnée réelle n’est chargée et b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.9.6');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.9\.6/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.9\.6/);
+  assert.equal(pkg.version, '1.9.7');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.9\.7/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.9\.7/);
   assert.match(read('CHANGELOG.md'), /^## 1\.9\.4/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });

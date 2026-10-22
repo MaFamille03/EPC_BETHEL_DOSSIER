@@ -1,3 +1,11 @@
+## 1.9.7 — Harmonisation de la charte graphique officielle
+
+- Palette centrale alignée sur le logo de l’établissement : vert `#0C6900`, orange `#FF6600`, violet `#802872` et blanc.
+- Contrastes renforcés sur les boutons principaux, les éléments de navigation et les panneaux de connexion.
+- Accent orange/violet discret dans la navigation et les bandeaux, sans surcharger les pages.
+- Ajout d’un indicateur de focus clavier plus visible et respect de la préférence de réduction des animations.
+- Contrôle de pré-livraison relancé ; build Next.js complet et validation réelle Supabase restent à effectuer dans un environnement connecté.
+
 ## 1.9.6 — Authentification unifiée et correction de configuration Supabase
 
 - Connexion et inscription partagent désormais la même page et conservent le panneau visuel fixe.
