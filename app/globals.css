@@ -249,3 +249,20 @@ th{font-size:11px}td{font-size:12px}
 
 /* EPC BETHEL v1.10.0: prevent settings status messages from overlapping nearby content. */
 .settings-panel .panel-heading{margin-bottom:18px}.settings-panel .settings-form{row-gap:18px}.settings-panel .inline-notice{position:relative;display:flex;align-items:flex-start;gap:9px;min-height:42px;padding:12px 14px;margin:0;line-height:1.5;white-space:normal;overflow-wrap:anywhere}.settings-panel .inline-notice svg{flex:0 0 auto;margin-top:1px}.settings-panel .form-footnote{line-height:1.65;margin:0}.settings-panel .input-with-icon{min-width:0}.settings-panel .input-with-icon input{min-width:0}
+
+
+/* EPC BETHEL v1.10.1 — filigrane officiel, grand et discret sur toutes les pages */
+.page-content,.login-page,.reset-page{position:relative;isolation:isolate;}
+.page-content::before,.login-page::before,.reset-page::before{content:"";position:fixed;z-index:-1;pointer-events:none;left:calc(50% + 120px);top:50%;width:min(78vw,1050px);height:min(78vw,1050px);transform:translate(-50%,-50%);background-image:url('/epc-bethel-watermark.png');background-position:center;background-repeat:no-repeat;background-size:contain;opacity:.055;}
+.page-content>*{position:relative;z-index:0;}
+.login-page::before,.reset-page::before{left:50%;width:min(86vw,1100px);height:min(86vw,1100px);opacity:.065;}
+/* Réorganisation visuelle des paramètres : cartes lisibles, titres et alertes séparés. */
+.settings-panel{display:flex;flex-direction:column;gap:18px;}
+.settings-panel .panel-heading{margin:0 0 2px;}
+.settings-panel .inline-notice{position:relative;display:flex;align-items:flex-start;gap:10px;min-height:42px;padding:12px 15px;margin:0;line-height:1.55;white-space:normal;overflow-wrap:anywhere;}
+.settings-panel .settings-form{row-gap:18px;}
+.settings-panel .form-footnote{line-height:1.65;margin:0;max-width:760px;}
+.settings-panel .input-with-icon{min-width:0;}
+.settings-panel .input-with-icon input{min-width:0;}
+@media(max-width:900px){.page-content::before{left:50%;width:min(90vw,800px);height:min(90vw,800px);opacity:.045;}}
+@media print{.page-content::before,.login-page::before,.reset-page::before{display:none!important;}}
