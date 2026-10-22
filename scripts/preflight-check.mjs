@@ -31,8 +31,8 @@ function walk(dir) {
 for (const p of [
   'package.json', 'README.md', '.env.example', '.gitignore', 'next.config.ts', 'tsconfig.json',
   'app/page.tsx', 'app/login/page.tsx', 'app/register/page.tsx', 'app/utilisateurs/page.tsx',
-  'app/api/auth/register/route.ts', 'app/api/admin/users/route.ts', 'components/app-shell.tsx',
-  'lib/supabase.ts', 'supabase/migrations',
+  'app/api/auth/register/route.ts', 'app/api/admin/users/route.ts', 'app/api/admin/registration-code/route.ts', 'components/app-shell.tsx',
+  'lib/supabase.ts', 'supabase/migrations/015_admin_registration_code_settings.sql',
 ]) {
   if (!exists(p)) fail(`Fichier ou dossier requis absent : ${p}`);
 }
@@ -51,11 +51,11 @@ try {
 }
 
 const envExample = read('.env.example');
-for (const key of ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'EPC_BETHEL_REGISTRATION_CODE']) {
+for (const key of ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']) {
   if (!new RegExp(`^${key}=`, 'm').test(envExample)) fail(`Variable ${key} absente de .env.example.`);
 }
 if (!/^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=/m.test(envExample) && !/^NEXT_PUBLIC_SUPABASE_ANON_KEY=/m.test(envExample)) fail('Une clé publique Supabase est absente de .env.example.');
-if (envExample.includes('YOUR_PROJECT.supabase.co') && !envExample.match(/^SUPABASE_SERVICE_ROLE_KEY=.+$/m) && !envExample.match(/^EPC_BETHEL_REGISTRATION_CODE=.+$/m)) {
+if (envExample.includes('YOUR_PROJECT.supabase.co') && !envExample.match(/^SUPABASE_SERVICE_ROLE_KEY=.+$/m)) {
   pass('Le fichier d’exemple ne contient pas de clé de service ou de code d’inscription renseigné.');
 } else {
   warn('Contrôler manuellement .env.example : il doit contenir uniquement des exemples, jamais de secret réel.');

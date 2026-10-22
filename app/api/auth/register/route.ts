@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { timingSafeEqual } from 'node:crypto';
-import { createClient } from '@supabase/supabase-js';
+import { scryptSync, timingSafeEqual } from 'node:crypto';
+import { createSupabaseServiceClient } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
 const PRIMARY_ADMIN_EMAIL = 'minnhindje@gmail.com';
-function sameSecret(received: string, expected: string) {
-  const a = Buffer.from(received, 'utf8'); const b = Buffer.from(expected, 'utf8');
-  return a.length === b.length && timingSafeEqual(a, b);
+function verifyRegistrationCode(received: string, stored: string) {
+  const [salt, expected] = stored.split(':');
+  if (!salt || !expected) return false;
+  const actual = scryptSync(received, salt, 64);
+  const expectedBuffer = Buffer.from(expected, 'hex');
+  return actual.length === expectedBuffer.length && timingSafeEqual(actual, expectedBuffer);
 }
 
 export async function POST(request: NextRequest) {
@@ -14,10 +17,14 @@ export async function POST(request: NextRequest) {
   try { body = await request.json(); }
   catch { return NextResponse.json({ error: 'Les informations envoyées sont invalides.' }, { status: 400 }); }
 
-  const expectedCode = process.env.EPC_BETHEL_REGISTRATION_CODE?.trim() || '';
-  if (expectedCode.length < 24) return NextResponse.json({ error: 'La création de compte est désactivée : configurez EPC_BETHEL_REGISTRATION_CODE côté serveur avec au moins 24 caractères aléatoires.' }, { status: 503 });
   const code = typeof body.code === 'string' ? body.code.trim() : '';
-  if (!code || !sameSecret(code, expectedCode)) return NextResponse.json({ error: 'Code administrateur incorrect. Demandez le code d’accès à l’administrateur.' }, { status: 403 });
+  if (!/^\d{6,8}$/.test(code)) return NextResponse.json({ error: 'Saisissez le code d’accès numérique de 6 à 8 chiffres fourni par l’administrateur.' }, { status: 403 });
+  const admin = createSupabaseServiceClient();
+  if (!admin) return NextResponse.json({ error: 'Configuration serveur incomplète : vérifiez l’URL Supabase et la clé de service dans Vercel.' }, { status: 503 });
+  const { data: accessSettings, error: settingsError } = await admin.from('admin_access_settings').select('registration_code_hash').eq('id', true).maybeSingle();
+  if (settingsError) return NextResponse.json({ error: 'Impossible de lire le code d’accès. Appliquez la migration 015 puis réessayez.' }, { status: 503 });
+  if (!accessSettings?.registration_code_hash) return NextResponse.json({ error: 'Le code d’accès initial n’est pas encore défini. Connectez-vous avec le compte administrateur principal et définissez-le dans Paramètres → Utilisateurs et autorisations.' }, { status: 503 });
+  if (!verifyRegistrationCode(code, accessSettings.registration_code_hash)) return NextResponse.json({ error: 'Code administrateur incorrect. Demandez le code d’accès à l’administrateur.' }, { status: 403 });
 
   const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
   const fullName = typeof body.fullName === 'string' ? body.fullName.trim() : '';
@@ -26,11 +33,6 @@ export async function POST(request: NextRequest) {
   if (!fullName || fullName.length > 120) return NextResponse.json({ error: 'Le nom complet est obligatoire (120 caractères maximum).' }, { status: 400 });
   if (password.length < 10 || password.length > 128) return NextResponse.json({ error: 'Le mot de passe doit contenir entre 10 et 128 caractères.' }, { status: 400 });
 
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) return NextResponse.json({ error: 'Configuration serveur incomplète : vérifiez SUPABASE_URL (ou NEXT_PUBLIC_SUPABASE_URL) et SUPABASE_SECRET_KEY (ou SUPABASE_SERVICE_ROLE_KEY) dans Vercel.' }, { status: 503 });
-
-  const admin = createClient(url, serviceKey, { auth: { autoRefreshToken: false, persistSession: false } });
   const { data, error } = await admin.auth.admin.createUser({
     email, password, email_confirm: true, user_metadata: { full_name: fullName },
   });

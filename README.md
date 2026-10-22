@@ -1,7 +1,7 @@
 # EPC BETHEL — Application de gestion scolaire
 
 **Établissement :** EPC BETHEL ASSEMBLÉES DE DIEU JEAN FOLLY  
-**Version courante :** 1.9.7  
+**Version courante :** 1.9.8  
 **Stack :** Next.js 15, React 19, TypeScript, Supabase/PostgreSQL
 
 ## État de livraison
@@ -102,3 +102,7 @@ Consultez `CHECKLIST_MISE_EN_SERVICE.md`, `RAPPORT_CONTROLE_QUALITE.md` et `RAPP
 ## Archive consolidée pour GitHub/Vercel
 
 Cette livraison réunit les changements des étapes 1 à 9 et place `package.json` à la racine du projet. Avant l’import, lire `DEPLOIEMENT_VERCEL.md` et `LIVRAISON_FINALE_EPC_BETHEL.md`. La compilation et la validation Supabase restent à réaliser sur un environnement connecté ; ne pas considérer l’archive comme déjà déployée ou certifiée en production.
+
+
+### Code d’accès aux inscriptions
+Le compte administrateur principal définit ou remplace le code dans **Paramètres → Utilisateurs et autorisations**. Appliquer la migration `015_admin_registration_code_settings.sql` avant d’utiliser cette fonction. Le code est stocké sous forme de hash scrypt salé et n’est jamais renvoyé à l’interface.

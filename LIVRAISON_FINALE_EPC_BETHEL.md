@@ -18,3 +18,6 @@ Cette archive réunit le code de l’application, les évolutions des étapes 1 
 Le registre npm a renvoyé `EAI_AGAIN registry.npmjs.org` lors de la tentative de création du lockfile. Le `package-lock.json`, le typecheck complet, la compilation Next.js, l’exécution des migrations sur un projet Supabase et le déploiement Vercel n’ont donc pas été validés depuis cet environnement. Aucun secret de production n’est inclus dans le paquet.
 
 Voir `DEPLOIEMENT_VERCEL.md` et `CHECKLIST_MISE_EN_SERVICE.md` avant toute mise en service réelle.
+
+## Addendum V1.9.8
+Voir `RAPPORT_V1_9_8_CODE_ADMIN_ET_CONFIGURATION.md` pour l’installation de la migration 015, la configuration des clés Supabase dans Vercel et la configuration du code d’accès depuis Paramètres → Utilisateurs et autorisations.

@@ -39,13 +39,15 @@ test('la configuration de paquet expose les commandes requises', () => {
 test('les migrations SQL sont présentes et numérotées sans trou', () => {
   const directory = path.join(root, 'supabase/migrations');
   const files = fs.readdirSync(directory).filter((name) => /^\d{3}_.+\.sql$/.test(name)).sort();
-  assert.equal(files.length, 14);
-  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 14 }, (_, i) => i + 1));
+  assert.equal(files.length, 15);
+  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 15 }, (_, i) => i + 1));
 });
 
 test('les routes serveur nécessaires au parcours des comptes existent', () => {
   assert.ok(exists('app/api/auth/register/route.ts'));
   assert.ok(exists('app/api/admin/users/route.ts'));
+  assert.ok(exists('app/api/admin/registration-code/route.ts'));
+  assert.ok(exists('supabase/migrations/015_admin_registration_code_settings.sql'));
   const register = read('app/api/auth/register/route.ts');
   const users = read('app/api/admin/users/route.ts');
   assert.match(register, /export\s+async\s+function\s+POST/);
@@ -54,13 +56,17 @@ test('les routes serveur nécessaires au parcours des comptes existent', () => {
   assert.match(users, /export\s+async\s+function\s+PATCH/);
 });
 
-test('l’inscription exige un code serveur long comparé de façon constante', () => {
+test('le code d’inscription se configure dans les paramètres et reste haché côté serveur', () => {
   const source = read('app/api/auth/register/route.ts');
+  const settingsRoute = read('app/api/admin/registration-code/route.ts');
+  const migration = read('supabase/migrations/015_admin_registration_code_settings.sql');
   assert.match(source, /timingSafeEqual/);
-  assert.match(source, /expectedCode\.length\s*<\s*24/);
-  assert.match(source, /EPC_BETHEL_REGISTRATION_CODE/);
-  assert.match(source, /SUPABASE_SERVICE_ROLE_KEY/);
-  assert.match(source, /admin\.createUser/);
+  assert.match(source, /registration_code_hash/);
+  assert.match(source, /createUser/);
+  assert.match(settingsRoute, /export\s+async\s+function\s+PUT/);
+  assert.match(settingsRoute, /scryptSync/);
+  assert.match(settingsRoute, /minnhindje@gmail\.com/);
+  assert.match(migration, /ENABLE ROW LEVEL SECURITY/);
 });
 
 test('l’adresse principale est cohérente dans les contrôles de sécurité', () => {
@@ -118,7 +124,7 @@ test('les exemples de configuration ne contiennent pas de secret réel', () => {
   assert.match(env, /^NEXT_PUBLIC_SUPABASE_URL=https:\/\/YOUR_PROJECT\.supabase\.co$/m);
   assert.match(env, /^SUPABASE_SERVICE_ROLE_KEY=$/m);
   assert.match(env, /^SUPABASE_SECRET_KEY=$/m);
-  assert.match(env, /^EPC_BETHEL_REGISTRATION_CODE=$/m);
+  assert.doesNotMatch(env, /^EPC_BETHEL_REGISTRATION_CODE=/m);
   assert.ok(!exists('.env.local'));
   assert.ok(!exists('.env.production'));
 });
@@ -176,9 +182,9 @@ test('le mode aperçu explique qu’aucune donnée réelle n’est chargée et b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.9.7');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.9\.7/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.9\.7/);
+  assert.equal(pkg.version, '1.9.8');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.9\.8/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.9\.8/);
   assert.match(read('CHANGELOG.md'), /^## 1\.9\.4/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });

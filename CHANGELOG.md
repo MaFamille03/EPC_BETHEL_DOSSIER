@@ -134,3 +134,11 @@
 - Nouvelle migration `012_school_management_completion.sql`.
 - Les validations de syntaxe TypeScript passent, mais la compilation complète et l’exécution PostgreSQL/Supabase restent à effectuer dans un environnement connecté aux dépendances et au projet réel.
 
+
+
+## 1.9.8 — Code d’accès administrateur configurable
+- Ajout du paramètre « Utilisateurs et autorisations » pour définir/remplacer le code d’inscription depuis l’application.
+- Le code n’est jamais renvoyé au navigateur ; seul son condensat salé est stocké dans une table inaccessible aux rôles anon/authenticated.
+- Ajout de la migration `015_admin_registration_code_settings.sql`.
+- Les API d’administration acceptent les clés Supabase publishable/anon et secret/service_role actuelles.
+- La création de compte vérifie le code stocké côté serveur ; plus besoin de la variable `EPC_BETHEL_REGISTRATION_CODE`.

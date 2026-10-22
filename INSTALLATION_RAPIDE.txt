@@ -1,4 +1,4 @@
-EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.9.7)
+EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.9.8)
 
 IMPORTANT
 Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pré-livraison). La compilation complète et les migrations n'ont pas encore été validées sur un projet Supabase réel. Commence toujours par un projet de développement et une sauvegarde.
@@ -79,3 +79,7 @@ LIMITES CONNUES
 - Le module de rapports détaillés et les parcours achats/patrimoine demandent encore des tests réels sur la base Supabase de développement.
 - Aucun build complet ni test end-to-end de production n'est certifié dans cette archive. Les vérifications syntaxiques et statiques ne remplacent pas les tests dans un environnement configuré.
 - Ne jamais ajouter de secrets réels à l'archive. Ne déployer en production qu'après réussite des tests, vérification RLS, sauvegarde et revue des migrations.
+
+
+MIGRATION VERSION 1.9.8
+Exécuter une seule fois supabase/migrations/015_admin_registration_code_settings.sql dans Supabase SQL Editor. Ensuite, se connecter avec minnhindje@gmail.com et définir le code dans Paramètres > Utilisateurs et autorisations. Les clés serveur SUPABASE_SECRET_KEY ou SUPABASE_SERVICE_ROLE_KEY doivent rester uniquement dans les variables serveur Vercel.
