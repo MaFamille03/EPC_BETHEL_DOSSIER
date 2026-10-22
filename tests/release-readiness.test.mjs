@@ -39,8 +39,8 @@ test('la configuration de paquet expose les commandes requises', () => {
 test('les migrations SQL sont présentes et numérotées sans trou', () => {
   const directory = path.join(root, 'supabase/migrations');
   const files = fs.readdirSync(directory).filter((name) => /^\d{3}_.+\.sql$/.test(name)).sort();
-  assert.equal(files.length, 15);
-  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 15 }, (_, i) => i + 1));
+  assert.equal(files.length, 17);
+  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 17 }, (_, i) => i + 1));
 });
 
 test('les routes serveur nécessaires au parcours des comptes existent', () => {
@@ -62,7 +62,7 @@ test('le code d’inscription se configure dans les paramètres et reste haché 
   const migration = read('supabase/migrations/015_admin_registration_code_settings.sql');
   assert.match(source, /timingSafeEqual/);
   assert.match(source, /registration_code_hash/);
-  assert.match(source, /createUser/);
+  assert.match(read('components/auth-screen.tsx'), /auth\.signUp/);
   assert.match(settingsRoute, /export\s+async\s+function\s+PUT/);
   assert.match(settingsRoute, /scryptSync/);
   assert.match(settingsRoute, /minnhindje@gmail\.com/);
@@ -182,9 +182,9 @@ test('le mode aperçu explique qu’aucune donnée réelle n’est chargée et b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.9.8');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.9\.8/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.9\.8/);
+  assert.equal(pkg.version, '1.10.6');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.10\.5/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.10\.5/);
   assert.match(read('CHANGELOG.md'), /^## 1\.9\.4/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });

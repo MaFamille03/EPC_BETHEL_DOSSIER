@@ -403,7 +403,7 @@ export function ReportsPage() {
             <div className="metric-mini"><span>Trésorerie disponible</span><strong>{money(summary?.treasury_total)}</strong><small>Soldes des comptes actifs calculés en base</small></div>
           </div>
           <section className="panel table-panel">
-            <div className="panel-toolbar"><div><h2>Indicateurs complémentaires</h2><p>Les indicateurs globaux ne sont pas limités à la période du filtre.</p></div><span className="muted-small">{loading ? 'Actualisation en cours…' : 'Source : PostgreSQL / Supabase'}</span></div>
+            <div className="panel-toolbar"><div><h2>Indicateurs complémentaires</h2><p>Les indicateurs globaux ne sont pas limités à la période du filtre.</p></div><span className="muted-small">{loading ? 'Actualisation en cours…' : 'Données de gestion'}</span></div>
             <div className="table-scroll"><table><thead><tr><th>Indicateur</th><th>Valeur</th><th>Périmètre</th></tr></thead><tbody>
               <tr><td>Nombre de reçus validés</td><td>{new Intl.NumberFormat('fr-FR').format(Number(summary?.validated_receipt_count || 0))}</td><td>Toutes périodes</td></tr>
               <tr><td>Nombre de dépenses validées</td><td>{new Intl.NumberFormat('fr-FR').format(Number(summary?.validated_expense_count || 0))}</td><td>Toutes périodes</td></tr>
@@ -419,7 +419,7 @@ export function ReportsPage() {
           <div className="metric-strip report-metrics-grid">
             <div className="metric-mini"><span>Enregistrements</span><strong>{new Intl.NumberFormat('fr-FR').format(totalRows)}</strong><small>Résultat complet, calculé côté base</small></div>
             <div className="metric-mini"><span>Page affichée</span><strong>{page + 1} / {pageCount}</strong><small>{PAGE_SIZE} lignes maximum par page</small></div>
-            <div className="metric-mini"><span>Type de rapport</span><strong className="report-metric-label">{definition?.label || ''}</strong><small>Filtres appliqués côté PostgreSQL</small></div>
+            <div className="metric-mini"><span>Type de rapport</span><strong className="report-metric-label">{definition?.label || ''}</strong><small>Filtres appliqués aux données</small></div>
           </div>
           <section className="panel table-panel">
             <div className="panel-toolbar"><div><h2>{definition?.label}</h2><p>{definition?.description}</p></div><span className="muted-small">{loading ? 'Chargement…' : `${totalRows.toLocaleString('fr-FR')} résultat(s)`}</span></div>
