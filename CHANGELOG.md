@@ -1,3 +1,11 @@
+## 1.9.5 — Connexion par mot de passe et lisibilité
+
+- Connexion avec adresse e-mail et mot de passe, sans code administrateur lors des connexions ordinaires.
+- Réinitialisation du mot de passe par e-mail depuis la page de connexion.
+- Inscription avec mot de passe, confirmation du mot de passe et code d’accès.
+- Augmentation modérée de la taille des textes de l’interface.
+- Le rôle applicatif continue d’être déterminé côté base de données, jamais depuis le formulaire.
+
 # Journal des versions — EPC BETHEL
 
 ## 1.9.4 — Étape 9 : cohérence d’interface et hygiène de livraison
@@ -110,5 +118,3 @@
 - Nouvelle migration `012_school_management_completion.sql`.
 - Les validations de syntaxe TypeScript passent, mais la compilation complète et l’exécution PostgreSQL/Supabase restent à effectuer dans un environnement connecté aux dépendances et au projet réel.
 
-- Ajout de la migration 015 et d’un code administrateur secondaire lié à une adresse e-mail précise, configuré depuis Paramètres par l’administrateur principal. Le code est stocké sous forme de hachage salé et vérifié côté serveur.
-- Augmentation modérée de la taille des caractères pour améliorer la lisibilité globale.

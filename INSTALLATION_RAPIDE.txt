@@ -1,4 +1,4 @@
-EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.9.4)
+EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.9.5)
 
 IMPORTANT
 Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pré-livraison). La compilation complète et les migrations n'ont pas encore été validées sur un projet Supabase réel. Commence toujours par un projet de développement et une sauvegarde.
@@ -33,9 +33,9 @@ Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pr
    013_financial_integrity_reporting.sql
    014_management_reports_asset_integration.sql
 
-8. Dans Supabase Auth, configurer le fournisseur e-mail et les modèles/limites d'envoi des codes OTP, les URL autorisées et les redirections de l'application. Tester la confirmation de l'invitation et la connexion OTP depuis /login et /register. Le fonctionnement réel dépend de la configuration e-mail et des URL du projet Supabase.
+8. Dans Supabase Auth, configurer le fournisseur e-mail, les paramètres de connexion par mot de passe, les URL autorisées et les redirections de l'application. Tester la création de compte avec code d'accès, puis la connexion par adresse e-mail et mot de passe depuis /login et /register. Le fonctionnement réel dépend de la configuration e-mail et des URL du projet Supabase.
 
-9. Administrateur principal prévu : minnhindje@gmail.com. Vérifier la propriété de l'adresse et son profil dans Supabase après l'application des migrations. Ne jamais attribuer le rôle admin à partir d'un champ modifiable par l'utilisateur public. Le code EPC_BETHEL_REGISTRATION_CODE sert à autoriser les inscriptions ; ce n'est pas le code OTP de connexion.
+9. Administrateur principal prévu : minnhindje@gmail.com. Vérifier la propriété de l'adresse et son profil dans Supabase après l'application des migrations. Ne jamais attribuer le rôle admin à partir d'un champ modifiable par l'utilisateur public. Le code EPC_BETHEL_REGISTRATION_CODE sert à autoriser les inscriptions ; il n'est pas demandé lors des connexions suivantes.
 
 10. Lancer les contrôles dans cet ordre après installation réussie des dépendances :
     npm run test:release

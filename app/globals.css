@@ -178,25 +178,17 @@
   .topbar-popover{top:calc(100% + 9px)}
 }
 
-/* Lisibilité générale — augmentation modérée des textes dans toute l'application */
-html, body { font-size: 15px; }
-.nav-link { font-size: 14px; }
-.nav-label, .eyebrow { font-size: 11px; }
-.school-chip, .school-chip strong { font-size: 12px; }
-.page-heading p, .form-field > span, .settings-form .form-field > span { font-size: 13px; }
-.button { font-size: 12px; }
-.form-field input, .form-field select, .form-field textarea,
-.settings-form input, .settings-form textarea, .settings-form select { font-size: 14px; }
-.panel-heading p, .form-footnote, .inline-notice { font-size: 13px; line-height: 1.6; }
-.data-table th, .data-table td, table th, table td { font-size: 13px; }
-.admin-code-panel .form-footnote { grid-column: 1 / -1; margin: 0; }
-.login-welcome p, .login-form .form-field > span { font-size: 13px; }
-.login-form .input-with-icon input { font-size: 14px; }
-.login-submit { font-size: 14px; }
-.login-notice, .login-error { font-size: 13px; }
-@media (max-width: 640px) {
-  html, body { font-size: 14px; }
-  .nav-link { font-size: 13.5px; }
-  .page-heading p { font-size: 13px; }
-  .login-form-side { padding-left: 20px; padding-right: 20px; }
-}
+
+/* EPC BETHEL 1.9.5 — amélioration globale de la lisibilité */
+html,body{font-size:15px}
+.nav-link{font-size:14px}
+.nav-label,.eyebrow{font-size:11px}
+.page-heading p,.panel-toolbar p,.form-field>span,.form-field input,.form-field textarea,.form-field select{font-size:13px}
+.metric-mini>span,.metric-mini>small,.task-row strong,.task-row small,.table-footer,.table-search input,.status-pill,.empty-cell,.form-footnote{font-size:12px}
+th{font-size:11px}td{font-size:12px}
+.login-welcome p,.login-form .form-field>span,.input-with-icon input,.login-security,.login-help,.login-error,.login-notice,.register-footnote{font-size:13px}
+.login-form .form-field>span{font-size:13px}
+
+
+/* Logo officiel EPC BETHEL — identité visuelle de l'établissement */
+.sidebar-school-logo{width:62px;height:62px;object-fit:contain;flex:0 0 auto;border-radius:50%;filter:drop-shadow(0 5px 9px rgba(63,22,74,.18));transition:transform .25s ease,filter .25s ease}.brand:hover .sidebar-school-logo{transform:scale(1.055) rotate(-2deg);filter:drop-shadow(0 7px 13px rgba(63,22,74,.25))}.brand{gap:10px}.brand-copy strong{font-size:15px}.brand-copy span{font-size:8px;letter-spacing:.09em;line-height:1.35}.login-school-logo{width:104px;height:104px;object-fit:contain;border-radius:50%;filter:drop-shadow(0 8px 18px rgba(0,0,0,.25));transition:transform .25s ease}.login-school-logo:hover{transform:scale(1.04) rotate(-2deg)}.login-brand{gap:16px}.login-visual-content:before{content:"";display:block;width:128px;height:128px;margin:0 0 24px;background:url('/epc-bethel-logo.webp') center/contain no-repeat;filter:drop-shadow(0 10px 25px rgba(0,0,0,.22));animation:bethel-logo-enter .7s ease-out both}.mobile-school-logo{width:76px;height:76px;object-fit:contain;border-radius:50%;filter:drop-shadow(0 4px 10px rgba(45,20,54,.15))}.mobile-login-brand{gap:12px}.register-school-logo{width:88px;height:88px;object-fit:contain;border-radius:50%;filter:drop-shadow(0 5px 12px rgba(45,20,54,.16));transition:transform .25s ease}.register-school-logo:hover{transform:scale(1.04)}.reset-brand{gap:14px}.illus-school-logo{width:68px;height:68px;object-fit:contain;border-radius:50%}.illus-logo{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:#fff;box-shadow:0 5px 15px rgba(0,0,0,.15)}@keyframes bethel-logo-enter{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}@media(max-width:760px){.login-visual-content:before{width:88px;height:88px;margin-bottom:16px}.login-school-logo{width:72px;height:72px}.sidebar-school-logo{width:52px;height:52px}.brand-copy span{font-size:7px}}

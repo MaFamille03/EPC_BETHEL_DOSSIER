@@ -1,16 +1,16 @@
 # Livraison consolidée EPC BETHEL — étapes 1 à 9
 
-**Version du projet :** 1.9.5  
-**Date de préparation :** 22 octobre 2026  
-**Base :** code EPC BETHEL consolidé, avec lisibilité améliorée et accès administrateur secondaire
+**Version du projet :** 1.9.4  
+**Date de préparation :** 16 octobre 2026  
+**Base :** code cumulé dans `EPC_BETHEL_ETAPE_9_COHERENCE.zip`
 
-Cette archive réunit le code de l’application, les évolutions des étapes 1 à 9, les migrations SQL 001 à 015, les tests hors ligne et les rapports/documentations des étapes.
+Cette archive réunit le code de l’application, les évolutions des étapes 1 à 9, les migrations SQL 001 à 014, les tests hors ligne et les rapports/documentations des étapes.
 
 ## Contrôles répétés sur cette copie consolidée
 
 - `node --test tests/release-readiness.test.mjs` : 19 tests réussis, 0 échec.
 - `node scripts/preflight-check.mjs` : 11 réussites, 0 échec, 1 avertissement (`package-lock.json` absent).
-- 15 migrations SQL présentes, dans une séquence continue.
+- 14 migrations SQL présentes, dans une séquence continue.
 - L’archive de livraison met `package.json` et le code directement à la racine, pour simplifier l’import du dépôt dans GitHub/Vercel.
 
 ## Limites

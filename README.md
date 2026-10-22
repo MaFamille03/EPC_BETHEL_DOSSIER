@@ -1,7 +1,7 @@
 # EPC BETHEL — Application de gestion scolaire
 
 **Établissement :** EPC BETHEL ASSEMBLÉES DE DIEU JEAN FOLLY  
-**Version courante :** 1.9.4  
+**Version courante :** 1.9.5  
 **Stack :** Next.js 15, React 19, TypeScript, Supabase/PostgreSQL
 
 ## État de livraison
@@ -13,7 +13,7 @@ Les contrôles hors ligne actuels comprennent `npm run preflight` et **19 tests 
 ## Fonctionnalités incluses
 
 - Tableau de bord, navigation et recherche rapide des modules.
-- Authentification par code OTP temporaire envoyé par e-mail et création de compte protégée par un code d’accès.
+- Authentification par adresse e-mail et mot de passe ; création de compte avec confirmation du mot de passe et code d’accès. Réinitialisation du mot de passe par e-mail.
 - Gestion des élèves, responsables légaux, inscriptions, classes et années scolaires.
 - Frais scolaires, six échéances, concessions, encaissements, reçus, dépenses et trésorerie.
 - Achats, fournisseurs, réceptions, inventaire et maintenance du patrimoine.
@@ -65,7 +65,7 @@ Le typecheck et le build doivent réussir avant tout déploiement.
 1. Créez un projet Supabase de développement et sauvegardez la base avant toute modification du schéma.
 2. Exécutez une migration à la fois, dans cet ordre : `001` à `009`, puis `010_add_observateur_role.sql`, `011_auth_admin_and_observer_access.sql`, `012_school_management_completion.sql`, `013_financial_integrity_reporting.sql` et `014_management_reports_asset_integration.sql`.
 3. Vérifiez le résultat après chaque fichier. Au premier échec, arrêtez-vous et examinez l’état du schéma ; ne relancez pas aveuglément une migration partiellement exécutée.
-4. Configurez Supabase Auth : OTP par e-mail, modèle d’invitation, URL du site, redirections autorisées et service e-mail.
+4. Configurez Supabase Auth pour la connexion par mot de passe et les URL autorisées. La création initiale de compte passe par une route serveur protégée par EPC_BETHEL_REGISTRATION_CODE et SUPABASE_SERVICE_ROLE_KEY.
 5. Vérifiez l’identité et la confirmation de `minnhindje@gmail.com`. Cette adresse est conçue comme administrateur principal. Ne permettez jamais à un utilisateur public de s’attribuer le rôle administrateur à partir d’un champ de formulaire.
 6. Testez les politiques RLS, les fonctions SQL et les parcours avec les trois rôles avant d’ajouter les données réelles de l’école.
 
@@ -102,7 +102,3 @@ Consultez `CHECKLIST_MISE_EN_SERVICE.md`, `RAPPORT_CONTROLE_QUALITE.md` et `RAPP
 ## Archive consolidée pour GitHub/Vercel
 
 Cette livraison réunit les changements des étapes 1 à 9 et place `package.json` à la racine du projet. Avant l’import, lire `DEPLOIEMENT_VERCEL.md` et `LIVRAISON_FINALE_EPC_BETHEL.md`. La compilation et la validation Supabase restent à réaliser sur un environnement connecté ; ne pas considérer l’archive comme déjà déployée ou certifiée en production.
-
-## Code administrateur secondaire (migration 015)
-
-Connecté avec `minnhindje@gmail.com`, ouvrez **Paramètres** puis **Accès d’un administrateur supplémentaire**. Définissez l’adresse e-mail exacte et un code fort d’au moins 12 caractères. Le code brut n’est pas conservé : seule son empreinte salée est enregistrée. Le compte ciblé doit déjà exister dans Supabase Auth et disposer d’un profil actif ; il devra confirmer sa boîte e-mail avec le code temporaire habituel et fournir le code administrateur. La configuration remplace l’adresse et le code précédents. Appliquez `015_admin_access_code.sql` après les migrations 001–014 avant d’utiliser cette fonction.

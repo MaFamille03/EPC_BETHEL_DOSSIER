@@ -33,14 +33,14 @@ Récupérez les valeurs Supabase depuis **Project Settings → API** de votre pr
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé publique/anon de ce projet Supabase |
 | `NEXT_PUBLIC_SITE_URL` | URL canonique de l’application déployée, par exemple `https://votre-projet.vercel.app` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Clé service Supabase, réservée au serveur ; **ne jamais** lui ajouter `NEXT_PUBLIC_` |
-| `EPC_BETHEL_REGISTRATION_CODE` | Secret aléatoire d’au moins 24 caractères, utilisé pour autoriser les inscriptions ; ce n’est pas le code OTP de connexion |
+| `EPC_BETHEL_REGISTRATION_CODE` | Secret aléatoire d’au moins 24 caractères, utilisé pour autoriser les inscriptions ; ce n’est pas le code mot de passe de connexion |
 
-Si le domaine Vercel n’existe pas encore, vous pouvez effectuer un premier déploiement Preview, puis renseigner `NEXT_PUBLIC_SITE_URL` avec l’URL canonique et redéployer. Configurez aussi dans Supabase Auth l’URL du site, les redirections autorisées, les e-mails/OTP et le modèle d’invitation.
+Si le domaine Vercel n’existe pas encore, vous pouvez effectuer un premier déploiement Preview, puis renseigner `NEXT_PUBLIC_SITE_URL` avec l’URL canonique et redéployer. Configurez aussi dans Supabase Auth l’URL du site, les redirections autorisées, les e-mails/mot de passe et le modèle d’invitation.
 
 ## Migrations Supabase — à faire avant les tests métier
 
 1. Utilisez un projet Supabase de développement et faites une sauvegarde avant tout changement de schéma.
-2. Exécutez les 15 fichiers de `supabase/migrations/` dans l’ordre numérique, de `001_initial_schema.sql` à `015_admin_access_code.sql`.
+2. Exécutez les 14 fichiers de `supabase/migrations/` dans l’ordre numérique, de `001_initial_schema.sql` à `014_management_reports_asset_integration.sql`.
 3. Contrôlez chaque migration au fur et à mesure. Arrêtez-vous au premier échec et examinez l’état de la base ; ne relancez pas aveuglément une migration partiellement exécutée.
 4. Vérifiez les politiques RLS, les droits d’exécution des fonctions SQL et les trois profils : administrateur principal, observateur et modification.
 5. Vérifiez que l’adresse `minnhindje@gmail.com` est bien confirmée et reconnue comme administrateur principal. Ne donnez jamais le rôle admin depuis un champ public de formulaire.
@@ -69,11 +69,3 @@ npm run preflight
 ```
 
 Ces commandes ne nécessitent pas de connexion Supabase mais ne remplacent pas le build Next.js, les tests d’intégration SQL/RLS ou les tests du navigateur.
-
-## Nouveau code administrateur secondaire — version 1.9.5
-
-Après les migrations 001–014 déjà appliquées, exécutez une seule fois le contenu de `supabase/migrations/015_admin_access_code.sql` dans le SQL Editor Supabase. Cette migration ajoute une table verrouillée par RLS ; elle ne modifie pas les données scolaires et financières existantes. Vérifiez la réussite avant de déployer cette version.
-
-Ensuite, connectez-vous dans l’application avec `minnhindje@gmail.com`, ouvrez **Paramètres**, et configurez l’adresse e-mail cible ainsi qu’un code secret fort (12 caractères minimum). Le compte cible doit déjà exister et avoir un profil actif. À la connexion, cette adresse doit fournir le code administrateur configuré puis le code temporaire reçu par e-mail. L’administrateur principal peut remplacer l’adresse et le code à tout moment. Le code brut n’est jamais affiché après sauvegarde.
-
-La taille des textes a été augmentée modérément dans l’interface. Les contrôles structurels et les tests hors ligne passent, mais le build complet n’a pas pu être confirmé ici car les dépendances npm ne sont pas installées dans cet environnement.
