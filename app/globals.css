@@ -253,9 +253,9 @@ th{font-size:11px}td{font-size:12px}
 
 /* EPC BETHEL v1.10.1 — filigrane officiel, grand et discret sur toutes les pages */
 .page-content,.login-page,.reset-page{position:relative;isolation:isolate;}
-.page-content::before,.login-page::before,.reset-page::before{content:"";position:fixed;z-index:0;pointer-events:none;left:calc(50% + 126px);top:50%;width:min(48vw,620px);height:min(48vw,620px);transform:translate(-50%,-50%);background-image:url('/epc-bethel-watermark.png');background-position:center;background-repeat:no-repeat;background-size:contain;opacity:.045;}
+.page-content::before,.login-page::before,.reset-page::before{content:"";position:fixed;z-index:0;pointer-events:none;left:calc(50% + 126px);top:50%;width:min(34vw,440px);height:min(34vw,440px);transform:translate(-50%,-50%);background-image:url('/epc-bethel-watermark.png');background-position:center;background-repeat:no-repeat;background-size:contain;opacity:.075;}
 .page-content>*{position:relative;z-index:0;}
-.login-page::before,.reset-page::before{left:50%;width:min(86vw,1100px);height:min(86vw,1100px);opacity:.065;}
+.login-page::before,.reset-page::before{left:50%;width:min(58vw,700px);height:min(58vw,700px);opacity:.09;}
 /* Réorganisation visuelle des paramètres : cartes lisibles, titres et alertes séparés. */
 .settings-panel{display:flex;flex-direction:column;gap:18px;}
 .settings-panel .panel-heading{margin:0 0 2px;}
@@ -270,4 +270,4 @@ th{font-size:11px}td{font-size:12px}
 /* V1.10.3 — filigrane redimensionné pour afficher le logo entier */
 .page-content,.login-page,.reset-page{position:relative;}
 .page-content>* ,.login-page>* ,.reset-page>*{position:relative;z-index:1;}
-@media(max-width:760px){.page-content::before,.login-page::before,.reset-page::before{left:50%;width:min(72vw,420px);height:min(72vw,420px);opacity:.035;}}
+@media(max-width:760px){.page-content::before,.login-page::before,.reset-page::before{left:50%;width:min(48vw,300px);height:min(48vw,300px);opacity:.06;}.login-page::before,.reset-page::before{width:min(58vw,360px);height:min(58vw,360px);opacity:.075;}}
