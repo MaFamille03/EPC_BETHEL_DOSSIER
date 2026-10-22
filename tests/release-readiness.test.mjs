@@ -65,7 +65,7 @@ test('l’inscription exige un code serveur long comparé de façon constante', 
 
 test('l’adresse principale est cohérente dans les contrôles de sécurité', () => {
   const files = [
-    'app/login/page.tsx',
+    'components/auth-screen.tsx',
     'app/api/admin/users/route.ts',
     'app/utilisateurs/page.tsx',
     'supabase/migrations/011_auth_admin_and_observer_access.sql',
@@ -74,7 +74,7 @@ test('l’adresse principale est cohérente dans les contrôles de sécurité', 
 });
 
 test('la connexion par mot de passe vérifie le profil actif et offre la réinitialisation', () => {
-  const source = read('app/login/page.tsx');
+  const source = read('components/auth-screen.tsx');
   assert.match(source, /signInWithPassword/);
   assert.match(source, /resetPasswordForEmail/);
   assert.match(source, /profile\.is_active/);
@@ -117,6 +117,7 @@ test('les exemples de configuration ne contiennent pas de secret réel', () => {
   const env = read('.env.example');
   assert.match(env, /^NEXT_PUBLIC_SUPABASE_URL=https:\/\/YOUR_PROJECT\.supabase\.co$/m);
   assert.match(env, /^SUPABASE_SERVICE_ROLE_KEY=$/m);
+  assert.match(env, /^SUPABASE_SECRET_KEY=$/m);
   assert.match(env, /^EPC_BETHEL_REGISTRATION_CODE=$/m);
   assert.ok(!exists('.env.local'));
   assert.ok(!exists('.env.production'));
@@ -175,9 +176,9 @@ test('le mode aperçu explique qu’aucune donnée réelle n’est chargée et b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.9.5');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.9\.5/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.9\.5/);
+  assert.equal(pkg.version, '1.9.6');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.9\.6/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.9\.6/);
   assert.match(read('CHANGELOG.md'), /^## 1\.9\.4/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });

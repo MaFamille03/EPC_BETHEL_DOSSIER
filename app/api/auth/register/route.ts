@@ -26,9 +26,9 @@ export async function POST(request: NextRequest) {
   if (!fullName || fullName.length > 120) return NextResponse.json({ error: 'Le nom complet est obligatoire (120 caractères maximum).' }, { status: 400 });
   if (password.length < 10 || password.length > 128) return NextResponse.json({ error: 'Le mot de passe doit contenir entre 10 et 128 caractères.' }, { status: 400 });
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) return NextResponse.json({ error: 'Configuration serveur incomplète : vérifiez Supabase et SUPABASE_SERVICE_ROLE_KEY dans Vercel.' }, { status: 503 });
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) return NextResponse.json({ error: 'Configuration serveur incomplète : vérifiez SUPABASE_URL (ou NEXT_PUBLIC_SUPABASE_URL) et SUPABASE_SECRET_KEY (ou SUPABASE_SERVICE_ROLE_KEY) dans Vercel.' }, { status: 503 });
 
   const admin = createClient(url, serviceKey, { auth: { autoRefreshToken: false, persistSession: false } });
   const { data, error } = await admin.auth.admin.createUser({

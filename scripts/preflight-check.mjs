@@ -51,9 +51,10 @@ try {
 }
 
 const envExample = read('.env.example');
-for (const key of ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'EPC_BETHEL_REGISTRATION_CODE']) {
+for (const key of ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'EPC_BETHEL_REGISTRATION_CODE']) {
   if (!new RegExp(`^${key}=`, 'm').test(envExample)) fail(`Variable ${key} absente de .env.example.`);
 }
+if (!/^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=/m.test(envExample) && !/^NEXT_PUBLIC_SUPABASE_ANON_KEY=/m.test(envExample)) fail('Une clé publique Supabase est absente de .env.example.');
 if (envExample.includes('YOUR_PROJECT.supabase.co') && !envExample.match(/^SUPABASE_SERVICE_ROLE_KEY=.+$/m) && !envExample.match(/^EPC_BETHEL_REGISTRATION_CODE=.+$/m)) {
   pass('Le fichier d’exemple ne contient pas de clé de service ou de code d’inscription renseigné.');
 } else {

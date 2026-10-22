@@ -1,3 +1,11 @@
+## 1.9.6 — Authentification unifiée et correction de configuration Supabase
+
+- Connexion et inscription partagent désormais la même page et conservent le panneau visuel fixe.
+- Réduction des logos répétés et formulaire plus haut, avec mise en page compacte.
+- Client Supabase compatible avec les variables de clé publique `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` et `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- Route d’inscription compatible avec `SUPABASE_SECRET_KEY` et l’ancien nom `SUPABASE_SERVICE_ROLE_KEY`.
+- Les secrets restent réservés au serveur ; aucune clé secrète n’est ajoutée au dépôt.
+
 ## 1.9.5 — Connexion par mot de passe et lisibilité
 
 - Connexion avec adresse e-mail et mot de passe, sans code administrateur lors des connexions ordinaires.

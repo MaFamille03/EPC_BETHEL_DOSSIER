@@ -192,3 +192,33 @@ th{font-size:11px}td{font-size:12px}
 
 /* Logo officiel EPC BETHEL — identité visuelle de l'établissement */
 .sidebar-school-logo{width:62px;height:62px;object-fit:contain;flex:0 0 auto;border-radius:50%;filter:drop-shadow(0 5px 9px rgba(63,22,74,.18));transition:transform .25s ease,filter .25s ease}.brand:hover .sidebar-school-logo{transform:scale(1.055) rotate(-2deg);filter:drop-shadow(0 7px 13px rgba(63,22,74,.25))}.brand{gap:10px}.brand-copy strong{font-size:15px}.brand-copy span{font-size:8px;letter-spacing:.09em;line-height:1.35}.login-school-logo{width:104px;height:104px;object-fit:contain;border-radius:50%;filter:drop-shadow(0 8px 18px rgba(0,0,0,.25));transition:transform .25s ease}.login-school-logo:hover{transform:scale(1.04) rotate(-2deg)}.login-brand{gap:16px}.login-visual-content:before{content:"";display:block;width:128px;height:128px;margin:0 0 24px;background:url('/epc-bethel-logo.webp') center/contain no-repeat;filter:drop-shadow(0 10px 25px rgba(0,0,0,.22));animation:bethel-logo-enter .7s ease-out both}.mobile-school-logo{width:76px;height:76px;object-fit:contain;border-radius:50%;filter:drop-shadow(0 4px 10px rgba(45,20,54,.15))}.mobile-login-brand{gap:12px}.register-school-logo{width:88px;height:88px;object-fit:contain;border-radius:50%;filter:drop-shadow(0 5px 12px rgba(45,20,54,.16));transition:transform .25s ease}.register-school-logo:hover{transform:scale(1.04)}.reset-brand{gap:14px}.illus-school-logo{width:68px;height:68px;object-fit:contain;border-radius:50%}.illus-logo{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:#fff;box-shadow:0 5px 15px rgba(0,0,0,.15)}@keyframes bethel-logo-enter{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}@media(max-width:760px){.login-visual-content:before{width:88px;height:88px;margin-bottom:16px}.login-school-logo{width:72px;height:72px}.sidebar-school-logo{width:52px;height:52px}.brand-copy span{font-size:7px}}
+
+/* EPC BETHEL 1.9.6 — authentification unifiée et lisible */
+.login-visual-content:before{display:none!important;content:none!important}
+.login-school-logo{width:82px;height:82px;object-fit:contain}
+.login-brand{gap:14px}
+.illus-logo{background:#e7f3e9;color:#246a40}
+.auth-form-side{padding:22px 7% 48px;overflow-y:auto;justify-content:center}
+.auth-form-wrap{max-width:410px}
+.auth-welcome{margin-bottom:19px}
+.auth-welcome .login-icon{margin-bottom:12px}
+.auth-welcome h2{font-size:29px}
+.auth-form-wrap .login-form{gap:13px}
+.auth-form-wrap .login-form .form-field{gap:6px}
+.auth-form-wrap .login-form .form-field>span{font-size:12px}
+.auth-form-wrap .input-with-icon{height:44px}
+.auth-form-wrap .input-with-icon input{font-size:13px}
+.auth-form-wrap .login-security{margin-top:15px;padding:10px;font-size:11px}
+.auth-form-wrap .login-help{margin-top:15px;font-size:12px;line-height:1.5}
+.auth-form-wrap .login-help button{border:0;background:transparent;color:#267447;font-size:12px;font-weight:800;padding:0;text-decoration:none;cursor:pointer}
+.auth-form-wrap .login-help button:hover{text-decoration:underline}
+.auth-register-form{gap:10px!important}
+.auth-register-form .form-field{gap:5px!important}
+.auth-register-form .input-with-icon{height:40px!important}
+.auth-register-form .login-submit{height:42px;min-height:42px}
+.auth-form-wrap .login-error,.auth-form-wrap .login-notice{display:flex;align-items:flex-start;gap:8px;font-size:12px;padding:9px 11px}
+.auth-form-wrap .login-error svg,.auth-form-wrap .login-notice svg{flex-shrink:0;margin-top:1px}
+.mobile-login-brand{margin-bottom:20px}
+@media(max-height:820px) and (min-width:901px){.auth-form-side{padding-top:12px;padding-bottom:35px}.auth-welcome{margin-bottom:12px}.auth-welcome .login-icon{width:36px;height:36px;margin-bottom:8px}.auth-welcome h2{font-size:25px}.auth-welcome p{font-size:12px}.auth-form-wrap .login-security{margin-top:10px}.auth-form-wrap .login-help{margin-top:10px}.auth-register-form{gap:8px!important}.auth-register-form .input-with-icon{height:37px!important}}
+@media(max-width:900px){.auth-form-side{padding:30px 24px 65px;justify-content:flex-start}.auth-form-wrap{max-width:460px}.auth-welcome{margin-bottom:22px}.auth-register-form{gap:12px!important}}
+@media(max-width:640px){.auth-form-side{padding:26px 22px 65px}.mobile-login-brand{margin-bottom:24px}.auth-welcome h2{font-size:27px}.auth-register-form .input-with-icon{height:44px!important}}
