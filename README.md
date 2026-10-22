@@ -102,3 +102,7 @@ Consultez `CHECKLIST_MISE_EN_SERVICE.md`, `RAPPORT_CONTROLE_QUALITE.md` et `RAPP
 ## Archive consolidée pour GitHub/Vercel
 
 Cette livraison réunit les changements des étapes 1 à 9 et place `package.json` à la racine du projet. Avant l’import, lire `DEPLOIEMENT_VERCEL.md` et `LIVRAISON_FINALE_EPC_BETHEL.md`. La compilation et la validation Supabase restent à réaliser sur un environnement connecté ; ne pas considérer l’archive comme déjà déployée ou certifiée en production.
+
+## Code administrateur secondaire (migration 015)
+
+Connecté avec `minnhindje@gmail.com`, ouvrez **Paramètres** puis **Accès d’un administrateur supplémentaire**. Définissez l’adresse e-mail exacte et un code fort d’au moins 12 caractères. Le code brut n’est pas conservé : seule son empreinte salée est enregistrée. Le compte ciblé doit déjà exister dans Supabase Auth et disposer d’un profil actif ; il devra confirmer sa boîte e-mail avec le code temporaire habituel et fournir le code administrateur. La configuration remplace l’adresse et le code précédents. Appliquez `015_admin_access_code.sql` après les migrations 001–014 avant d’utiliser cette fonction.

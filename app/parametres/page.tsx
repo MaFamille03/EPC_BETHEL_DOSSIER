@@ -6,7 +6,7 @@ import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { useEPCAccess } from '@/components/access-context';
 import { ClassesManager } from '@/components/classes-manager';
 import { SchoolYearsManager } from '@/components/school-years-manager';
-import { Building2, Save, RefreshCw, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
+import { Building2, Save, RefreshCw, CheckCircle2, AlertCircle, ShieldCheck, KeyRound } from 'lucide-react';
 
 type SchoolSettings = { school_name: string; phone: string; email: string; address: string };
 const initialSchool: SchoolSettings = {
@@ -19,6 +19,11 @@ function SettingsContent() {
   const [school, setSchool] = useState<SchoolSettings>(initialSchool);
   const [loading, setLoading] = useState(false);
   const [savingSchool, setSavingSchool] = useState(false);
+  const [adminTargetEmail, setAdminTargetEmail] = useState('');
+  const [adminAccessCode, setAdminAccessCode] = useState('');
+  const [adminCodeConfigured, setAdminCodeConfigured] = useState(false);
+  const [isPrimaryAdmin, setIsPrimaryAdmin] = useState(false);
+  const [savingAdminCode, setSavingAdminCode] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
   const connected = isSupabaseConfigured();
@@ -37,7 +42,29 @@ function SettingsContent() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    void load();
+    const client = supabase();
+    if (client) void (async () => {
+      const { data: { session } } = await client.auth.getSession();
+      if (!session) return;
+      setIsPrimaryAdmin(session.user.email?.toLowerCase() === 'minnhindje@gmail.com');
+      const response = await fetch('/api/admin/admin-access-code', { headers: { Authorization: `Bearer ${session.access_token}` }, cache: 'no-store' });
+      if (response.ok) { const data = await response.json(); setAdminCodeConfigured(!!data.configured); setAdminTargetEmail(data.targetEmail || ''); }
+    })();
+  }, [load]);
+
+  async function saveAdminAccessCode(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setError(''); setNotice('');
+    const client = supabase(); if (!client) { setError('Supabase n’est pas configuré.'); return; }
+    const { data: { session } } = await client.auth.getSession();
+    if (!session) { setError('Reconnectez-vous avec le compte administrateur principal.'); return; }
+    setSavingAdminCode(true);
+    const response = await fetch('/api/admin/admin-access-code', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ action: 'configure', targetEmail: adminTargetEmail, code: adminAccessCode }) });
+    const result = await response.json().catch(() => ({})); setSavingAdminCode(false);
+    if (!response.ok) { setError(result.error || 'Impossible d’enregistrer le code administrateur.'); return; }
+    setAdminCodeConfigured(true); setAdminAccessCode(''); setNotice(`Code administrateur configuré pour ${result.targetEmail}.`);
+  }
 
   async function saveSchool(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -77,6 +104,16 @@ function SettingsContent() {
         {isReadOnly && <p className="form-footnote">Votre niveau d’accès permet de consulter les paramètres, mais pas de les modifier.</p>}
       </form>
     </section>
+
+    {isPrimaryAdmin && !isReadOnly && <section className="panel settings-panel admin-code-panel">
+      <div className="panel-heading"><div><h2><KeyRound size={19}/> Accès d’un administrateur supplémentaire</h2><p>Réservé au compte principal minnhindje@gmail.com. Le code est stocké sous forme de hachage et ne peut pas être relu après enregistrement.</p></div></div>
+      <form className="settings-form" onSubmit={saveAdminAccessCode}>
+        <label className="form-field"><span>Adresse e-mail autorisée à devenir administrateur *</span><input type="email" required maxLength={254} value={adminTargetEmail} onChange={e => setAdminTargetEmail(e.target.value)} placeholder="autre.administrateur@exemple.com" /></label>
+        <label className="form-field"><span>{adminCodeConfigured ? 'Nouveau code administrateur (remplacement)' : 'Créer le code administrateur'} *</span><input type="password" required minLength={12} maxLength={128} autoComplete="new-password" value={adminAccessCode} onChange={e => setAdminAccessCode(e.target.value)} placeholder="Au moins 12 caractères" /></label>
+        <p className="form-footnote">L’adresse indiquée devra confirmer sa boîte e-mail avec le code temporaire habituel et saisir ce code administrateur pour obtenir le rôle administrateur. Toute modification remplace le code et l’adresse précédents.</p>
+        <button type="submit" className="button button-primary" disabled={savingAdminCode || !connected}><ShieldCheck size={16}/>{savingAdminCode ? 'Enregistrement…' : 'Enregistrer le code administrateur'}</button>
+      </form>
+    </section>}
 
     <SchoolYearsManager />
     <ClassesManager />

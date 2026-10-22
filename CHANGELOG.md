@@ -110,3 +110,5 @@
 - Nouvelle migration `012_school_management_completion.sql`.
 - Les validations de syntaxe TypeScript passent, mais la compilation complète et l’exécution PostgreSQL/Supabase restent à effectuer dans un environnement connecté aux dépendances et au projet réel.
 
+- Ajout de la migration 015 et d’un code administrateur secondaire lié à une adresse e-mail précise, configuré depuis Paramètres par l’administrateur principal. Le code est stocké sous forme de hachage salé et vérifié côté serveur.
+- Augmentation modérée de la taille des caractères pour améliorer la lisibilité globale.

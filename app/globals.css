@@ -177,3 +177,26 @@
   .topbar-divider{display:none}
   .topbar-popover{top:calc(100% + 9px)}
 }
+
+/* Lisibilité générale — augmentation modérée des textes dans toute l'application */
+html, body { font-size: 15px; }
+.nav-link { font-size: 14px; }
+.nav-label, .eyebrow { font-size: 11px; }
+.school-chip, .school-chip strong { font-size: 12px; }
+.page-heading p, .form-field > span, .settings-form .form-field > span { font-size: 13px; }
+.button { font-size: 12px; }
+.form-field input, .form-field select, .form-field textarea,
+.settings-form input, .settings-form textarea, .settings-form select { font-size: 14px; }
+.panel-heading p, .form-footnote, .inline-notice { font-size: 13px; line-height: 1.6; }
+.data-table th, .data-table td, table th, table td { font-size: 13px; }
+.admin-code-panel .form-footnote { grid-column: 1 / -1; margin: 0; }
+.login-welcome p, .login-form .form-field > span { font-size: 13px; }
+.login-form .input-with-icon input { font-size: 14px; }
+.login-submit { font-size: 14px; }
+.login-notice, .login-error { font-size: 13px; }
+@media (max-width: 640px) {
+  html, body { font-size: 14px; }
+  .nav-link { font-size: 13.5px; }
+  .page-heading p { font-size: 13px; }
+  .login-form-side { padding-left: 20px; padding-right: 20px; }
+}
