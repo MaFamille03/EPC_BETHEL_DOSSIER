@@ -1,0 +1,9 @@
+EPC BETHEL — ÉTAPE 9 — VERSION 1.9.4
+
+- Recherche rapide de modules fonctionnelle dans la barre supérieure.
+- Raccourci Ctrl/Cmd+K, fermeture par clic extérieur et Échap.
+- Menu compte selon le rôle et action de déconnexion.
+- Notifications sans fausses alertes : état vide explicite, branchement réel restant à développer.
+- Documentation consolidée ; tsconfig.tsbuildinfo supprimé du paquet.
+- Contrôles hors ligne : 19 tests, 0 échec ; précontrôle 11 réussis, 1 avertissement (lockfile manquant).
+- Compilation, typecheck complet, migrations Supabase et déploiement Vercel restent non validés.

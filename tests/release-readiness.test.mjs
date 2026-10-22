@@ -1,0 +1,204 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
+const exists = (relative) => fs.existsSync(path.join(root, relative));
+const primaryAdmin = 'minnhindje@gmail.com';
+
+function allSourceFiles(relativeDirectories) {
+  const files = [];
+  for (const relativeDirectory of relativeDirectories) {
+    const start = path.join(root, relativeDirectory);
+    if (!fs.existsSync(start)) continue;
+    const visit = (current) => {
+      for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+        const absolute = path.join(current, entry.name);
+        if (entry.isDirectory()) visit(absolute);
+        else if (/\.(?:ts|tsx|js|jsx)$/.test(entry.name)) files.push(absolute);
+      }
+    };
+    visit(start);
+  }
+  return files;
+}
+
+test('la configuration de paquet expose les commandes requises', () => {
+  const pkg = JSON.parse(read('package.json'));
+  assert.equal(pkg.private, true);
+  assert.ok(pkg.scripts?.build);
+  assert.ok(pkg.scripts?.typecheck);
+  assert.ok(pkg.scripts?.preflight);
+  assert.ok(pkg.scripts?.['test:release']);
+  assert.ok(pkg.engines?.node, 'la version minimale de Node.js doit être déclarée');
+});
+
+test('les migrations SQL sont présentes et numérotées sans trou', () => {
+  const directory = path.join(root, 'supabase/migrations');
+  const files = fs.readdirSync(directory).filter((name) => /^\d{3}_.+\.sql$/.test(name)).sort();
+  assert.equal(files.length, 14);
+  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 14 }, (_, i) => i + 1));
+});
+
+test('les routes serveur nécessaires au parcours des comptes existent', () => {
+  assert.ok(exists('app/api/auth/register/route.ts'));
+  assert.ok(exists('app/api/admin/users/route.ts'));
+  const register = read('app/api/auth/register/route.ts');
+  const users = read('app/api/admin/users/route.ts');
+  assert.match(register, /export\s+async\s+function\s+POST/);
+  assert.match(users, /export\s+async\s+function\s+GET/);
+  assert.match(users, /export\s+async\s+function\s+POST/);
+  assert.match(users, /export\s+async\s+function\s+PATCH/);
+});
+
+test('l’inscription exige un code serveur long comparé de façon constante', () => {
+  const source = read('app/api/auth/register/route.ts');
+  assert.match(source, /timingSafeEqual/);
+  assert.match(source, /expectedCode\.length\s*<\s*24/);
+  assert.match(source, /EPC_BETHEL_REGISTRATION_CODE/);
+  assert.match(source, /SUPABASE_SERVICE_ROLE_KEY/);
+});
+
+test('l’adresse principale est cohérente dans les contrôles de sécurité', () => {
+  const files = [
+    'app/login/page.tsx',
+    'app/api/auth/register/route.ts',
+    'app/api/admin/users/route.ts',
+    'app/utilisateurs/page.tsx',
+    'supabase/migrations/011_auth_admin_and_observer_access.sql',
+  ];
+  for (const file of files) assert.ok(read(file).toLowerCase().includes(primaryAdmin), `${file} doit protéger l’administrateur principal`);
+});
+
+test('la connexion OTP ne crée pas de compte et vérifie le profil actif', () => {
+  const source = read('app/login/page.tsx');
+  assert.match(source, /shouldCreateUser:\s*false/);
+  assert.match(source, /verifyOtp/);
+  assert.match(source, /profile\.is_active/);
+  assert.match(source, /router\.replace\('\/'\)/);
+});
+
+test('le profil de sécurité interdit la promotion publique au rôle administrateur', () => {
+  const sql = read('supabase/migrations/011_auth_admin_and_observer_access.sql');
+  assert.match(sql, /create or replace function public\.update_profile_access/i);
+  assert.match(sql, /p_role not in \('observateur'::public\.app_role,'modification'::public\.app_role\)/i);
+  assert.match(sql, /guard_epc_profile_insert/);
+  assert.match(sql, /guard_epc_profile_delete/);
+  assert.match(sql, /set search_path = ''/i);
+});
+
+test('les profils observateur et modification sont séparés de l’administration', () => {
+  const access = read('components/access-context.tsx');
+  const shell = read('components/app-shell.tsx');
+  const users = read('app/utilisateurs/page.tsx');
+  assert.match(access, /'admin'\s*\|\s*'observateur'\s*\|\s*'modification'/);
+  assert.match(access, /role\s*!==\s*'admin'\s*&&\s*role\s*!==\s*'modification'/);
+  assert.match(shell, /observateur:\s*\[/);
+  assert.match(users, /Lecture seule/);
+  assert.match(users, /Modification/);
+});
+
+test('aucune clé de service Supabase n’est référencée dans un composant client', () => {
+  const files = allSourceFiles(['app', 'components', 'lib']);
+  const offenders = [];
+  for (const absolute of files) {
+    const source = fs.readFileSync(absolute, 'utf8');
+    if (/^\s*['"]use client['"];?/m.test(source) && /process\.env\.SUPABASE_SERVICE_ROLE_KEY|import[^\n]*SUPABASE_SERVICE_ROLE_KEY/.test(source)) {
+      offenders.push(path.relative(root, absolute));
+    }
+  }
+  assert.deepEqual(offenders, []);
+});
+
+test('les exemples de configuration ne contiennent pas de secret réel', () => {
+  const env = read('.env.example');
+  assert.match(env, /^NEXT_PUBLIC_SUPABASE_URL=https:\/\/YOUR_PROJECT\.supabase\.co$/m);
+  assert.match(env, /^SUPABASE_SERVICE_ROLE_KEY=$/m);
+  assert.match(env, /^EPC_BETHEL_REGISTRATION_CODE=$/m);
+  assert.ok(!exists('.env.local'));
+  assert.ok(!exists('.env.production'));
+});
+
+test('les garde-fous financiers et les rapports disposent de leurs migrations', () => {
+  const finances = read('supabase/migrations/013_financial_integrity_reporting.sql');
+  const reports = read('supabase/migrations/014_management_reports_asset_integration.sql');
+  assert.match(finances, /get_financial_overview/i);
+  assert.match(finances, /get_school_fee_ledger/i);
+  assert.match(reports, /get_management_report_rows/i);
+  assert.match(reports, /receive_purchase_order/i);
+  assert.match(reports, /create_order_from_request/i);
+});
+
+test('la documentation prévient que les tests de préproduction restent obligatoires', () => {
+  const readme = read('README.md');
+  assert.match(readme, /npm run typecheck/);
+  assert.match(readme, /npm run build/);
+  assert.match(readme, /de \*\*développement\*\*/i);
+  assert.match(readme, /n’est pas certifiée prête pour la production/i);
+});
+
+
+test('le catalogue des modules ne contient pas de dossiers ou mouvements fictifs', () => {
+  const modules = read('lib/modules.ts');
+  assert.doesNotMatch(modules, /\bdemo\s*:/i);
+  assert.doesNotMatch(modules, /Kouassi Grâce Marie|Yao Nathaniel|N’Guessan David/);
+  assert.doesNotMatch(modules, /07 08 12 34 56|REC-2026-0182|PAT-0001/);
+});
+
+test('les tableaux scolaires démarrent vides et restent vides hors connexion', () => {
+  const source = read('components/module-page.tsx');
+  assert.match(source, /useState<Row\[]>\(\[\]\)/);
+  assert.match(source, /if\(!connected\)\{setRows\(\[\]\);setFeeTotalCount\(0\);setSchoolYear\(null\);return;\}/);
+  assert.doesNotMatch(source, /module\?\.demo/);
+});
+
+test('l’absence de profil authentifié est en lecture seule par défaut', () => {
+  const access = read('components/access-context.tsx');
+  const shell = read('components/app-shell.tsx');
+  assert.match(access, /role:\s*null,\s*isReadOnly:\s*true,\s*isAdmin:\s*false/);
+  assert.match(access, /role\s*!==\s*'admin'\s*&&\s*role\s*!==\s*'modification'/);
+  assert.match(shell, /Boolean\(role\s*&&\s*allowed\[role\]\?\.includes\(i\.key\)\)/);
+  assert.match(shell, /router\.replace\('\/login'\)/);
+});
+
+test('le mode aperçu explique qu’aucune donnée réelle n’est chargée et bloque les créations scolaires', () => {
+  const shell = read('components/app-shell.tsx');
+  const modulePage = read('components/module-page.tsx');
+  assert.match(shell, /Aucune donnée réelle n’est chargée et les modifications sont désactivées/);
+  assert.match(modulePage, /!isReadOnly&&connected&&!\(section==='scolarite'&&concessionView\)/);
+  assert.match(modulePage, /Aucune donnée réelle chargée/);
+});
+
+
+test('la version courante et les guides d’installation sont cohérents', () => {
+  const pkg = JSON.parse(read('package.json'));
+  assert.equal(pkg.version, '1.9.4');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.9\.4/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.9\.4/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.9\.4/m);
+  assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
+});
+
+test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
+  const testSource = read('tests/release-readiness.test.mjs');
+  const count = (testSource.match(/^test\(/gm) || []).length;
+  assert.equal(count, 19, 'la suite de contrôle doit contenir exactement 19 tests');
+  assert.match(read('README.md'), /19 tests hors ligne/);
+  assert.match(read('CHANGELOG.md'), /19 tests hors ligne/);
+  assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /19 tests hors ligne/);
+  assert.doesNotMatch(read('README.md'), /12 contrôles structurels hors ligne/);
+});
+
+test('les commandes de barre supérieure proposent recherche, fermeture et menus du compte', () => {
+  const topbar = read('components/topbar-menus.tsx');
+  assert.match(topbar, /aria-label="Rechercher un module"/);
+  assert.match(topbar, /router\.push/);
+  assert.match(topbar, /document\.addEventListener\('pointerdown'/);
+  assert.match(topbar, /event\.key === 'Escape'/);
+  assert.match(topbar, /Aucune notification disponible/);
+  assert.match(topbar, /Gestion des utilisateurs/);
+  assert.match(topbar, /void onLogout\(\)/);
+});

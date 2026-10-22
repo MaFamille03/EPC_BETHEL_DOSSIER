@@ -1,0 +1,109 @@
+'use client';
+import { useCallback, useEffect, useState } from 'react';
+import { AppShell } from '@/components/app-shell';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { UserPlus, RefreshCw, ShieldCheck, Mail, UserRound, CheckCircle2, AlertCircle, LockKeyhole } from 'lucide-react';
+
+type Role = 'admin' | 'observateur' | 'modification';
+type EditableRole = Exclude<Role, 'admin'>;
+type UserRow = { id: string; email: string; full_name: string; role: Role; is_active: boolean; created_at: string };
+const PRIMARY_ADMIN_EMAIL = 'minnhindje@gmail.com';
+
+export default function UsersPage() {
+  const [rows, setRows] = useState<UserRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState('');
+  const [error, setError] = useState('');
+  const [form, setForm] = useState({ email: '', full_name: '' });
+
+  const load = useCallback(async () => {
+    const client = supabase();
+    if (!client) { setError('Configurez Supabase pour gérer les utilisateurs.'); return; }
+    setLoading(true); setError('');
+    try {
+      const { data: { session } } = await client.auth.getSession();
+      if (!session) throw new Error('Session expirée. Reconnectez-vous.');
+      const response = await fetch('/api/admin/users', { headers: { Authorization: `Bearer ${session.access_token}` }, cache: 'no-store' });
+      const json = await response.json();
+      if (!response.ok) throw new Error(json.error || 'Chargement impossible');
+      setRows(json.users || []);
+    } catch (e) { setError(e instanceof Error ? e.message : 'Erreur de chargement'); }
+    finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { void load(); }, [load]);
+
+  async function invite(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const client = supabase();
+    if (!client) return;
+    setSaving(true); setError(''); setNotice('');
+    try {
+      const { data: { session } } = await client.auth.getSession();
+      if (!session) throw new Error('Session expirée. Reconnectez-vous.');
+      const response = await fetch('/api/admin/users', {
+        method: 'POST', headers: { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const json = await response.json();
+      if (!response.ok) throw new Error(json.error || 'Invitation impossible');
+      setNotice(`Invitation envoyée à ${form.email}. Le compte démarre en lecture seule ; tu pourras ajuster son rôle après son inscription.`);
+      setForm({ email: '', full_name: '' });
+      await load();
+    } catch (e) { setError(e instanceof Error ? e.message : 'Invitation impossible'); }
+    finally { setSaving(false); }
+  }
+
+  async function update(row: UserRow, patch: Partial<Pick<UserRow, 'role' | 'is_active'>>) {
+    const client = supabase();
+    if (!client) return;
+    if (row.email.toLowerCase() === PRIMARY_ADMIN_EMAIL || row.role === 'admin') {
+      setError('Le compte administrateur principal est protégé.'); return;
+    }
+    setError(''); setNotice('');
+    try {
+      const { data: { session } } = await client.auth.getSession();
+      if (!session) throw new Error('Session expirée.');
+      const response = await fetch('/api/admin/users', {
+        method: 'PATCH', headers: { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: row.id, ...patch }),
+      });
+      const json = await response.json();
+      if (!response.ok) throw new Error(json.error || 'Modification impossible');
+      setNotice('Les autorisations ont été enregistrées.');
+      await load();
+    } catch (e) { setError(e instanceof Error ? e.message : 'Modification impossible'); }
+  }
+
+  return <AppShell>
+    <div className="page-heading"><div><div className="eyebrow">ADMINISTRATION</div><h1>Utilisateurs et autorisations</h1><p>Les nouveaux comptes sont en lecture seule par défaut. Attribue ensuite Lecture seule ou Modification à chaque compte ; l’administration reste réservée au compte principal.</p></div><button className="button button-secondary" onClick={() => void load()} disabled={loading}><RefreshCw size={16}/> Actualiser</button></div>
+    {!isSupabaseConfigured() && <div className="inline-notice"><ShieldCheck size={16}/> Mode aperçu : connectez Supabase pour gérer des comptes réels.</div>}
+    {error && <div className="inline-notice"><AlertCircle size={16}/>{error}</div>}
+    {notice && <div className="inline-notice"><CheckCircle2 size={16}/>{notice}</div>}
+    <section className="panel form-panel"><div className="panel-heading"><div><h2>Inviter un utilisateur</h2><p>Un lien d’activation sera envoyé par e-mail. Tous les nouveaux comptes commencent en lecture seule.</p></div><UserPlus size={22}/></div>
+      <form className="admin-invite-form" onSubmit={invite}>
+        <label className="form-field"><span>Nom complet</span><input required maxLength={120} value={form.full_name} onChange={e => setForm({ ...form, full_name: e.target.value })} placeholder="Nom et prénoms"/></label>
+        <label className="form-field"><span>Adresse e-mail</span><input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value.trim() })} placeholder="prenom@exemple.com"/></label>
+        <button className="button button-primary" disabled={saving || !isSupabaseConfigured()}>{saving ? 'Envoi…' : <><Mail size={16}/> Envoyer l’invitation</>}</button>
+      </form>
+      <p className="form-footnote">La clé <code>SUPABASE_SERVICE_ROLE_KEY</code> doit rester côté serveur. Le code de création de compte est configuré séparément dans <code>EPC_BETHEL_REGISTRATION_CODE</code>.</p>
+    </section>
+    <section className="panel table-panel"><div className="panel-toolbar"><div><h2>Comptes enregistrés</h2><p>{rows.length} compte{rows.length > 1 ? 's' : ''} chargé{rows.length > 1 ? 's' : ''}</p></div></div>
+      <div className="table-scroll"><table><thead><tr><th>Utilisateur</th><th>Autorisation</th><th>État du compte</th><th>Inscription</th><th>Actions</th></tr></thead><tbody>
+        {rows.map(row => {
+          const isPrimary = row.email.toLowerCase() === PRIMARY_ADMIN_EMAIL || row.role === 'admin';
+          return <tr key={row.id}>
+            <td><div className="admin-user-cell"><span className="person-avatar green">{isPrimary ? <ShieldCheck size={16}/> : <UserRound size={16}/>}</span><span><strong>{row.full_name || 'Nom non renseigné'}</strong><small>{row.email}</small>{isPrimary && <small className="field-help">Compte principal protégé</small>}</span></div></td>
+            <td>{isPrimary ? <span className="role-pill role-pill-admin"><LockKeyhole size={13}/> Administrateur principal</span> : <select aria-label={`Autorisation de ${row.email}`} value={row.role} onChange={e => void update(row, { role: e.target.value as EditableRole })}><option value="observateur">Lecture seule — consulter les informations</option><option value="modification">Modification — gérer les données de l’école</option></select>}</td>
+            <td><span className={`status-pill ${row.is_active ? 'status-good' : 'status-warn'}`}><i/>{row.is_active ? 'Actif' : 'Désactivé'}</span></td>
+            <td>{row.created_at ? new Date(row.created_at).toLocaleDateString('fr-FR') : '—'}</td>
+            <td>{isPrimary ? <span className="field-help">Protection active</span> : <button className="button button-secondary" onClick={() => void update(row, { is_active: !row.is_active })}>{row.is_active ? 'Désactiver' : 'Réactiver'}</button>}</td>
+          </tr>;
+        })}
+        {!rows.length && <tr><td colSpan={5} className="empty-cell">{loading ? 'Chargement…' : 'Aucun utilisateur retourné. Vérifiez la configuration et les droits administrateur.'}</td></tr>}
+      </tbody></table></div>
+    </section>
+    <div className="inline-notice"><ShieldCheck size={16}/><span>Les autorisations sont vérifiées côté serveur et dans les politiques RLS. Les niveaux disponibles sont Lecture seule et Modification ; l’administration est réservée exclusivement à {PRIMARY_ADMIN_EMAIL}.</span></div>
+  </AppShell>;
+}

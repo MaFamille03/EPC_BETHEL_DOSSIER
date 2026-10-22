@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+# Secrets de configuration : seuls les exemples peuvent être versionnés.
+.env*
+!.env.example
+.DS_Store
+npm-debug.log*
+
+*.tsbuildinfo
+
+# Configuration de liaison locale Vercel
+.vercel

@@ -1,0 +1,21 @@
+EPC BETHEL — ÉTAPE 6 — CONTRÔLES FINAUX ET PRÉPARATION AU DÉPLOIEMENT
+Version de contrôle : 1.9.1 — 16 octobre 2026
+
+Statut : CANDIDAT DE PRÉPRODUCTION. Ne pas déployer en production avant validation du build, des migrations et des tests d’accès.
+
+Contrôles effectués dans cet environnement :
+- 25 fichiers TypeScript/TSX analysés ; 0 erreur de syntaxe détectée.
+- Aucun import interne manquant détecté.
+- Les 31 RPC appelées par le code et les 23 tables consultées correspondent à des fonctions/tables des migrations.
+- Les 14 migrations 001 à 014 sont présentes, sans trou de numérotation ; contrôle statique des délimiteurs dollar.
+- Contrôle des blocs SECURITY DEFINER, de la clé service côté client et de .gitignore.
+- `npm run preflight` : 11 contrôles réussis, 1 avertissement, 0 échec.
+- Ajout de `scripts/preflight-check.mjs` et du script package `preflight`.
+
+Limitations :
+- `npm install` a échoué avec EAI_AGAIN sur registry.npmjs.org ; les dépendances ne sont pas installées.
+- `npm run typecheck` et `npm run build` ne sont donc pas validés.
+- Les migrations n’ont pas été exécutées sur Supabase/PostgreSQL et aucun test end-to-end n’a été fait.
+- `package-lock.json` est absent ; il faut le générer via `npm install` dans un environnement connecté puis le conserver.
+
+Lire `RAPPORT_ETAPE_6_PREDEPLOIEMENT.md` et `RAPPORT_CONTROLE_QUALITE.md` pour le détail et le plan de validation obligatoire avant production.

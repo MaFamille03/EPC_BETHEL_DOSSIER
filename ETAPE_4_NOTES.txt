@@ -1,0 +1,10 @@
+EPC BETHEL — Étape 4 : frais scolaires, encaissements et trésorerie
+Version du projet : 1.8.0
+
+Cette étape fiabilise les indicateurs financiers en les calculant côté PostgreSQL. Elle ajoute la migration 013_financial_integrity_reporting.sql, le registre des frais scolaires paginé, les options d’encaissement sur les inscriptions ayant un solde positif et les agrégats utilisés par le tableau de bord, la page des paiements et la page des dépenses.
+
+Les paiements sont alloués automatiquement aux échéances les plus anciennes puis aux frais ponctuels, dans une transaction SQL. Les concessions approuvées et valides sont appliquées à la création des frais, avec conservation des montants brut, réduction et net. Les dépenses restent en brouillon jusqu’à validation ; validation et annulation conservent la trace et créent ou contrepassent les mouvements de trésorerie. Les transferts restent des mouvements liés entre deux comptes.
+
+Des garde-fous SQL refusent les dates de paiement, de validation des dépenses et de transfert dans le futur. La lecture de la trésorerie prend en compte les mouvements validés datés jusqu’à la fin de la date courante afin de rester cohérente avec la saisie de date sans heure.
+
+IMPORTANT : appliquer la migration 013 seulement après les migrations 001 à 012, d’abord sur un projet Supabase de développement et après sauvegarde. Le code a fait l’objet de contrôles statiques, mais la compilation Next.js et les scénarios PostgreSQL/Supabase n’ont pas pu être validés dans l’environnement de préparation faute d’installation complète des dépendances et d’accès à une base réelle.
