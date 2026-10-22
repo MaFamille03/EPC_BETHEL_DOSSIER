@@ -19,7 +19,7 @@ export default function UsersPage() {
 
   const load = useCallback(async () => {
     const client = supabase();
-    if (!client) { setError('Configurez Supabase pour gérer les utilisateurs.'); return; }
+    if (!client) { setError('La connexion aux données doit être activée pour gérer les utilisateurs.'); return; }
     setLoading(true); setError('');
     try {
       const { data: { session } } = await client.auth.getSession();
@@ -78,7 +78,7 @@ export default function UsersPage() {
 
   return <AppShell>
     <div className="page-heading"><div><div className="eyebrow">ADMINISTRATION</div><h1>Utilisateurs et autorisations</h1><p>Les nouveaux comptes sont en lecture seule par défaut. Attribue ensuite Lecture seule ou Modification à chaque compte ; l’administration reste réservée au compte principal.</p></div><button className="button button-secondary" onClick={() => void load()} disabled={loading}><RefreshCw size={16}/> Actualiser</button></div>
-    {!isSupabaseConfigured() && <div className="inline-notice"><ShieldCheck size={16}/> Mode aperçu : connectez Supabase pour gérer des comptes réels.</div>}
+    {!isSupabaseConfigured() && <div className="inline-notice"><ShieldCheck size={16}/> Mode aperçu : la connexion aux données doit être activée pour gérer les comptes.</div>}
     {error && <div className="inline-notice"><AlertCircle size={16}/>{error}</div>}
     {notice && <div className="inline-notice"><CheckCircle2 size={16}/>{notice}</div>}
     <section className="panel form-panel"><div className="panel-heading"><div><h2>Inviter un utilisateur</h2><p>Invitez un membre de l’équipe par e-mail. Chaque nouveau compte commence en lecture seule et peut être ajusté ensuite.</p></div><UserPlus size={22}/></div>
@@ -87,7 +87,7 @@ export default function UsersPage() {
         <label className="form-field"><span>Adresse e-mail</span><input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value.trim() })} placeholder="prenom@exemple.com"/></label>
         <button className="button button-primary" disabled={saving || !isSupabaseConfigured()}>{saving ? 'Envoi…' : <><Mail size={16}/> Envoyer l’invitation</>}</button>
       </form>
-      <p className="form-footnote"><strong>Configuration technique</strong><span>La clé serveur Supabase doit rester secrète dans Vercel. Le code d’inscription est un réglage distinct ; il ne sert pas à se connecter.</span></p>
+      <p className="form-footnote"><strong>Information pour l’administrateur</strong><span>Le code d’inscription est un réglage distinct du mot de passe utilisé pour se connecter.</span></p>
     </section>
     <section className="panel table-panel"><div className="panel-toolbar"><div><h2>Comptes enregistrés</h2><p>{rows.length} compte{rows.length > 1 ? 's' : ''} chargé{rows.length > 1 ? 's' : ''}</p></div></div>
       <div className="table-scroll"><table><thead><tr><th>Utilisateur</th><th>Autorisation</th><th>État du compte</th><th>Inscription</th><th>Actions</th></tr></thead><tbody>
@@ -104,6 +104,6 @@ export default function UsersPage() {
         {!rows.length && <tr><td colSpan={5} className="empty-cell">{loading ? 'Chargement…' : 'Aucun utilisateur retourné. Vérifiez la configuration et les droits administrateur.'}</td></tr>}
       </tbody></table></div>
     </section>
-    <div className="inline-notice"><ShieldCheck size={16}/><span>Les autorisations sont vérifiées côté serveur et dans les politiques RLS. Les niveaux disponibles sont Lecture seule et Modification ; l’administration est réservée exclusivement à {PRIMARY_ADMIN_EMAIL}.</span></div>
+    <div className="inline-notice"><ShieldCheck size={16}/><span>Les niveaux d’accès disponibles sont Lecture seule et Modification. L’administration est réservée au compte principal : {PRIMARY_ADMIN_EMAIL}.</span></div>
   </AppShell>;
 }

@@ -57,7 +57,7 @@ export const navigation = [
 ];
 
 // Ce fichier ne contient volontairement aucun faux dossier d'élève ni mouvement financier.
-// Les tableaux affichent uniquement les données chargées depuis Supabase.
+// Les tableaux affichent uniquement les données chargées depuis le système.
 export const modules: Record<string, Module> = {
   eleves: {
     key: 'eleves',

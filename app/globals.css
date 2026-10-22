@@ -301,28 +301,3 @@ input, select, textarea, button { max-width:100%; }
   .page-heading h1 { font-size:23px; }
   .form-footnote { font-size:11px; }
 }
-
-/* Trésorerie — navigation des cinq rubriques et filtres adaptatifs */
-.treasury-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 22px;padding:8px;background:#fff;border:1px solid #e5ece6;border-radius:12px}
-.treasury-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:9px 13px;border:1px solid transparent;border-radius:8px;background:transparent;color:#617067;font-size:11px;font-weight:700}
-.treasury-tabs button:hover{background:#f4f8f4;color:var(--green-900)}
-.treasury-tabs button.active{background:#eaf5ed;border-color:#d7eadb;color:var(--green-900)}
-.treasury-filters{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px;padding:14px 16px;border-bottom:1px solid #edf1ed;background:#fbfcfb}
-.treasury-filters label,.treasury-period-note label{display:flex;flex-direction:column;gap:5px;color:#6e7c72;font-size:10px;font-weight:700;min-width:120px}
-.treasury-filters select,.treasury-filters input,.treasury-period-note input{min-height:35px;min-width:0;border:1px solid #dfe7e0;border-radius:7px;background:#fff;color:#39483e;padding:0 9px;font-size:11px;max-width:100%}
-.treasury-period-note{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;padding:16px 18px;margin-bottom:22px}
-.treasury-period-note>strong{font-size:12px;color:#354a3a}
-.treasury-period-note>div{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px}
-.treasury-section-title{font:800 15px Manrope,sans-serif;color:#263d2e;margin:20px 0 13px}
-.treasury-empty{padding:28px;margin-bottom:20px;text-align:center;color:#748278;font-size:12px}
-.treasury-error{background:#fff4f1!important;border-color:#f0d0c8!important;color:#91483d!important}
-.treasury-tabs button:focus-visible,.treasury-filters input:focus-visible,.treasury-filters select:focus-visible{outline:2px solid #7ab487;outline-offset:2px}
-@media(max-width:760px){.treasury-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:6px}.treasury-tabs button{font-size:10px;padding:8px;justify-content:flex-start}.treasury-tabs button:last-child{grid-column:1/-1}.treasury-period-note{align-items:flex-start}.treasury-period-note>div{width:100%}.treasury-period-note label{flex:1;min-width:110px}.treasury-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.treasury-filters label{min-width:0}.treasury-filters .button{grid-column:1/-1}.treasury-period-note input{width:100%}}
-
-/* Navigation latérale dédiée aux cinq rubriques de trésorerie */
-.nav-parent{min-width:0}
-.nav-parent-active>.nav-link{color:var(--green-900)}
-.treasury-side-links{display:flex;flex-direction:column;gap:3px;margin:3px 0 9px 27px;padding:4px 0 4px 11px;border-left:2px solid #dcebdd}
-.treasury-side-link{display:block;padding:8px 9px;border-radius:7px;color:#657469;text-decoration:none;font-size:11px;font-weight:650;line-height:1.35;transition:background .15s,color .15s}
-.treasury-side-link:hover{background:#eef6ef;color:var(--green-900)}
-@media(max-width:760px){.treasury-side-links{margin-left:24px}.treasury-side-link{padding:9px 8px;font-size:12px}}

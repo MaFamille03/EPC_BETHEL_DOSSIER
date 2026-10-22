@@ -31,11 +31,11 @@ function SettingsContent() {
 
   const load = useCallback(async () => {
     const client = supabase();
-    if (!client) { setError('Configurez Supabase pour enregistrer les paramètres réels.'); return; }
+    if (!client) { setError('La connexion aux données doit être activée pour enregistrer les paramètres.'); return; }
     setLoading(true); setError('');
     const { data, error: queryError } = await client.from('school_settings')
       .select('school_name,phone,email,address').order('created_at').limit(1).maybeSingle();
-    if (queryError) setError(`Chargement impossible : ${queryError.message}`);
+    if (queryError) setError(`Chargement impossible : un problème est survenu. Contactez l’administrateur.`);
     else if (data) setSchool({
       school_name: data.school_name || '', phone: data.phone || '',
       email: data.email || '', address: data.address || '',
@@ -64,7 +64,7 @@ function SettingsContent() {
     const normalizedCode = adminCode.trim();
     if (!/^\d{6,8}$/.test(normalizedCode)) { setCodeError('Choisissez un code numérique de 6 à 8 chiffres.'); return; }
     const client = supabase();
-    if (!client) { setCodeError('La connexion Supabase est indisponible.'); return; }
+    if (!client) { setCodeError('La connexion aux données est indisponible.'); return; }
     const { data: sessionData } = await client.auth.getSession();
     const token = sessionData.session?.access_token;
     if (!token) { setCodeError('Votre session a expiré. Reconnectez-vous.'); return; }
@@ -81,7 +81,7 @@ function SettingsContent() {
   async function saveSchool(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const client = supabase();
-    if (!client) { setError('Supabase n’est pas configuré.'); return; }
+    if (!client) { setError('La connexion aux données n’est pas activée.'); return; }
     setSavingSchool(true); setNotice(''); setError('');
     const { error: saveError } = await client.rpc('save_school_settings', {
       p_school_name: school.school_name,
@@ -90,7 +90,7 @@ function SettingsContent() {
       p_address: school.address || null,
     });
     setSavingSchool(false);
-    if (saveError) { setError(`Enregistrement impossible : ${saveError.message}`); return; }
+    if (saveError) { setError(`Enregistrement impossible : un problème est survenu. Contactez l’administrateur.`); return; }
     setNotice('Coordonnées de l’établissement enregistrées.');
   }
 
@@ -99,7 +99,7 @@ function SettingsContent() {
       <div><div className="eyebrow">ADMINISTRATION</div><h1>Paramètres de l’établissement</h1><p>Gérez les coordonnées officielles, les années scolaires et les classes.</p></div>
       <button type="button" className="button button-secondary" onClick={() => void load()} disabled={loading}><RefreshCw size={16}/> Actualiser</button>
     </div>
-    {!connected && <div className="inline-notice"><ShieldCheck size={16}/> Mode aperçu : les modifications ne seront pas conservées sans Supabase.</div>}
+    {!connected && <div className="inline-notice"><ShieldCheck size={16}/> Mode aperçu : les modifications ne seront pas conservées tant que la connexion aux données n’est pas activée.</div>}
     {notice && <div className="inline-notice"><CheckCircle2 size={16}/>{notice}</div>}
     {error && <div className="inline-notice"><AlertCircle size={16}/>{error}</div>}
 

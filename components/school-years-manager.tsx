@@ -24,12 +24,12 @@ export function SchoolYearsManager() {
 
   const load = useCallback(async () => {
     const client = supabase();
-    if (!client) { setError('Configurez Supabase pour gérer les années scolaires réelles.'); return; }
+    if (!client) { setError('Activez la connexion aux données pour gérer les années scolaires réelles.'); return; }
     setLoading(true); setError('');
     const { data, error: queryError } = await client.from('school_years')
       .select('id,label,starts_on,ends_on,is_current,is_closed')
       .order('starts_on', { ascending: false }).limit(50);
-    if (queryError) setError(`Chargement impossible : ${queryError.message}`);
+    if (queryError) setError(`Chargement impossible : un problème est survenu. Contactez l’administrateur.`);
     else setYears((data || []) as SchoolYear[]);
     setLoading(false);
   }, []);
@@ -57,7 +57,7 @@ export function SchoolYearsManager() {
   async function save(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const client = supabase();
-    if (!client) { setError('Supabase n’est pas configuré.'); return; }
+    if (!client) { setError('La connexion aux données n’est pas activée.'); return; }
     if (!form.label.trim() || form.ends_on <= form.starts_on) { setError('Le libellé est obligatoire et la date de fin doit suivre la date de début.'); return; }
     setSaving(true); setError(''); setNotice('');
     const { error: saveError } = await client.rpc('save_school_year', {
@@ -68,7 +68,7 @@ export function SchoolYearsManager() {
       p_is_current: form.is_current,
     });
     setSaving(false);
-    if (saveError) { setError(`Enregistrement impossible : ${saveError.message}`); return; }
+    if (saveError) { setError(`Enregistrement impossible : un problème est survenu. Contactez l’administrateur.`); return; }
     setShowForm(false); setNotice(editingId ? 'Année scolaire mise à jour.' : 'Année scolaire créée.');
     await load();
   }
@@ -83,7 +83,7 @@ export function SchoolYearsManager() {
     </div>
     {currentYear && <div className="inline-notice"><CheckCircle2 size={16}/> Année actuellement active : <strong>{currentYear.label}</strong></div>}
     {!currentYear && years.length > 0 && <div className="inline-notice"><AlertCircle size={16}/> Aucune année n’est actuellement active. Activez une année pour permettre les nouvelles inscriptions.</div>}
-    {!connected && <div className="inline-notice"><AlertCircle size={16}/> Mode aperçu : les modifications ne seront pas conservées sans Supabase.</div>}
+    {!connected && <div className="inline-notice"><AlertCircle size={16}/> Mode aperçu : les modifications ne seront pas conservées tant que la connexion aux données n’est pas activée.</div>}
     {notice && <div className="inline-notice"><CheckCircle2 size={16}/>{notice}</div>}
     {error && <div className="inline-notice"><AlertCircle size={16}/>{error}</div>}
     <div className="table-scroll">

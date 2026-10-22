@@ -60,7 +60,7 @@ export function PurchasesPage() {
         };
       }));
     } catch (error: any) {
-      setNotice(`Chargement impossible : ${error?.message || 'vérifiez les migrations et les autorisations.'}`);
+      setNotice(`Chargement impossible : un problème est survenu. Vérifiez votre connexion ou contactez l’administrateur.`);
     } finally {
       setBusy(false);
     }
@@ -144,7 +144,7 @@ export function PurchasesPage() {
       setForm({ kind: 'asset', quantity: '1', unitPrice: '0' });
       await load();
     } catch (error: any) {
-      setNotice(`Enregistrement impossible : ${error?.message || 'erreur inconnue'}`);
+      setNotice(`Enregistrement impossible : un problème est survenu. Contactez l’administrateur.`);
     } finally {
       setBusy(false);
     }
@@ -162,7 +162,7 @@ export function PurchasesPage() {
       setNotice(`Fournisseur ${supplier.is_active ? 'désactivé' : 'réactivé'}. L’historique des commandes est conservé.`);
       await load();
     } catch (error: any) {
-      setNotice(`Modification impossible : ${error?.message || 'vérifiez les autorisations.'}`);
+      setNotice(`Modification impossible : un problème est survenu. Contactez l’administrateur.`);
     } finally {
       setBusy(false);
     }
@@ -180,7 +180,7 @@ export function PurchasesPage() {
       setNotice(approve ? 'Demande approuvée. Créez ensuite le bon de commande dans l’onglet Commandes.' : 'Demande refusée.');
       await load();
     } catch (error: any) {
-      setNotice(`Décision impossible : ${error?.message || 'erreur inconnue'}`);
+      setNotice(`Décision impossible : un problème est survenu. Contactez l’administrateur.`);
     } finally {
       setBusy(false);
     }
@@ -196,7 +196,7 @@ export function PurchasesPage() {
       setNotice('Demande transmise pour approbation.');
       await load();
     } catch (error: any) {
-      setNotice(`Envoi impossible : ${error?.message || 'erreur inconnue'}`);
+      setNotice(`Envoi impossible : un problème est survenu. Contactez l’administrateur.`);
     } finally {
       setBusy(false);
     }
@@ -210,7 +210,7 @@ export function PurchasesPage() {
       const { data, error } = await db.from('purchase_order_lines')
         .select('id,description,item_kind,quantity_ordered,quantity_received,unit_price')
         .eq('purchase_order_id', form.order_id).order('description');
-      if (error) { setNotice(`Lignes indisponibles : ${error.message}`); return; }
+      if (error) { setNotice(`Lignes indisponibles : un problème est survenu. Contactez l’administrateur.`); return; }
       setReceiptLines((data || []).filter((line: Item) => Number(line.quantity_ordered) > Number(line.quantity_received)));
       setForm((current) => ({ ...current, line_id: '', quantity_received: '' }));
     }
@@ -233,7 +233,7 @@ export function PurchasesPage() {
         <div className="heading-actions"><button className="button button-secondary" onClick={() => void load()} disabled={busy}><RefreshCw size={16}/> Actualiser</button>{!isReadOnly && <button className="button button-primary" onClick={() => { setForm(tab === 'receipts' ? {} : { kind: 'asset', quantity: '1', unitPrice: '0' }); setModal(true); }}><Plus size={17}/>{tab === 'suppliers' ? 'Nouveau fournisseur' : tab === 'orders' ? 'Nouveau bon de commande' : tab === 'receipts' ? 'Réceptionner une commande' : 'Nouvelle demande'}</button>}</div>
       </div>
       {notice && <div className="inline-notice"><AlertCircle size={16}/><span>{notice}</span><button className="icon-button" onClick={() => setNotice('')} aria-label="Fermer">×</button></div>}
-      {!connected && <div className="inline-notice"><AlertCircle size={16}/><span>Configurez les variables Supabase et connectez-vous pour charger ou enregistrer les données réelles.</span></div>}
+      {!connected && <div className="inline-notice"><AlertCircle size={16}/><span>Configurez les variables la connexion aux données et connectez-vous pour charger ou enregistrer les données réelles.</span></div>}
 
       <div className="module-tabs">{tabs.map(([id, label]) => <button key={id} className={`module-tab ${tab === id ? 'active' : ''}`} onClick={() => setTab(id)}>{label}{id === 'requests' ? ` (${rows.length})` : id === 'suppliers' ? ` (${suppliers.length})` : id === 'orders' ? ` (${orders.length})` : ` (${receiptRows.length})`}</button>)}</div>
       <div className="table-toolbar"><div className="search-field"><Search size={17}/><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={tab === 'receipts' ? 'Réception, commande, fournisseur…' : 'Rechercher…'}/></div><span className="muted-small">{visible.length} résultat(s) dans les 500 derniers enregistrements chargés</span></div>
@@ -326,7 +326,7 @@ export function AssetsPage() {
         setRows(data || []);
       }
     } catch (error: any) {
-      setNotice(`Chargement impossible : ${error?.message || 'vérifiez les migrations et les autorisations.'}`);
+      setNotice(`Chargement impossible : un problème est survenu. Vérifiez votre connexion ou contactez l’administrateur.`);
     } finally {
       setBusy(false);
     }
@@ -400,7 +400,7 @@ export function AssetsPage() {
       }
       succeeded = true;
     } catch (error: any) {
-      setNotice(`Enregistrement impossible : ${error?.message || 'erreur inconnue'}`);
+      setNotice(`Enregistrement impossible : un problème est survenu. Contactez l’administrateur.`);
     } finally {
       setBusy(false);
       if (succeeded) {
@@ -424,7 +424,7 @@ export function AssetsPage() {
       <div className="heading-actions"><button className="button button-secondary" onClick={() => void load()} disabled={busy}><RefreshCw size={16}/> Actualiser</button>{!isReadOnly && <button className="button button-primary" onClick={() => { setEditingAssetId(''); setForm({ cost: '0', status: 'planned' }); setModal(true); }}><Plus size={17}/>{tab === 'assets' ? 'Ajouter un bien' : tab === 'maintenance' ? 'Planifier une maintenance' : 'Enregistrer un transfert'}</button>}</div>
     </div>
     {notice && <div className="inline-notice"><AlertCircle size={16}/><span>{notice}</span><button className="icon-button" onClick={() => setNotice('')} aria-label="Fermer">×</button></div>}
-    {!connected && <div className="inline-notice"><AlertCircle size={16}/><span>Configurez Supabase et connectez-vous pour utiliser l’inventaire réel.</span></div>}
+    {!connected && <div className="inline-notice"><AlertCircle size={16}/><span>Configurez la connexion aux données et connectez-vous pour utiliser l’inventaire réel.</span></div>}
     <div className="module-tabs">{tabs.map(([id, label]) => <button key={id} className={`module-tab ${tab === id ? 'active' : ''}`} onClick={() => setTab(id)}>{label}{id === 'assets' ? ` (${allAssets.length})` : ''}</button>)}</div>
     <div className="table-toolbar"><div className="search-field"><Search size={17}/><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher un bien, un code, une intervention…"/></div><span className="muted-small">{visible.length} résultat(s) chargés{busy ? ' · Actualisation…' : ''}</span></div>
     <section className="data-card"><div className="table-scroll"><table><thead><tr>{headers.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>

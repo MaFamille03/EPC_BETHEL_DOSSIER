@@ -26,15 +26,15 @@ export default function AuthScreen() {
 
   async function signIn(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); setError(''); setNotice('');
-    if (!isSupabaseConfigured()) { setError('Configuration Supabase absente côté navigateur. Dans Vercel, vérifiez NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (ou NEXT_PUBLIC_SUPABASE_ANON_KEY), puis redéployez.'); return; }
+    if (!isSupabaseConfigured()) { setError('La connexion sécurisée n’est pas disponible. Contactez l’administrateur de l’application.'); return; }
     const client = supabase();
-    if (!client) { setError('Configuration Supabase incomplète. Vérifiez les variables publiques puis redéployez.'); return; }
+    if (!client) { setError('La connexion sécurisée est indisponible. Contactez l’administrateur de l’application.'); return; }
     setLoading(true);
     const normalized = email.trim().toLowerCase();
     const { data, error: authError } = await client.auth.signInWithPassword({ email: normalized, password });
     if (authError || !data.user) {
       setLoading(false);
-      setError('Connexion impossible. Vérifiez votre e-mail et votre mot de passe. Si votre compte vient d’être créé, vérifiez aussi la configuration de Supabase Auth.'); return;
+      setError('Connexion impossible. Vérifiez votre adresse e-mail et votre mot de passe. Si le problème persiste, contactez l’administrateur.'); return;
     }
     const { data: profile, error: profileError } = await client.from('profiles').select('role,is_active').eq('id', data.user.id).maybeSingle();
     if (profileError) {
@@ -51,7 +51,7 @@ export default function AuthScreen() {
     }
     if (normalized === 'minnhindje@gmail.com' && profile.role !== 'admin') {
       await client.auth.signOut(); setLoading(false);
-      setError('Votre profil existe, mais le rôle administrateur principal n’est pas activé. Vérifiez le profil dans Supabase.'); return;
+      setError('Votre compte n’a pas encore les droits d’administration nécessaires. Contactez l’administrateur principal.'); return;
     }
     setLoading(false); router.replace('/'); router.refresh();
   }
@@ -60,14 +60,14 @@ export default function AuthScreen() {
     event.preventDefault(); setError(''); setNotice('');
     if (password.length < 10) { setError('Choisissez un mot de passe d’au moins 10 caractères.'); return; }
     if (password !== confirmPassword) { setError('Les deux mots de passe ne correspondent pas.'); return; }
-    if (!isSupabaseConfigured()) { setError('Configuration Supabase absente côté navigateur. Vérifiez NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (ou NEXT_PUBLIC_SUPABASE_ANON_KEY) dans Vercel, puis redéployez.'); return; }
+    if (!isSupabaseConfigured()) { setError('La connexion sécurisée n’est pas disponible. Contactez l’administrateur de l’application.'); return; }
     setLoading(true);
     try {
       const response = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: adminCode }) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'La vérification du code d’accès a échoué.');
       const client = supabase();
-      if (!client) throw new Error('La configuration Supabase est indisponible.');
+      if (!client) throw new Error('La configuration la connexion aux données est indisponible.');
       const { data, error: signUpError } = await client.auth.signUp({
         email: email.trim().toLowerCase(),
         password,
@@ -76,7 +76,7 @@ export default function AuthScreen() {
           emailRedirectTo: `${window.location.origin}/login?confirmed=1`,
         },
       });
-      if (signUpError) throw new Error(signUpError.message.includes('already registered') ? 'Cette adresse e-mail possède déjà un compte. Connectez-vous ou utilisez « Mot de passe oublié ». ' : 'Impossible de créer le compte. Vérifiez l’adresse e-mail et la configuration de confirmation dans Supabase.');
+      if (signUpError) throw new Error(signUpError.message.includes('already registered') ? 'Cette adresse e-mail possède déjà un compte. Connectez-vous ou utilisez « Mot de passe oublié ». ' : 'Impossible de créer le compte. Vérifiez l’adresse e-mail et la configuration de confirmation dans les paramètres de l’application.');
       if (data.session) {
         setNotice('Compte créé. Votre adresse est déjà confirmée ; vous pouvez vous connecter.');
       } else {
@@ -91,11 +91,11 @@ export default function AuthScreen() {
     setError(''); setNotice(''); const normalized = email.trim().toLowerCase();
     if (!normalized) { setError('Saisissez votre adresse e-mail avant de demander la réinitialisation.'); return; }
     const client = supabase();
-    if (!client) { setError('Configuration Supabase absente. Vérifiez les variables publiques dans Vercel puis redéployez.'); return; }
+    if (!client) { setError('La connexion sécurisée n’est pas disponible. Contactez l’administrateur de l’application.'); return; }
     setLoading(true);
     const { error: resetError } = await client.auth.resetPasswordForEmail(normalized, { redirectTo: `${window.location.origin}/reset-password` });
     setLoading(false);
-    if (resetError) { setError('Le lien ne peut pas être envoyé. Vérifiez les paramètres e-mail et les URL autorisées dans Supabase.'); return; }
+    if (resetError) { setError('Le lien ne peut pas être envoyé. Vérifiez les paramètres e-mail et les URL autorisées dans les paramètres de l’application.'); return; }
     setNotice('Si cette adresse correspond à un compte, un lien de réinitialisation a été envoyé. Vérifiez aussi les courriers indésirables.');
   }
 

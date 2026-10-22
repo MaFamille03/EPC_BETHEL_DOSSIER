@@ -20,9 +20,9 @@ export async function POST(request: NextRequest) {
   const code = typeof body.code === 'string' ? body.code.trim() : '';
   if (!/^\d{6,8}$/.test(code)) return NextResponse.json({ error: 'Saisissez le code d’accès numérique de 6 à 8 chiffres fourni par l’administrateur.' }, { status: 403 });
   const admin = createSupabaseServiceClient();
-  if (!admin) return NextResponse.json({ error: 'Configuration serveur incomplète : vérifiez l’URL Supabase et la clé de service dans Vercel.' }, { status: 503 });
+  if (!admin) return NextResponse.json({ error: 'Le service est momentanément indisponible. Contactez l’administrateur de l’application.' }, { status: 503 });
   const { data: accessSettings, error: settingsError } = await admin.from('admin_access_settings').select('registration_code_hash').eq('id', true).maybeSingle();
-  if (settingsError) return NextResponse.json({ error: 'Impossible de lire le code d’accès. Appliquez la migration 015 puis réessayez.' }, { status: 503 });
+  if (settingsError) return NextResponse.json({ error: 'Impossible de vérifier le code d’accès. Contactez l’administrateur puis réessayez.' }, { status: 503 });
   if (!accessSettings?.registration_code_hash) return NextResponse.json({ error: 'Le code d’accès initial n’est pas encore défini. Connectez-vous avec le compte administrateur principal et définissez-le dans Paramètres → Utilisateurs et autorisations.' }, { status: 503 });
   if (!verifyRegistrationCode(code, accessSettings.registration_code_hash)) return NextResponse.json({ error: 'Code administrateur incorrect. Demandez le code d’accès à l’administrateur.' }, { status: 403 });
 

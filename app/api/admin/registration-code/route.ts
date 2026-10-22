@@ -18,7 +18,7 @@ function verify(code: string, stored: string) {
 async function requirePrimaryAdmin(request: NextRequest) {
   const { url, publicKey } = getSupabaseServerConfig();
   const service = createSupabaseServiceClient();
-  if (!url || !publicKey || !service) throw new Error('Configuration serveur manquante : renseignez l’URL Supabase, une clé publique et une clé de service dans Vercel.');
+  if (!url || !publicKey || !service) throw new Error('Le service est momentanément indisponible. Contactez l’administrateur de l’application.');
   const authorization = request.headers.get('authorization') || '';
   const token = authorization.startsWith('Bearer ') ? authorization.slice(7) : '';
   if (!token) throw new Error('Authentification requise.');
@@ -27,7 +27,7 @@ async function requirePrimaryAdmin(request: NextRequest) {
   if (error || !user) throw new Error('Session invalide. Reconnectez-vous.');
   if (user.email?.trim().toLowerCase() !== PRIMARY_ADMIN_EMAIL) throw new Error('Accès réservé à l’administrateur principal.');
   const { data: profile, error: profileError } = await service.from('profiles').select('role,is_active').eq('id', user.id).maybeSingle();
-  if (profileError || profile?.role !== 'admin' || profile.is_active !== true) throw new Error('Le profil administrateur principal n’est pas actif. Vérifiez la migration 011.');
+  if (profileError || profile?.role !== 'admin' || profile.is_active !== true) throw new Error('Le compte administrateur principal n’est pas actif. Contactez l’administrateur technique.');
   return { service, user };
 }
 function errorResponse(error: unknown) {
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
   try {
     const { service } = await requirePrimaryAdmin(request);
     const { data, error } = await service.from('admin_access_settings').select('registration_code_hash,updated_at').eq('id', true).maybeSingle();
-    if (error) throw new Error(`Lecture du paramètre impossible : ${error.message}. Vérifiez la migration 015.`);
+    if (error) throw new Error(`Lecture du paramètre impossible : un problème est survenu. Contactez l’administrateur.. contactez l’administrateur.`);
     return NextResponse.json({ configured: Boolean(data?.registration_code_hash), updatedAt: data?.updated_at || null }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) { return errorResponse(error); }
 }
@@ -52,7 +52,7 @@ export async function PUT(request: NextRequest) {
     const salt = randomBytes(16).toString('hex');
     const registration_code_hash = `${salt}:${digest(code, salt)}`;
     const { error } = await service.from('admin_access_settings').upsert({ id: true, registration_code_hash, updated_by: user.id, updated_at: new Date().toISOString() }, { onConflict: 'id' });
-    if (error) throw new Error(`Enregistrement impossible : ${error.message}. Vérifiez la migration 015.`);
+    if (error) throw new Error(`Enregistrement impossible : un problème est survenu. Contactez l’administrateur.. contactez l’administrateur.`);
     return NextResponse.json({ ok: true, message: 'Le code d’accès a été enregistré. Il ne sera plus affiché dans les paramètres.' }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) { return errorResponse(error); }
 }

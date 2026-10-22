@@ -12,7 +12,7 @@ function clients(token?: string) {
   const anon = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
   const service = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !anon || !service) {
-    throw new Error('Configuration serveur manquante : URL, clé publique et clé de service Supabase sont requises.');
+    throw new Error('Le service est momentanément indisponible. Contactez l’administrateur de l’application.');
   }
   const auth = createClient(url, anon, {
     auth: { persistSession: false, autoRefreshToken: false },
@@ -35,7 +35,7 @@ async function requirePrimaryAdmin(req: NextRequest) {
   const { data: profile, error: profileError } = await admin
     .from('profiles').select('id,role,is_active').eq('id', user.id).maybeSingle();
   if (profileError || !profile || profile.role !== 'admin' || !profile.is_active) {
-    throw new Error('Le profil administrateur n’est pas initialisé ou n’est pas actif. Appliquez les migrations de sécurité.');
+    throw new Error('Le compte administrateur n’est pas actif. Contactez l’administrateur principal.');
   }
   return { user, admin };
 }
@@ -83,19 +83,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'L’adresse administrateur principal ne peut pas être invitée comme un autre utilisateur.' }, { status: 400 });
     }
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV !== 'production' ? req.nextUrl.origin : '');
-    if (!siteUrl) return NextResponse.json({ error: 'Configurez NEXT_PUBLIC_SITE_URL côté serveur avant d’envoyer des invitations.' }, { status: 503 });
+    if (!siteUrl) return NextResponse.json({ error: 'Le service d’invitation n’est pas configuré. Contactez l’administrateur.' }, { status: 503 });
     const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
       data: { full_name },
       redirectTo: new URL('/login', siteUrl).toString(),
     });
     if (error) throw new Error(error.message);
-    if (!data.user) throw new Error('Supabase n’a pas retourné le compte invité.');
+    if (!data.user) throw new Error('Le compte invité n’a pas pu être créé.');
 
     const { error: profileError } = await admin.from('profiles').upsert(
       { id: data.user.id, full_name, role: 'observateur', is_active: true },
       { onConflict: 'id' },
     );
-    if (profileError) throw new Error(`Invitation créée mais profil non enregistré : ${profileError.message}. Vérifiez la migration 011.`);
+    if (profileError) throw new Error(`Invitation créée mais profil non enregistré : ${profileError.message}. Contactez l’administrateur principal.`);
     return NextResponse.json({ ok: true, userId: data.user.id, role: 'observateur' }, { status: 201 });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Erreur serveur';

@@ -215,7 +215,7 @@ export function ReportsPage() {
       if (!client) return;
       const { data, error } = await client.from('school_years').select('id,label,is_current').order('starts_on', { ascending: false });
       if (error) {
-        setNotice(`Chargement des années scolaires impossible : ${error.message}`);
+        setNotice(`Chargement des années scolaires impossible : un problème est survenu. Contactez l’administrateur.`);
         return;
       }
       const items = (data || []) as YearOption[];
@@ -264,7 +264,7 @@ export function ReportsPage() {
         setSummary(null);
       }
     } catch (error: any) {
-      setNotice(`Impossible de produire le rapport : ${error?.message || 'vérifiez les migrations et les autorisations Supabase.'}`);
+      setNotice(`Impossible de produire le rapport : un problème est survenu. Vérifiez votre connexion ou contactez l’administrateur.`);
       setRows([]);
       setSummary(null);
       setTotalRows(0);
@@ -278,7 +278,7 @@ export function ReportsPage() {
   const exportToExcel = useCallback(async () => {
     const client = supabase();
     if (!client) {
-      setNotice('Configurez Supabase pour exporter les données réelles.');
+      setNotice('La connexion aux données est nécessaire pour exporter les informations de l’établissement.');
       return;
     }
     if (from && to && to < from) {
@@ -337,7 +337,7 @@ export function ReportsPage() {
         XLSX.writeFile(workbook, `EPC_BETHEL_${reportKey}_${from || 'debut'}_${to || 'aujourdhui'}.xlsx`);
       }
     } catch (error: any) {
-      setNotice(`Export impossible : ${error?.message || 'erreur inconnue'}`);
+      setNotice(`Export impossible : un problème est survenu. Contactez l’administrateur.`);
     } finally {
       setExporting(false);
     }
@@ -352,7 +352,7 @@ export function ReportsPage() {
         <div>
           <div className="eyebrow">PILOTAGE DE L’ÉTABLISSEMENT</div>
           <h1>Rapports & exports</h1>
-          <p>Produisez des états à partir des données enregistrées dans Supabase, avec filtres, pagination et export Excel.</p>
+          <p>Produisez des états à partir des données de l’établissement, avec filtres, pagination et export Excel.</p>
         </div>
         <div className="heading-actions">
           <button className="button button-secondary" onClick={() => window.print()}><Printer size={16}/> Imprimer</button>
@@ -361,7 +361,7 @@ export function ReportsPage() {
         </div>
       </div>
 
-      {!connected && <div className="inline-notice"><AlertCircle size={16}/><span>Configurez les variables Supabase et connectez-vous pour afficher les rapports réels. Aucun chiffre de démonstration n’est utilisé dans ce module.</span></div>}
+      {!connected && <div className="inline-notice"><AlertCircle size={16}/><span>Connectez-vous pour afficher les rapports réels. Aucun chiffre de démonstration n’est utilisé dans ce module.</span></div>}
       {notice && <div className="inline-notice"><AlertCircle size={16}/><span>{notice}</span><button className="icon-button" onClick={() => setNotice('')} aria-label="Fermer">×</button></div>}
 
       <section className="panel report-filter-panel">
@@ -397,13 +397,13 @@ export function ReportsPage() {
       {reportKey === 'financial' ? (
         <>
           <div className="metric-strip report-metrics-grid">
-            <div className="metric-mini"><span>Recettes validées · période</span><strong>{money(summary?.receipts_period)}</strong><small>Sur la période sélectionnée, calcul SQL complet</small></div>
-            <div className="metric-mini"><span>Dépenses validées · période</span><strong>{money(summary?.expenses_period)}</strong><small>Sur la période sélectionnée, calcul SQL complet</small></div>
+            <div className="metric-mini"><span>Recettes validées · période</span><strong>{money(summary?.receipts_period)}</strong><small>Sur la période sélectionnée, calcul automatique complet</small></div>
+            <div className="metric-mini"><span>Dépenses validées · période</span><strong>{money(summary?.expenses_period)}</strong><small>Sur la période sélectionnée, calcul automatique complet</small></div>
             <div className="metric-mini"><span>Impayés de scolarité</span><strong>{money(summary?.outstanding_balance)}</strong><small>Solde total restant dû, toutes années confondues</small></div>
-            <div className="metric-mini"><span>Trésorerie disponible</span><strong>{money(summary?.treasury_total)}</strong><small>Soldes des comptes actifs calculés en base</small></div>
+            <div className="metric-mini"><span>Trésorerie disponible</span><strong>{money(summary?.treasury_total)}</strong><small>Soldes des comptes actifs calculés automatiquement</small></div>
           </div>
           <section className="panel table-panel">
-            <div className="panel-toolbar"><div><h2>Indicateurs complémentaires</h2><p>Les indicateurs globaux ne sont pas limités à la période du filtre.</p></div><span className="muted-small">{loading ? 'Actualisation en cours…' : 'Données de gestion'}</span></div>
+            <div className="panel-toolbar"><div><h2>Indicateurs complémentaires</h2><p>Les indicateurs globaux couvrent l’ensemble des données disponibles.</p></div><span className="muted-small">{loading ? 'Actualisation en cours…' : 'Données de l’établissement'}</span></div>
             <div className="table-scroll"><table><thead><tr><th>Indicateur</th><th>Valeur</th><th>Périmètre</th></tr></thead><tbody>
               <tr><td>Nombre de reçus validés</td><td>{new Intl.NumberFormat('fr-FR').format(Number(summary?.validated_receipt_count || 0))}</td><td>Toutes périodes</td></tr>
               <tr><td>Nombre de dépenses validées</td><td>{new Intl.NumberFormat('fr-FR').format(Number(summary?.validated_expense_count || 0))}</td><td>Toutes périodes</td></tr>
@@ -419,7 +419,7 @@ export function ReportsPage() {
           <div className="metric-strip report-metrics-grid">
             <div className="metric-mini"><span>Enregistrements</span><strong>{new Intl.NumberFormat('fr-FR').format(totalRows)}</strong><small>Résultat complet, calculé côté base</small></div>
             <div className="metric-mini"><span>Page affichée</span><strong>{page + 1} / {pageCount}</strong><small>{PAGE_SIZE} lignes maximum par page</small></div>
-            <div className="metric-mini"><span>Type de rapport</span><strong className="report-metric-label">{definition?.label || ''}</strong><small>Filtres appliqués aux données</small></div>
+            <div className="metric-mini"><span>Type de rapport</span><strong className="report-metric-label">{definition?.label || ''}</strong><small>Filtres appliqués automatiquement</small></div>
           </div>
           <section className="panel table-panel">
             <div className="panel-toolbar"><div><h2>{definition?.label}</h2><p>{definition?.description}</p></div><span className="muted-small">{loading ? 'Chargement…' : `${totalRows.toLocaleString('fr-FR')} résultat(s)`}</span></div>

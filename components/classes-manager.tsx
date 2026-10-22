@@ -23,10 +23,10 @@ export function ClassesManager() {
 
   const load = useCallback(async () => {
     const client = supabase();
-    if (!client) { setError('Configurez Supabase pour gérer les classes réelles.'); return; }
+    if (!client) { setError('La connexion aux données doit être activée pour gérer les classes.'); return; }
     setLoading(true); setError('');
     const { data, error: queryError } = await client.from('classes').select('id,code,name,level_order,is_active').order('level_order').order('name');
-    if (queryError) setError(`Chargement impossible : ${queryError.message}`);
+    if (queryError) setError(`Chargement impossible : un problème est survenu. Contactez l’administrateur.`);
     else setClasses((data || []) as SchoolClass[]);
     setLoading(false);
   }, []);
@@ -44,7 +44,7 @@ export function ClassesManager() {
   async function save(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const client = supabase();
-    if (!client) { setError('Supabase n’est pas configuré.'); return; }
+    if (!client) { setError('La connexion aux données n’est pas activée.'); return; }
     const level = Number(form.level_order);
     if (!Number.isInteger(level) || level < 1 || level > 99) { setError('L’ordre du niveau doit être un entier entre 1 et 99.'); return; }
     setSaving(true); setError(''); setNotice('');
@@ -56,7 +56,7 @@ export function ClassesManager() {
       p_is_active: form.is_active,
     });
     setSaving(false);
-    if (saveError) { setError(`Enregistrement impossible : ${saveError.message}`); return; }
+    if (saveError) { setError(`Enregistrement impossible : un problème est survenu. Contactez l’administrateur.`); return; }
     setShowForm(false); setNotice(editingId ? 'Classe mise à jour.' : 'Classe créée.');
     await load();
   }
@@ -83,7 +83,7 @@ export function ClassesManager() {
             <td><span className={`status-pill ${item.is_active ? 'status-good' : 'status-warn'}`}><i/>{item.is_active ? 'Active' : 'Inactive'}</span></td>
             <td>{!isReadOnly ? <button type="button" className="button button-secondary" onClick={() => startEdit(item)}><Edit3 size={15}/> Modifier</button> : <span>—</span>}</td>
           </tr>)}
-          {classes.length === 0 && <tr><td colSpan={5} className="empty-cell">{loading ? 'Chargement des classes…' : 'Aucune classe chargée. Vérifiez les migrations et les autorisations Supabase.'}</td></tr>}
+          {classes.length === 0 && <tr><td colSpan={5} className="empty-cell">{loading ? 'Chargement des classes…' : 'Aucune classe disponible. Actualisez la page ou contactez l’administrateur.'}</td></tr>}
         </tbody>
       </table>
     </div>
