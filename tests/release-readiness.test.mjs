@@ -199,13 +199,24 @@ test('le mode aperçu explique qu’aucune donnée réelle n’est chargée et b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.13.0');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.13\.0/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.13\.0/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.13\.0/m);
+  assert.equal(pkg.version, '1.13.2');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.13\.2/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.13\.2/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.13\.2/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
+
+
+test('le dossier élève expose les raccourcis Finance scolaire et Notes et bulletins avec présélection', () => {
+  const modulePage = read('components/module-page.tsx');
+  const notesPage = read('components/notes-bulletins-page.tsx');
+  assert.match(modulePage, /className="student-name-link"[\s\S]*viewStudentHistory\(row\)/);
+  assert.match(modulePage, /router\.push\(`\/scolarite\?studentQuery=\$\{encodeURIComponent\(studentQuery\)\}`\)/);
+  assert.match(modulePage, /router\.push\(`\/notes-bulletins\?studentId=\$\{encodeURIComponent\(student\._id\)\}`\)/);
+  assert.match(notesPage, /get\('studentId'\)/);
+  assert.match(notesPage, /setSelectedEnrollmentId\(target\.id\)/);
+});
 
 test('le module Notes et bulletins expose les parcours primaire et trimestriel', () => {
   const component = read('components/notes-bulletins-page.tsx');
@@ -249,8 +260,8 @@ test('le guide de déploiement Notes exige une migration 018 et des essais en pr
 test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 23, 'la suite de contrôle doit contenir exactement 23 tests');
-  assert.match(read('README.md'), /23 tests hors ligne/);
+  assert.equal(count, 24, 'la suite de contrôle doit contenir exactement 24 tests');
+  assert.match(read('README.md'), /24 tests hors ligne/);
   assert.match(read('CHANGELOG.md'), /23 tests hors ligne/);
   assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);
   assert.doesNotMatch(read('README.md'), /12 contrôles structurels hors ligne/);

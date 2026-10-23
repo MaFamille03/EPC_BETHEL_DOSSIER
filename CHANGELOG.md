@@ -1,5 +1,23 @@
 # Journal des versions — EPC BETHEL
 
+## 1.13.2 — Raccourcis depuis le dossier élève
+
+- Le nom et les prénoms de chaque élève sont désormais cliquables dans la liste et ouvrent le dossier individuel avec les coordonnées et l’historique scolaire.
+- Ajout dans le dossier de deux raccourcis : « Finance scolaire » et « Notes et bulletins ».
+- Le raccourci Finance scolaire ouvre la rubrique avec une recherche préremplie sur le matricule de l’élève (ou son nom en solution de repli).
+- Le raccourci Notes et bulletins ouvre les résultats individuels avec l’inscription actuelle de l’élève présélectionnée ; si aucune inscription active exploitable n’est trouvée, la page affiche un message explicite.
+- Aucun changement SQL ni de règles de droits n’est introduit. Les raccourcis ouvrent les modules existants et conservent les autorisations habituelles.
+- Contrôles hors ligne : 24 tests réussis, contrôle structurel 11 réussites et 1 avertissement lié à l’absence de `package-lock.json` ; analyse syntaxique des deux composants modifiés réussie. Build complet et essais Supabase réels restent requis avant production.
+
+## 1.13.1 — Fenêtre de formulaire du dossier élève
+
+- Le formulaire « Créer un dossier élève » et son équivalent de modification s’ouvrent dans une fenêtre superposée plus large, au-dessus de la page courante.
+- Les champs d’identité, de responsable légal et les autres informations sont répartis sur trois colonnes sur grand écran, deux colonnes sur écran intermédiaire et une colonne sur mobile.
+- La zone de formulaire conserve son propre défilement si nécessaire ; l’en-tête et les boutons Annuler/Enregistrer restent visibles.
+- Les champs et procédures d’enregistrement existants sont conservés. Aucun changement SQL n’est ajouté.
+- Contrôles hors ligne : 23 tests réussis, 0 échec ; précontrôle structurel 11 réussites, 0 échec et 1 avertissement lié à l’absence de `package-lock.json`. Analyse syntaxique du composant modifié réussie. Build complet et tests Supabase réels restent à effectuer en préproduction.
+
+
 ## 1.13.0 — Amélioration de la gestion des élèves
 
 - Suppression des trois cartes de métriques dans la page élèves, sans toucher aux autres rubriques ; le bouton Actualiser reste disponible dans l’en-tête.

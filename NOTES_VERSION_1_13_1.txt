@@ -1,0 +1,10 @@
+EPC BETHEL — Version 1.13.1
+
+Amélioration du formulaire « Créer un dossier élève » :
+- fenêtre superposée à la page, plus large et mieux visible ;
+- disposition horizontale en trois colonnes sur grand écran, deux colonnes sur écran intermédiaire et une colonne sur mobile ;
+- zone de formulaire défilable seulement si la hauteur d’écran l’exige ; les boutons d’action restent visibles ;
+- formulaire de modification du dossier adapté de la même manière ;
+- champs, validations métier et enregistrement conservés ; aucune migration SQL.
+
+Vérifications effectuées : 23 tests de pré-livraison réussis, 0 échec ; précontrôle structurel 11 réussites, 0 échec, 1 avertissement (package-lock.json absent) ; analyse syntaxique TSX réussie. Le build Next.js complet, le typecheck avec dépendances installées et les essais sur Supabase réel restent à effectuer avant production.

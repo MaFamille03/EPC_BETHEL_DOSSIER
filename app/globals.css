@@ -458,7 +458,7 @@ input, select, textarea, button { max-width:100%; }
 .student-table-actions .student-filter{max-width:190px}
 .student-table-panel .table-footer{display:none}
 .student-table-panel table{min-width:850px;table-layout:auto}
-.student-table-panel td.student-name-cell{white-space:normal;min-width:210px;max-width:420px;overflow-wrap:anywhere;word-break:normal;line-height:1.45}
+.student-table-panel td.student-name-cell{white-space:normal;min-width:210px;max-width:420px;overflow-wrap:anywhere;word-break:normal;line-height:1.45}.student-name-link{display:inline;text-align:left;border:0;background:transparent;padding:0;color:var(--green-900);font-weight:700;line-height:1.45;white-space:normal;overflow-wrap:anywhere;text-decoration:underline;text-decoration-color:#b9d8bd;text-underline-offset:3px}.student-name-link:hover{color:var(--green-700);text-decoration-color:currentColor}.student-name-link:focus-visible{outline:2px solid var(--green-700);outline-offset:3px;border-radius:3px}
 .student-table-panel td.student-name-cell .cell-strong{white-space:normal;overflow-wrap:anywhere}
 @media(max-width:1000px){.student-list-pagination{justify-content:flex-start}.student-toolbar-top{align-items:flex-start;flex-direction:column}.student-table-actions .table-search{max-width:none;flex-basis:100%}}
 @media(max-width:640px){.student-import-panel{padding:13px}.student-import-heading{align-items:stretch}.student-import-details>summary{align-items:flex-start;flex-direction:column;gap:6px}.student-template-download{width:100%}.student-panel-toolbar{padding:14px 12px}.student-list-pagination{gap:6px}.student-list-pagination>span{white-space:normal;flex-basis:100%;line-height:1.5}.student-table-actions .student-filter{max-width:none;flex:1 1 130px}.student-table-actions .table-search{min-width:0;flex-basis:100%}.student-list-heading h2{font-size:16px}}
@@ -471,7 +471,7 @@ input, select, textarea, button { max-width:100%; }
 .student-row-actions{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
 .student-row-actions .button{min-height:31px;padding:0 9px;font-size:10px}
 .student-detail-modal{width:min(920px,100%)}
-.student-detail-modal .modal-header p{margin:7px 0 0;font-size:11px;color:#879389}
+.student-detail-modal .modal-header p{margin:7px 0 0;font-size:11px;color:#879389}.student-detail-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.student-detail-shortcuts,.student-detail-footer-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.student-detail-shortcuts{margin-right:auto}.student-detail-shortcuts .button,.student-detail-footer-actions .button{min-height:36px}
 .student-detail-body{display:block;max-height:calc(90vh - 150px);overflow:auto}
 .student-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
 .student-detail-grid>section,.student-history-section,.student-admin-notes{border:1px solid #e5ece6;border-radius:11px;padding:15px;min-width:0}
@@ -495,3 +495,54 @@ input, select, textarea, button { max-width:100%; }
 .import-preview-head{flex-wrap:wrap}
 .import-preview-head .button{min-height:32px;padding:0 10px}
 @media(max-width:640px){.student-row-actions{justify-content:flex-start}.student-row-actions .button{min-height:30px}.student-detail-modal .modal-body{padding:14px}.student-detail-grid{grid-template-columns:1fr}.student-detail-grid dl{grid-template-columns:repeat(2,minmax(0,1fr))}.student-detail-grid>section,.student-history-section,.student-admin-notes{padding:12px}.student-detail-modal .modal-header h2{font-size:16px}}
+
+
+/* Formulaire de création/modification d'un élève : fenêtre superposée, large et horizontale */
+.student-form-modal {
+  width: min(1040px, calc(100vw - 36px));
+  max-height: calc(100dvh - 32px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.student-form-modal .modal-header,
+.student-form-modal .modal-footer { flex: 0 0 auto; }
+.student-form-modal .modal-header { padding: 18px 24px 14px; }
+.student-form-modal .modal-header .eyebrow { display: block; margin-bottom: 6px; }
+.student-form-modal .modal-header h2 { font-size: 20px; }
+.student-form-modal .modal-body {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: start;
+  gap: 11px 16px;
+  padding: 17px 24px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 0;
+}
+.student-form-modal .form-section-heading { margin-top: 2px; padding-bottom: 6px; }
+.student-form-modal .form-field input,
+.student-form-modal .form-field select,
+.student-form-modal .form-field textarea { min-height: 36px; padding: 8px 10px; font-size: 12px; }
+.student-form-modal .student-notes-field { grid-column: 1 / -1; }
+.student-form-modal .student-school-context { padding: 10px 12px; }
+.student-form-modal .student-school-context p { font-size: 11px; }
+.student-form-modal .form-footnote { padding-top: 1px; }
+.student-form-modal .modal-footer { padding: 12px 24px 16px; }
+@media (max-width: 900px) {
+  .student-form-modal { width: min(760px, calc(100vw - 28px)); max-height: calc(100dvh - 24px); }
+  .student-form-modal .modal-body { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 16px 20px; gap: 11px 13px; }
+  .student-form-modal .modal-header { padding: 16px 20px 13px; }
+  .student-form-modal .modal-footer { padding: 12px 20px 15px; }
+}
+@media (max-width: 620px) {
+  .student-form-modal { width: calc(100vw - 18px); max-height: calc(100dvh - 18px); border-radius: 12px; }
+  .student-form-modal .modal-body { grid-template-columns: minmax(0, 1fr); padding: 14px; gap: 10px; }
+  .student-form-modal .modal-header { padding: 14px 14px 12px; }
+  .student-form-modal .modal-header h2 { font-size: 17px; }
+  .student-form-modal .modal-footer { padding: 11px 14px 14px; }
+  .student-form-modal .student-notes-field { grid-column: auto; }
+  .student-form-modal .modal-footer .button { flex: 1; }
+}
+
+/* Raccourcis depuis le dossier individuel de l’élève */
+@media (max-width: 620px) { .student-detail-footer { align-items:stretch; } .student-detail-shortcuts, .student-detail-footer-actions { width:100%; margin-right:0; } .student-detail-shortcuts .button, .student-detail-footer-actions .button { flex:1; white-space:normal; } .student-detail-footer-actions { justify-content:flex-end; } }

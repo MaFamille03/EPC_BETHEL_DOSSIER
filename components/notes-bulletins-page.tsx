@@ -68,6 +68,7 @@ export function NotesBulletinsPage() {
   const [subjectId, setSubjectId] = useState('');
   const [assessmentId, setAssessmentId] = useState('');
   const [selectedEnrollmentId, setSelectedEnrollmentId] = useState('');
+  const [studentDeepLinkHandled, setStudentDeepLinkHandled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState('');
@@ -130,6 +131,27 @@ export function NotesBulletinsPage() {
   }, []);
 
   useEffect(() => { void refresh(); }, [refresh]);
+
+  // Deep link from a student's record: open individual results for that student.
+  useEffect(() => {
+    if (studentDeepLinkHandled || !years.length || !enrollments.length) return;
+    const studentId = new URLSearchParams(window.location.search).get('studentId');
+    if (!studentId) { setStudentDeepLinkHandled(true); return; }
+    const currentYear = years.find((year) => year.is_current);
+    const target = enrollments.find((enrollment) => enrollment.student_id === studentId && enrollment.school_year_id === currentYear?.id)
+      || enrollments.find((enrollment) => enrollment.student_id === studentId);
+    if (target) {
+      setYearId(target.school_year_id);
+      setClassId(target.class_id);
+      setSelectedEnrollmentId(target.id);
+      setTab('results');
+      announce(`Dossier de ${safeName(target)} ouvert dans les résultats individuels.`);
+    } else {
+      setTab('results');
+      announce('Aucune inscription active de cet élève n’a été trouvée pour consulter ses notes et bulletins.', true);
+    }
+    setStudentDeepLinkHandled(true);
+  }, [studentDeepLinkHandled, years, enrollments]);
 
   const yearEnrollments = useMemo(() => enrollments.filter((e) => e.school_year_id === yearId), [enrollments, yearId]);
   const classEnrollments = useMemo(() => yearEnrollments.filter((e) => !classId || e.class_id === classId).sort((a, b) => safeName(a).localeCompare(safeName(b), 'fr')), [yearEnrollments, classId]);

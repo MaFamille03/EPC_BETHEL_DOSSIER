@@ -1,0 +1,10 @@
+EPC BETHEL — Version 1.13.2
+
+Raccourcis d’accès depuis le dossier individuel de l’élève :
+- le nom/prénom devient cliquable dans la liste et ouvre la fiche de l’élève ;
+- le dossier propose « Finance scolaire » et « Notes et bulletins » ;
+- Finance scolaire s’ouvre avec la recherche préremplie par matricule ;
+- Notes et bulletins s’ouvre sur les résultats individuels et présélectionne l’inscription de l’élève pour l’année en cours, lorsqu’elle existe ;
+- aucun changement de schéma SQL ou de permissions n’est effectué.
+
+Vérifications dans l’environnement de préparation : 24 tests de pré-livraison réussis, 0 échec ; contrôle structurel 11 réussites, 0 échec et 1 avertissement (package-lock.json absent) ; analyse syntaxique TypeScript/TSX des deux composants modifiés sans erreur. Le build complet et les essais Supabase réels restent nécessaires avant production.
