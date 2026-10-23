@@ -231,10 +231,10 @@ test('le formulaire de création de compte de trésorerie est bancaire et sans b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.18.1');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.18\.1/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.18\.1/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.18\.1/m);
+  assert.equal(pkg.version, '1.19.0');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.19\.0/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.19\.0/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.19\.0/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
@@ -318,7 +318,7 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.18.1');
+  assert.equal(packageInfo.version, '1.19.0');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
   assert.match(source, /Échéancier de \{installmentCount\} versement/);
@@ -339,9 +339,9 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
 test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 36, 'la suite de contrôle doit contenir exactement 36 tests');
-  assert.match(read('README.md'), /36 tests hors ligne/);
-  assert.match(read('CHANGELOG.md'), /Tests de pré-livraison : 36 réussis sur 36/);
+  assert.equal(count, 38, 'la suite de contrôle doit contenir exactement 38 tests');
+  assert.match(read('README.md'), /38 tests hors ligne/);
+  assert.match(read('CHANGELOG.md'), /Tests de pré-livraison : 38 réussis sur 38/);
   assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);
   assert.doesNotMatch(read('README.md'), /12 contrôles structurels hors ligne/);
 });
@@ -462,4 +462,29 @@ test('la caisse utilise un seul registre avec comptage physique et actions manue
   assert.match(migration, /moyen de paiement d’origine/);
   assert.match(migration, /update_manual_cash_movement/);
   assert.match(migration, /delete_manual_cash_movement/);
+});
+
+
+test('Gestion des élèves et Finance scolaire ouvrent leurs formulaires en superposition large', () => {
+  const source = read('components/module-page.tsx');
+  const css = read('app/globals.css');
+  assert.match(source, /className=\{`modal\$\{section==='eleves'\|\|section==='scolarite'\?' application-form-modal':''\}/);
+  assert.match(source, /<div className="modal-backdrop"[\s\S]*?<section className=\{`modal/);
+  assert.match(source, /event\.key !== 'Escape'/);
+  assert.match(source, /document\.body\.style\.overflow = 'hidden'/);
+  assert.match(css, /\.modal-backdrop\{position:fixed;inset:0;z-index:100/);
+  assert.match(css, /\.application-form-modal\s*\{[\s\S]*?display:\s*flex/);
+});
+
+test('Notes et bulletins utilise des UserForms superposés pour les entrées scolaires', () => {
+  const source = read('components/notes-bulletins-page.tsx');
+  const css = read('app/globals.css');
+  for (const modal of ['assessment', 'grades', 'rule', 'subject']) {
+    assert.match(source, new RegExp(`activeFormModal === '${modal}'`));
+  }
+  assert.match(source, /role="dialog" aria-modal="true"/);
+  assert.match(source, /event\.key === 'Escape'/);
+  assert.match(source, /setActiveFormModal\(null\); announce\('Les résultats de la classe ont été enregistrés/);
+  assert.match(css, /\.notes-form-backdrop\s*\{\s*z-index:\s*130/);
+  assert.match(css, /\.notes-grade-modal-body\s*\{\s*display:\s*block !important/);
 });

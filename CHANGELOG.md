@@ -1,3 +1,10 @@
+## 1.19.0 — Formulaires superposés façon UserForm
+- Gestion des élèves et Finance scolaire utilisent une fenêtre de saisie large, avec en-tête, zone de champs défilante et actions persistantes, au-dessus de la page existante.
+- Notes et bulletins : création d’évaluation, saisie collective des notes, configuration des règles de calcul et ajout de matière déplacés dans des fenêtres modales.
+- La page reste visible derrière les fenêtres ; annulation/clic extérieur ferment le formulaire, et les opérations réussies ferment la fenêtre après enregistrement.
+- Ajout de dispositions responsive pour les formulaires sur ordinateur, tablette et mobile ; aucune migration SQL.
+- Contrôles réalisés : Tests de pré-livraison : 38 réussis sur 38. Contrôle structurel : 11 réussis, 1 avertissement lié au package-lock.json, et analyse syntaxique de 29 fichiers sans erreur. La compilation Next.js complète et les tests sur une base Supabase réelle restent à effectuer.
+
 ## 1.18.1 — Correction du build Vercel
 
 - Correction d’une comparaison TypeScript impossible dans le formulaire bancaire : le formulaire ne s’affiche que dans la rubrique Banque, il ne doit donc pas tester le mode Caisse/Mobile Money.

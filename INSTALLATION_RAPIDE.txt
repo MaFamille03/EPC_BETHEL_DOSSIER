@@ -1,4 +1,6 @@
-EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.18.1)
+EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.19.0)
+
+NOUVEAUTÉ 1.19.0 — Les formulaires des modules Gestion des élèves, Finance scolaire et Notes et bulletins s’ouvrent en fenêtres superposées à la page existante, avec fermeture par Annuler, clic extérieur ou Échap.
 
 IMPORTANT
 Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pré-livraison). La compilation complète et les migrations n'ont pas encore été validées sur un projet Supabase réel. Commence toujours par un projet de développement et une sauvegarde.
