@@ -1,5 +1,13 @@
 # Journal des versions — EPC BETHEL
 
+## 1.11.3 — Finition du module Notes et bulletins
+
+- Suppression du message ambigu laissant entendre que l’accès à la préparation des bulletins est réservé à l’administrateur ; les permissions effectives restent contrôlées par les rôles et les règles d’accès existantes.
+- Remplacement du sélecteur « Choisir un élève » par un champ mieux structuré, libellé « Élève à consulter », avec focus clavier visible et identifiant élève facultatif.
+- Réduction des espaces verticaux inutiles dans les panneaux, indicateurs et en-têtes de Notes et bulletins.
+- Tests de pré-livraison : 23 réussis. Contrôle structurel : 11 réussis, 1 avertissement lié à l’absence de package-lock.json, 0 échec. Le build et le typecheck restent à exécuter après installation des dépendances.
+
+
 ## 1.11.2 — Module Notes et bulletins du primaire
 
 - Ajout des évaluations par classe, matière, trimestre, barème et coefficient.
