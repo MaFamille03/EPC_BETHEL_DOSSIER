@@ -223,10 +223,10 @@ test('Finance scolaire présente les réductions et les échéanciers variables'
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.15.2');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.15\.2/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.15\.2/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.15\.2/m);
+  assert.equal(pkg.version, '1.15.3');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.15\.3/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.15\.3/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.15\.3/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
@@ -299,7 +299,7 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.15.2');
+  assert.equal(packageInfo.version, '1.15.3');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
   assert.match(source, /Échéancier de \{installmentCount\} versement/);
@@ -320,8 +320,8 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
 test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 27, 'la suite de contrôle doit contenir exactement 27 tests');
-  assert.match(read('README.md'), /27 tests hors ligne/);
+  assert.equal(count, 28, 'la suite de contrôle doit contenir exactement 28 tests');
+  assert.match(read('README.md'), /28 tests hors ligne/);
   assert.match(read('CHANGELOG.md'), /23 tests hors ligne/);
   assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);
   assert.doesNotMatch(read('README.md'), /12 contrôles structurels hors ligne/);
@@ -336,4 +336,17 @@ test('les commandes de barre supérieure proposent recherche, fermeture et menus
   assert.match(topbar, /Aucune notification disponible/);
   assert.match(topbar, /Gestion des utilisateurs/);
   assert.match(topbar, /void onLogout\(\)/);
+});
+
+
+test('Finance scolaire affiche compteur et pagination près de la recherche, pas sous le tableau', () => {
+  const source = read('components/module-page.tsx');
+  const css = read('app/globals.css');
+  const searchAt = source.indexOf('<div className="table-search">');
+  const paginationAt = source.indexOf('className="finance-list-pagination"');
+  const tableAt = source.indexOf('<div className="table-scroll"><table>');
+  assert.ok(searchAt >= 0 && paginationAt > searchAt && tableAt > paginationAt);
+  assert.match(source, /section!=='eleves'&&!\(section==='scolarite'&&!concessionView\)&&<div className="table-footer"/);
+  assert.match(css, /\.finance-list-pagination\{display:flex/);
+  assert.match(source, /Les soldes sont calculés automatiquement à partir de tous les paiements validés\./);
 });

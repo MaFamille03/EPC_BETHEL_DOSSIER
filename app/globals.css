@@ -582,3 +582,15 @@ input, select, textarea, button { max-width:100%; }
 .finance-filter-bar+div.table-scroll{border-top:0}
 @media(max-width:1180px){.finance-page-heading{align-items:flex-start;flex-direction:column}.finance-page-heading>div:first-child{width:100%}.finance-action-layout{width:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,155px),1fr));flex:1 1 auto}.finance-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.finance-action-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}.finance-action-layout .button{width:100%;height:42px;min-height:42px;padding:0 8px;font-size:10px;white-space:normal;text-align:center;line-height:1.15}.finance-action-layout .button svg{width:14px;height:14px}.installment-help{padding:10px}.finance-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.finance-summary-card{padding:10px;gap:5px}.finance-summary-card>span{font-size:11px}.finance-summary-card strong{font-size:16px}.finance-summary-card small{font-size:9px}.finance-filter-bar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:12px;gap:9px}.finance-filter-bar label{min-width:0}.finance-filter-bar label select{font-size:10px;padding:0 7px}.finance-reset-filters{grid-column:1/-1;width:100%}.fee-detail-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.fee-detail-summary>div{padding:10px}.fee-detail-body{grid-template-columns:1fr}.fee-detail-modal{max-height:92vh}}
+
+
+/* EPC BETHEL V1.15.3 — pagination des frais en haut */
+.finance-list-pagination{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0;flex:0 1 auto;padding-left:4px;color:#89958d;font-size:10px}
+.finance-list-count{display:flex;flex-direction:column;gap:3px;min-width:0;line-height:1.35}
+.finance-list-count>span{white-space:nowrap}
+.finance-list-count strong{color:#526258}
+.finance-list-count small{font-size:9px;color:#9aa49d;white-space:nowrap}
+.finance-list-pagination .pagination{flex:0 0 auto}
+.finance-list-pagination .pagination .icon-button{width:29px;height:29px}
+@media(max-width:1180px){.finance-list-pagination{flex-basis:100%;justify-content:space-between;padding-left:0}.finance-list-count{flex:1}}
+@media(max-width:640px){.finance-list-pagination{align-items:flex-start;flex-wrap:wrap;gap:8px;width:100%;font-size:10px}.finance-list-count{flex:1 1 100%}.finance-list-count>span,.finance-list-count small{white-space:normal}.finance-list-pagination .pagination{margin-left:auto}}

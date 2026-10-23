@@ -1,0 +1,5 @@
+EPC BETHEL — Version 1.15.3
+
+Finance scolaire : déplacement du compteur « Affichage de … sur … frais » et de la navigation de pagination depuis le pied du tableau vers la barre supérieure, près de la recherche. Le texte explicatif sur les soldes calculés à partir des paiements validés reste disponible sous le compteur. Le pied de tableau correspondant est retiré afin d’éviter les doublons. La disposition s’adapte aux écrans plus étroits.
+
+Aucune migration SQL ni modification des règles de calcul financier n’est incluse dans cette version.

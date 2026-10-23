@@ -1,3 +1,10 @@
+## 1.15.3 — Pagination Finance scolaire en haut
+
+- Déplacement du compteur « Affichage de … sur … frais » et des commandes précédent/suivant dans la barre supérieure, à proximité de la recherche.
+- Maintien de l’aide sur le calcul des soldes dans le bloc du compteur.
+- Suppression du pied de tableau en doublon pour la liste des frais scolaires.
+- Mise en page responsive pour les écrans étroits ; aucune migration SQL ni modification des règles de calcul.
+
 # Journal des versions — EPC BETHEL
 
 ## 1.15.2 — Correction du chargement des frais et synthèse 2 × 2

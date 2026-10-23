@@ -1,14 +1,14 @@
 # EPC BETHEL — Application de gestion scolaire
 
 **Établissement :** EPC BETHEL ASSEMBLÉES DE DIEU JEAN FOLLY  
-**Version courante :** 1.15.2  
+**Version courante :** 1.15.3  
 **Stack :** Next.js 15, React 19, TypeScript, Supabase/PostgreSQL
 
 ## État de livraison
 
 EPC BETHEL est une base applicative avancée, mais elle **n’est pas certifiée prête pour la production**. Les dépendances n’ont pas pu être installées dans l’environnement de préparation, car le registre npm a renvoyé `EAI_AGAIN`. Le `typecheck`, la compilation Next.js, les migrations sur une base Supabase réelle et les tests de bout en bout restent donc à valider dans un environnement configuré.
 
-Les contrôles hors ligne actuels comprennent `npm run preflight` et **27 tests hors ligne** via `npm run test:release`. La livraison comprend les améliorations Finance scolaire V1.15.2 (correction de l’ambiguïté SQL du registre, synthèse compacte en grille 2 × 2) et V1.15.1 (libellés de réduction clarifiés, actions uniformes, indicateurs et échéanciers de 1 à 6 versements pour la scolarité et l’inscription), le module Notes et bulletins (migrations 016 et 018), le rapprochement bancaire transactionnel (migration 017) et les améliorations de Gestion des élèves en V1.13.0 et la fenêtre de formulaire élève élargie en V1.13.1 et les raccourcis directs vers Finance scolaire et Notes et bulletins depuis le dossier individuel en V1.13.2. Elle inclut le modèle Excel téléchargeable. Ces contrôles structurels ne remplacent pas la compilation ou les tests réels sur Supabase.
+Les contrôles hors ligne actuels comprennent `npm run preflight` et **28 tests hors ligne** via `npm run test:release`. La livraison comprend les améliorations Finance scolaire V1.15.3 (compteur et pagination déplacés près de la recherche), V1.15.2 (correction de l’ambiguïté SQL du registre, synthèse compacte en grille 2 × 2) et V1.15.1 (libellés de réduction clarifiés, actions uniformes, indicateurs et échéanciers de 1 à 6 versements pour la scolarité et l’inscription), le module Notes et bulletins (migrations 016 et 018), le rapprochement bancaire transactionnel (migration 017) et les améliorations de Gestion des élèves en V1.13.0 et la fenêtre de formulaire élève élargie en V1.13.1 et les raccourcis directs vers Finance scolaire et Notes et bulletins depuis le dossier individuel en V1.13.2. Elle inclut le modèle Excel téléchargeable. Ces contrôles structurels ne remplacent pas la compilation ou les tests réels sur Supabase.
 
 ## Fonctionnalités incluses
 
