@@ -1,3 +1,22 @@
+## 1.16.1 — Import Excel avec commande visible
+
+- Dans Gestion des élèves, le panneau « Importer les élèves depuis Excel » affiche désormais un libellé visible « Déplier » lorsqu’il est fermé et « Réplier » lorsqu’il est ouvert, à la place des symboles plus/moins.
+- Le libellé est présenté comme une commande clairement identifiable, avec un style cohérent, un état ouvert/fermé et un comportement adapté aux petits écrans.
+- L’import Excel, le téléchargement du modèle, l’aperçu, les contrôles des doublons et le rapport CSV restent inchangés.
+- Aucune migration SQL n’est nécessaire.
+
+## 1.16.0 — Rubriques de trésorerie spécialisées
+
+- Séparation des vues Caisse et comptes Mobile Money, Banque, Transferts internes et Journal de trésorerie : chaque page n’affiche plus le même tableau général.
+- Caisse/Mobile Money affiche uniquement les comptes physiques et les portefeuilles Mobile Money, avec leurs soldes, entrées, sorties et mouvements associés.
+- Banque affiche uniquement les comptes bancaires et conserve le rapprochement des relevés dans cette rubrique.
+- Transferts internes présente chaque transfert une seule fois avec source, destination, montant, référence et libellé ; les fonctions SQL continuent à créer les deux mouvements liés sans recette/dépense artificielle.
+- Journal de trésorerie conserve la vue consolidée sur tous les comptes, avec filtres et export CSV.
+- Nouvelle migration `021_treasury_account_types_and_creation.sql` : type de compte `mobile_money`, champ opérateur et RPC transactionnelle de création de compte avec contrôle administrateur et journal d’audit.
+- Création de comptes intégrée aux pages Caisse/Mobile Money et Banque ; solde initial daté, code unique et champs spécifiques au compte.
+- Les marges, cartes et filtres sont plus compacts, les commandes alignées et les messages sans résultat plus explicites.
+- Contrôles hors ligne et analyse syntaxique réalisés. Le build complet, les tests RLS et les tests sur Supabase réel restent requis en préproduction.
+
 ## 1.15.3 — Pagination Finance scolaire en haut
 
 - Déplacement du compteur « Affichage de … sur … frais » et des commandes précédent/suivant dans la barre supérieure, à proximité de la recherche.

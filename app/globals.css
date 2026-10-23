@@ -441,8 +441,10 @@ input, select, textarea, button { max-width:100%; }
 .student-import-summary-title{display:inline-flex;align-items:center;gap:9px;font-family:Manrope,sans-serif;font-size:14px;font-weight:800}
 .student-import-summary-title svg{color:#2e7949}
 .student-import-summary-note{color:#7e8c81;font-size:11px}
-.student-import-details>summary:after{content:'＋';color:#398454;font-weight:700;margin-left:2px}
-.student-import-details[open]>summary:after{content:'−'}
+.student-import-toggle-label{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:0 12px;margin-left:auto;border:1px solid #b8d7c0;border-radius:8px;background:#edf7ef;color:#236a3b;font-size:12px;font-weight:800;white-space:nowrap;transition:background .15s,border-color .15s,color .15s}
+.student-import-toggle-label.is-open{border-color:#9bbba3;background:#f4f7f4;color:#526157}
+.student-import-details>summary:hover .student-import-toggle-label{border-color:#6fa47b}
+.student-import-details>summary:focus-visible{outline:2px solid #398454;outline-offset:3px;border-radius:6px}
 .student-import-content{padding-top:16px}
 .student-template-download{flex-shrink:0}
 .student-panel-toolbar{display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:18px 20px}
@@ -461,7 +463,7 @@ input, select, textarea, button { max-width:100%; }
 .student-table-panel td.student-name-cell{white-space:normal;min-width:210px;max-width:420px;overflow-wrap:anywhere;word-break:normal;line-height:1.45}.student-name-link{display:inline;text-align:left;border:0;background:transparent;padding:0;color:var(--green-900);font-weight:700;line-height:1.45;white-space:normal;overflow-wrap:anywhere;text-decoration:underline;text-decoration-color:#b9d8bd;text-underline-offset:3px}.student-name-link:hover{color:var(--green-700);text-decoration-color:currentColor}.student-name-link:focus-visible{outline:2px solid var(--green-700);outline-offset:3px;border-radius:3px}
 .student-table-panel td.student-name-cell .cell-strong{white-space:normal;overflow-wrap:anywhere}
 @media(max-width:1000px){.student-list-pagination{justify-content:flex-start}.student-toolbar-top{align-items:flex-start;flex-direction:column}.student-table-actions .table-search{max-width:none;flex-basis:100%}}
-@media(max-width:640px){.student-import-panel{padding:13px}.student-import-heading{align-items:stretch}.student-import-details>summary{align-items:flex-start;flex-direction:column;gap:6px}.student-template-download{width:100%}.student-panel-toolbar{padding:14px 12px}.student-list-pagination{gap:6px}.student-list-pagination>span{white-space:normal;flex-basis:100%;line-height:1.5}.student-table-actions .student-filter{max-width:none;flex:1 1 130px}.student-table-actions .table-search{min-width:0;flex-basis:100%}.student-list-heading h2{font-size:16px}}
+@media(max-width:640px){.student-import-panel{padding:13px}.student-import-heading{align-items:stretch}.student-import-details>summary{align-items:flex-start;flex-direction:row;flex-wrap:wrap;gap:8px}.student-import-summary-note{flex-basis:100%}.student-import-toggle-label{margin-left:0;min-height:32px}.student-template-download{width:100%}.student-panel-toolbar{padding:14px 12px}.student-list-pagination{gap:6px}.student-list-pagination>span{white-space:normal;flex-basis:100%;line-height:1.5}.student-table-actions .student-filter{max-width:none;flex:1 1 130px}.student-table-actions .table-search{min-width:0;flex-basis:100%}.student-list-heading h2{font-size:16px}}
 
 /* Dossier individuel et historique scolaire */
 .form-section-heading{grid-column:1/-1;margin:6px 0 -2px;padding-bottom:8px;border-bottom:1px solid #e8eee9;color:#28553a;font:800 13px Manrope,sans-serif}
@@ -594,3 +596,45 @@ input, select, textarea, button { max-width:100%; }
 .finance-list-pagination .pagination .icon-button{width:29px;height:29px}
 @media(max-width:1180px){.finance-list-pagination{flex-basis:100%;justify-content:space-between;padding-left:0}.finance-list-count{flex:1}}
 @media(max-width:640px){.finance-list-pagination{align-items:flex-start;flex-wrap:wrap;gap:8px;width:100%;font-size:10px}.finance-list-count{flex:1 1 100%}.finance-list-count>span,.finance-list-count small{white-space:normal}.finance-list-pagination .pagination{margin-left:auto}}
+
+
+/* Trésorerie : pages spécialisées, densité optimisée et actions alignées. */
+.treasury-page-heading{align-items:center;gap:16px;margin-bottom:20px}
+.treasury-actions{flex-wrap:wrap;gap:8px}
+.treasury-actions .button{height:40px;min-height:40px}
+.treasury-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.treasury-metrics .metric-mini{min-width:0;padding:15px 17px;border-radius:11px}
+.treasury-metrics .metric-mini>strong{display:block;overflow-wrap:anywhere;line-height:1.3;font-size:clamp(16px,1.35vw,22px)}
+.treasury-transfer-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+.treasury-accounts-section{margin-bottom:18px}
+.treasury-section-heading{margin-bottom:10px}
+.treasury-section-heading h2{margin-bottom:4px}
+.treasury-section-heading p{font-size:11px}
+.treasury-account-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:0}
+.treasury-account-card{padding:16px 18px}
+.treasury-account-top{margin-bottom:10px}
+.treasury-account-icon{width:36px;height:36px;border-radius:10px}
+.treasury-account-card>p{font-size:13px;font-weight:700;color:#485a4d;margin:0 0 3px}
+.treasury-account-provider{display:block;color:#8a958d;font-size:10px;margin-bottom:7px;min-height:14px}
+.treasury-account-card>strong{font-size:23px;display:block;line-height:1.25}
+.treasury-account-breakdown{gap:14px;margin-top:12px;padding-top:10px}
+.treasury-account-breakdown span{gap:3px}
+.treasury-empty-accounts{display:flex;align-items:center;flex-direction:column;text-align:center;gap:8px;padding:24px 16px;margin-bottom:0;color:#5c7865}
+.treasury-empty-accounts>strong{font-size:14px;color:#2d4334}
+.treasury-empty-accounts p{font-size:12px;color:#849087;margin:0 0 4px;max-width:520px;line-height:1.5}
+.treasury-table-panel{margin-top:0}
+.treasury-table-filters{display:flex;align-items:center;gap:8px;flex:0 1 520px;max-width:100%;min-width:0}
+.treasury-account-filter{display:block;min-width:145px;max-width:220px}
+.treasury-account-filter select{height:38px;min-width:0;width:100%;border:1px solid #e1e8e2;background:#fff;border-radius:8px;padding:0 10px;color:#526157;font-size:11px}
+.treasury-table-filters .table-search{flex:1;min-width:190px}
+.treasury-tx-account{display:flex;flex-direction:column;gap:3px;min-width:130px;font-weight:600}
+.treasury-tx-account small{font-size:10px;color:#8a958d;font-weight:400}
+.treasury-table-footer{gap:12px;align-items:center}
+.treasury-table-footer>span{line-height:1.5}
+.treasury-account-form-body{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.treasury-account-form-body .form-field small{display:block;font-size:10px;line-height:1.4;color:#89948c;margin-top:5px}
+@media(max-width:1050px){.treasury-page-heading{align-items:flex-start;flex-direction:column}.treasury-page-heading>div:first-child{width:100%}.treasury-actions{width:100%}.treasury-table-filters{width:100%;flex-basis:100%}}
+@media(max-width:720px){.treasury-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.treasury-metrics .metric-mini{padding:12px}.treasury-account-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.treasury-account-card{padding:13px}.treasury-account-card>strong{font-size:19px}.treasury-account-breakdown{gap:10px}.treasury-account-breakdown b{font-size:10px}.treasury-account-filter{min-width:120px;flex:0 0 42%}.treasury-table-filters .table-search{min-width:0}.treasury-table-footer{align-items:flex-start;flex-direction:column}.treasury-table-footer .button{align-self:flex-end}}
+@media(max-width:520px){.treasury-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.treasury-account-grid{grid-template-columns:minmax(0,1fr)}.treasury-account-form-body{grid-template-columns:minmax(0,1fr)}.treasury-actions .button{flex:1 1 130px}.treasury-table-filters{align-items:stretch;flex-direction:column}.treasury-account-filter{max-width:none;min-width:0;flex-basis:auto}.treasury-table-filters .table-search{width:100%}}
+
+.payment-account-warning{display:block;margin-top:6px;color:#9b5f29;font-size:11px;line-height:1.45}

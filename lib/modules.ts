@@ -3,6 +3,8 @@ import {
   Users,
   GraduationCap,
   Wallet,
+  Smartphone,
+  Landmark,
   ArrowLeftRight,
   ReceiptText,
   ShoppingCart,
@@ -41,8 +43,8 @@ export const navigation = [
   {
     label: 'Finances',
     items: [
-      { key: 'caisse-mobile-money', title: 'Caisse et comptes Mobile Money', icon: Wallet },
-      { key: 'banque', title: 'Banque', icon: Wallet },
+      { key: 'caisse-mobile-money', title: 'Caisse et comptes Mobile Money', icon: Smartphone },
+      { key: 'banque', title: 'Banque', icon: Landmark },
       { key: 'transferts-internes', title: 'Transferts internes', icon: ArrowLeftRight },
       { key: 'journal-tresorerie', title: 'Journal de trésorerie (historique)', icon: ReceiptText },
     ],
@@ -160,8 +162,8 @@ export const modules: Record<string, Module> = {
   },
 };
 
-// Les quatre entrées financières partagent le moteur de trésorerie existant.
-modules['caisse-mobile-money'] = { ...modules.tresorerie, key: 'caisse-mobile-money', title: 'Caisse et comptes Mobile Money' };
-modules.banque = { ...modules.tresorerie, key: 'banque', title: 'Banque' };
-modules['transferts-internes'] = { ...modules.tresorerie, key: 'transferts-internes', title: 'Transferts internes' };
-modules['journal-tresorerie'] = { ...modules.tresorerie, key: 'journal-tresorerie', title: 'Journal de trésorerie (historique)' };
+// Les quatre rubriques utilisent le même socle sécurisé, mais leurs vues et listes sont spécialisées.
+modules['caisse-mobile-money'] = { ...modules.tresorerie, key: 'caisse-mobile-money', title: 'Caisse et comptes Mobile Money', description: 'Gérez les liquidités physiques et les portefeuilles Mobile Money, indépendamment des comptes bancaires.', icon: Smartphone };
+modules.banque = { ...modules.tresorerie, key: 'banque', title: 'Banque', description: 'Suivez les soldes et mouvements bancaires, puis rapprochez-les avec les relevés importés.', icon: Landmark };
+modules['transferts-internes'] = { ...modules.tresorerie, key: 'transferts-internes', title: 'Transferts internes', description: 'Transférez de l’argent entre deux comptes actifs et consultez chaque transfert lié sans le compter en recette ou dépense.', icon: ArrowLeftRight };
+modules['journal-tresorerie'] = { ...modules.tresorerie, key: 'journal-tresorerie', title: 'Journal de trésorerie (historique)', description: 'Consultez les mouvements de tous les comptes et exportez l’historique filtré.', icon: ReceiptText };

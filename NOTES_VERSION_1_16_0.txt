@@ -1,0 +1,8 @@
+EPC BETHEL V1.16.0 — Trésorerie
+
+- Vues séparées : Caisse/Mobile Money, Banque, Transferts internes et Journal.
+- Nouveau type de compte Mobile Money et champ opérateur.
+- Création de compte sécurisée et auditée, réservée à l’administrateur.
+- Interface compacte, filtres par compte et export adapté à chaque vue.
+- Appliquer la migration 021 en préproduction après sauvegarde.
+- Build Next.js et tests Supabase réels à valider avant production.

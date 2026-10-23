@@ -39,8 +39,8 @@ test('la configuration de paquet expose les commandes requises', () => {
 test('les migrations SQL sont présentes et numérotées sans trou', () => {
   const directory = path.join(root, 'supabase/migrations');
   const files = fs.readdirSync(directory).filter((name) => /^\d{3}_.+\.sql$/.test(name)).sort();
-  assert.equal(files.length, 20);
-  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 20 }, (_, i) => i + 1));
+  assert.equal(files.length, 21);
+  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 21 }, (_, i) => i + 1));
 });
 
 test('les routes serveur nécessaires au parcours des comptes existent', () => {
@@ -223,10 +223,10 @@ test('Finance scolaire présente les réductions et les échéanciers variables'
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.15.3');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.15\.3/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.15\.3/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.15\.3/m);
+  assert.equal(pkg.version, '1.16.1');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.16\.1/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.16\.1/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.16\.1/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
@@ -287,6 +287,17 @@ test('la migration Notes applique les contrôles RLS et ne crée pas de politiqu
   assert.doesNotMatch(migration, /for delete to authenticated/i);
 });
 
+
+test('Import Excel affiche des libellés Déplier/Réplier visibles', () => {
+  const source = read('components/student-import.tsx');
+  const css = read('app/globals.css');
+  assert.match(source, /isImportPanelOpen\?'Réplier':'Déplier'/);
+  assert.match(source, /student-import-toggle-label/);
+  assert.match(css, /\.student-import-toggle-label\{/);
+  assert.doesNotMatch(css, /student-import-details>summary:after\{content:'[＋+−-]'/);
+  assert.match(source, /Télécharger le modèle Excel/);
+});
+
 test('le guide de déploiement Notes exige une migration 018 et des essais en préproduction', () => {
   const guide = read('ETAPE_10_NOTES_BULLETINS.md');
   assert.match(guide, /018_notes_bulletins_workflows\.sql/);
@@ -299,7 +310,7 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.15.3');
+  assert.equal(packageInfo.version, '1.16.1');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
   assert.match(source, /Échéancier de \{installmentCount\} versement/);
@@ -320,8 +331,8 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
 test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 28, 'la suite de contrôle doit contenir exactement 28 tests');
-  assert.match(read('README.md'), /28 tests hors ligne/);
+  assert.equal(count, 32, 'la suite de contrôle doit contenir exactement 32 tests');
+  assert.match(read('README.md'), /32 tests hors ligne/);
   assert.match(read('CHANGELOG.md'), /23 tests hors ligne/);
   assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);
   assert.doesNotMatch(read('README.md'), /12 contrôles structurels hors ligne/);
@@ -349,4 +360,45 @@ test('Finance scolaire affiche compteur et pagination près de la recherche, pas
   assert.match(source, /section!=='eleves'&&!\(section==='scolarite'&&!concessionView\)&&<div className="table-footer"/);
   assert.match(css, /\.finance-list-pagination\{display:flex/);
   assert.match(source, /Les soldes sont calculés automatiquement à partir de tous les paiements validés\./);
+});
+
+
+test('les quatre rubriques de trésorerie ont des vues distinctes', () => {
+  const treasury = read('components/treasury-page.tsx');
+  const route = read('app/[section]/page.tsx');
+  const modules = read('lib/modules.ts');
+  assert.match(route, /section==='caisse-mobile-money'\?'cash-mobile-money':section==='banque'\?'bank':section==='transferts-internes'\?'transfers':'journal'/);
+  assert.match(treasury, /account.kind === 'cash' \|\| account.kind === 'mobile_money'/);
+  assert.match(treasury, /transaction.transaction_type === 'transfer'/);
+  assert.match(treasury, /Chaque transfert est présenté une seule fois/);
+  assert.match(treasury, /if \(mode === 'journal'\) return txs/);
+  assert.match(modules, /portefeuilles Mobile Money/);
+});
+
+test('le type Mobile Money est migré et la création de comptes est auditée côté SQL', () => {
+  const migration = read('supabase/migrations/021_treasury_account_types_and_creation.sql');
+  const treasury = read('components/treasury-page.tsx');
+  assert.match(migration, /add value if not exists 'mobile_money'/i);
+  assert.match(migration, /add column if not exists provider_name/i);
+  assert.match(migration, /create or replace function public\.create_cash_account/i);
+  assert.match(migration, /has_any_role\(array\['admin'\]::public\.app_role\[\]\)/i);
+  assert.match(migration, /insert into public\.audit_logs/i);
+  assert.match(migration, /revoke all on function public\.create_cash_account/i);
+  assert.match(migration, /grant execute on function public\.create_cash_account/i);
+  assert.match(treasury, /client\.rpc\('create_cash_account'/);
+  assert.match(treasury, /provider_name/);
+});
+
+
+test('les paiements et dépenses proposent un compte cohérent avec le mode de règlement', () => {
+  const payments = read('components/payments-page.tsx');
+  const expenses = read('components/expenses-page.tsx');
+  const migration = read('supabase/migrations/021_treasury_account_types_and_creation.sql');
+  assert.match(payments, /accountsForPaymentMethod/);
+  assert.match(payments, /account\.kind===expectedKind/);
+  assert.match(expenses, /accountsForExpenseMethod/);
+  assert.match(expenses, /account\.kind===expectedKind/);
+  assert.match(migration, /payments_account_method_match/);
+  assert.match(migration, /expenses_account_method_match/);
+  assert.match(migration, /Pour un paiement Mobile Money, choisissez un portefeuille Mobile Money/);
 });

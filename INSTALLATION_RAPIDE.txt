@@ -1,4 +1,4 @@
-EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.15.3)
+EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.16.1)
 
 IMPORTANT
 Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pré-livraison). La compilation complète et les migrations n'ont pas encore été validées sur un projet Supabase réel. Commence toujours par un projet de développement et une sauvegarde.
@@ -38,6 +38,7 @@ Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pr
    018_notes_bulletins_workflows.sql
    019_finance_scolaire_reductions_echeanciers.sql
    020_fix_school_fee_ledger_ambiguity.sql
+   021_treasury_account_types_and_creation.sql
 
 8. Dans Supabase Auth, configurer le fournisseur e-mail, les paramètres de connexion par mot de passe, les URL autorisées et les redirections de l'application. Tester la création de compte avec code d'accès, puis la connexion par adresse e-mail et mot de passe depuis /login et /register. Le fonctionnement réel dépend de la configuration e-mail et des URL du projet Supabase.
 
@@ -101,3 +102,14 @@ Ne lancez pas les migrations directement en production sans sauvegarde et valida
 
 MODULE NOTES ET BULLETINS (1.11.2)
 Appliquer supabase/migrations/018_notes_bulletins_workflows.sql après les migrations 001 à 017, après sauvegarde et validation en préproduction. Voir ETAPE_10_NOTES_BULLETINS.md.
+
+FONCTIONNALITÉS V1.16.0 — TRÉSORERIE (conservées en V1.16.1)
+- Distinction des vues Caisse/Mobile Money, Banque, Transferts internes et Journal général.
+- Ajout du type de compte Mobile Money avec opérateur renseigné.
+- Création de compte réservée à l’administrateur et journalisée par RPC dans la migration 021.
+- Avant le déploiement, appliquer la migration 021 sur un projet Supabase de développement et tester chaque profil.
+
+
+AMÉLIORATION V1.16.1 — GESTION DES ÉLÈVES
+- Le panneau « Importer les élèves depuis Excel » affiche un bouton textuel « Déplier » quand il est fermé et « Réplier » quand il est ouvert, à la place des symboles plus/moins.
+- Le téléchargement du modèle Excel et le processus d’import restent inchangés.

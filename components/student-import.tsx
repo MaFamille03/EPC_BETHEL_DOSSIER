@@ -10,7 +10,7 @@ const find=(row:Record<string,unknown>,aliases:string[])=>{const keys=Object.key
 function dateValue(value:unknown):string|null{if(value===null||value===undefined||value==='')return null;if(typeof value==='number'&&value>20000){const d=new Date(Date.UTC(1899,11,30)+value*86400000);return d.toISOString().slice(0,10);}const s=norm(value);if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;const m=s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);if(m)return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;return null;}
 
 export function StudentImport({onImported}:{onImported?:()=>void|Promise<void>}){
- const fileRef=useRef<HTMLInputElement>(null);const [rows,setRows]=useState<ImportRow[]>([]);const [fileName,setFileName]=useState('');const [busy,setBusy]=useState(false);const [notice,setNotice]=useState('');const [error,setError]=useState('');
+ const fileRef=useRef<HTMLInputElement>(null);const [isImportPanelOpen,setIsImportPanelOpen]=useState(false);const [rows,setRows]=useState<ImportRow[]>([]);const [fileName,setFileName]=useState('');const [busy,setBusy]=useState(false);const [notice,setNotice]=useState('');const [error,setError]=useState('');
  async function choose(file?:File){
   if(!file)return;setFileName(file.name);setRows([]);setError('');setNotice('');
   try{
@@ -46,8 +46,8 @@ export function StudentImport({onImported}:{onImported?:()=>void|Promise<void>})
  function exportErrorReport(){const failed=rows.filter(r=>r.error);if(!failed.length)return;const quote=(v:unknown)=>`"${String(v??'').replaceAll('"','""')}"`;const csv=[['Ligne','Matricule','Nom','Prénoms','Motif'].map(quote).join(';'),...failed.map(r=>[r.rowNo,r.student_number,r.last_name,r.first_names,r.error].map(quote).join(';'))].join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='epc-bethel-erreurs-import-eleves.csv';a.click();URL.revokeObjectURL(url);}
  return <section className="panel import-panel student-import-panel">
   <div className="student-import-heading">
-   <details className="student-import-details">
-    <summary><span className="student-import-summary-title"><FileSpreadsheet size={19}/> Importer les élèves depuis Excel</span><span className="student-import-summary-note">Importer plusieurs dossiers en une fois · .xlsx, .xls ou .csv</span></summary>
+   <details className="student-import-details" open={isImportPanelOpen} onToggle={event=>setIsImportPanelOpen(event.currentTarget.open)}>
+    <summary><span className="student-import-summary-title"><FileSpreadsheet size={19}/> Importer les élèves depuis Excel</span><span className={`student-import-toggle-label${isImportPanelOpen?' is-open':''}`}>{isImportPanelOpen?'Réplier':'Déplier'}</span><span className="student-import-summary-note">Importer plusieurs dossiers en une fois · .xlsx, .xls ou .csv</span></summary>
     <div className="student-import-content">
      <div className="import-instructions"><strong>Colonnes attendues</strong><span>Matricule · Nom · Prénoms · Sexe (facultatif) · Date de naissance (facultative) · Lieu de naissance (facultatif)</span><small>Les en-têtes peuvent être écrits avec ou sans accents. La première ligne doit contenir les titres des colonnes. Les matricules existants ne sont pas écrasés.</small></div>
      <div className="import-controls"><input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" onChange={e=>void choose(e.target.files?.[0])} aria-label="Choisir un fichier Excel"/><button className="button button-secondary" onClick={()=>fileRef.current?.click()} disabled={busy}><Upload size={16}/> Choisir un fichier</button>{fileName&&<span className="import-filename">{fileName}</span>}</div>
