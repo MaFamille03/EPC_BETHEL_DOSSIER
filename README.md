@@ -1,14 +1,14 @@
 # EPC BETHEL — Application de gestion scolaire
 
 **Établissement :** EPC BETHEL ASSEMBLÉES DE DIEU JEAN FOLLY  
-**Version courante :** 1.9.8  
+**Version courante :** 1.10.5  
 **Stack :** Next.js 15, React 19, TypeScript, Supabase/PostgreSQL
 
 ## État de livraison
 
 EPC BETHEL est une base applicative avancée, mais elle **n’est pas certifiée prête pour la production**. Les dépendances n’ont pas pu être installées dans l’environnement de préparation, car le registre npm a renvoyé `EAI_AGAIN`. Le `typecheck`, la compilation Next.js, les migrations sur une base Supabase réelle et les tests de bout en bout restent donc à valider dans un environnement configuré.
 
-Les contrôles hors ligne actuels comprennent `npm run preflight` et **19 tests hors ligne** via `npm run test:release`. Ils contrôlent la structure et certains invariants du code, sans remplacer la compilation ou les tests réels.
+Les contrôles hors ligne actuels comprennent `npm run preflight` et **19 tests hors ligne** via `npm run test:release`. La livraison ajoute le module Notes et bulletins (migration 016) et le rapprochement bancaire transactionnel (migration 017). Ces contrôles structurels ne remplacent pas la compilation ou les tests réels sur Supabase.
 
 ## Fonctionnalités incluses
 
@@ -86,6 +86,8 @@ MS, GSA, GSB, CP1 A/B, CP2 A/B, CE1 A/B, CE2 A/B, CM1 A/B et CM2 A/B.
 ## Contrôles hors ligne et limites
 
 - `npm run test:release` : **19 tests** de cohérence et de pré-livraison, sans accès réseau ou Supabase.
+- Appliquer `supabase/migrations/016_notes_bulletins.sql` pour activer la saisie des notes.
+- Appliquer `supabase/migrations/017_bank_reconciliation_workflow.sql` pour activer le rapprochement bancaire sécurisé.
 - `npm run preflight` : contrôle de la structure, des imports locaux, des migrations, des tables/RPC référencées et de certains points de protection des secrets.
 - Les tests de barre supérieure vérifient la recherche rapide, les menus, la fermeture par clic extérieur et Échap ; la zone de notifications indique explicitement lorsqu’aucune source de notifications n’est connectée.
 - Le fichier `tsconfig.tsbuildinfo` est un artefact généré et n’est pas livré dans l’archive source.

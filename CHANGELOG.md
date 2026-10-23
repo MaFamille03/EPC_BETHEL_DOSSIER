@@ -1,3 +1,12 @@
+# Journal des versions — EPC BETHEL
+
+## 1.10.5 — Organisation du menu et consolidation de trésorerie
+- Organisation de la navigation en cinq rubriques principales conformément au cahier des charges.
+- Raccordement des entrées financières au module de trésorerie existant.
+- Module Notes et bulletins : saisie des notes, calcul de moyennes pondérées et export CSV après migration 016.
+- Module Banque : import CSV de relevé, propositions de rapprochement et validation transactionnelle après migration 017.
+- Contrôles de rapprochement empêchant les doublons et vérifiant compte, montant, sens et validation du mouvement.
+
 ## 1.9.7 — Harmonisation de la charte graphique officielle
 
 - Palette centrale alignée sur le logo de l’établissement : vert `#0C6900`, orange `#FF6600`, violet `#802872` et blanc.
@@ -22,7 +31,6 @@
 - Augmentation modérée de la taille des textes de l’interface.
 - Le rôle applicatif continue d’être déterminé côté base de données, jamais depuis le formulaire.
 
-# Journal des versions — EPC BETHEL
 
 ## 1.9.4 — Étape 9 : cohérence d’interface et hygiène de livraison
 

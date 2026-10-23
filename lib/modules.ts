@@ -3,6 +3,7 @@ import {
   Users,
   GraduationCap,
   Wallet,
+  ArrowLeftRight,
   ReceiptText,
   ShoppingCart,
   Package,
@@ -22,35 +23,40 @@ export type Module = {
 };
 
 export const navigation = [
-  { label: 'Vue générale', items: [{ key: 'dashboard', title: 'Tableau de bord', icon: LayoutDashboard }] },
+  {
+    label: 'Vue générale',
+    items: [
+      { key: 'dashboard', title: 'Tableau de bord', icon: LayoutDashboard },
+      { key: 'rapports', title: 'Rapports', icon: BarChart3 },
+    ],
+  },
   {
     label: 'Gestion scolaire',
     items: [
-      { key: 'eleves', title: 'Élèves', icon: Users },
-      { key: 'inscriptions', title: 'Inscriptions', icon: GraduationCap },
-      { key: 'scolarite', title: 'Frais scolaires', icon: ReceiptText },
+      { key: 'eleves', title: 'Gestion des élèves', icon: Users },
+      { key: 'scolarite', title: 'Finance scolaire', icon: ReceiptText },
+      { key: 'notes-bulletins', title: 'Notes et bulletins', icon: GraduationCap },
     ],
   },
   {
     label: 'Finances',
     items: [
-      { key: 'paiements', title: 'Encaissements & reçus', icon: ReceiptText },
-      { key: 'tresorerie', title: 'Trésorerie', icon: Wallet },
-      { key: 'depenses', title: 'Dépenses', icon: ReceiptText },
-      { key: 'achats', title: 'Achats & fournisseurs', icon: ShoppingCart },
+      { key: 'caisse-mobile-money', title: 'Caisse et comptes Mobile Money', icon: Wallet },
+      { key: 'banque', title: 'Banque', icon: Wallet },
+      { key: 'transferts-internes', title: 'Transferts internes', icon: ArrowLeftRight },
+      { key: 'journal-tresorerie', title: 'Journal de trésorerie (historique)', icon: ReceiptText },
     ],
   },
   {
     label: 'Établissement',
     items: [
       { key: 'patrimoine', title: 'Patrimoine', icon: Package },
-      { key: 'rapports', title: 'Rapports', icon: BarChart3 },
     ],
   },
   {
     label: 'Administration',
     items: [
-      { key: 'utilisateurs', title: 'Utilisateurs & rôles', icon: ShieldCheck },
+      { key: 'utilisateurs', title: 'Utilisateurs et rôles', icon: ShieldCheck },
       { key: 'parametres', title: 'Paramètres', icon: Settings },
     ],
   },
@@ -59,9 +65,16 @@ export const navigation = [
 // Ce fichier ne contient volontairement aucun faux dossier d'élève ni mouvement financier.
 // Les tableaux affichent uniquement les données chargées depuis le système.
 export const modules: Record<string, Module> = {
+  'notes-bulletins': {
+    key: 'notes-bulletins',
+    title: 'Notes et bulletins',
+    description: 'Cette fonctionnalité doit être raccordée aux données scolaires existantes avant de pouvoir saisir ou publier des notes et des bulletins.',
+    icon: GraduationCap,
+    columns: ['Élève', 'Classe', 'Matière', 'Évaluation', 'Note', 'Période'],
+  },
   eleves: {
     key: 'eleves',
-    title: 'Élèves',
+    title: 'Gestion des élèves',
     description: 'Consultez et gérez les dossiers des élèves de l’établissement.',
     icon: Users,
     table: 'students',
@@ -77,7 +90,7 @@ export const modules: Record<string, Module> = {
   },
   scolarite: {
     key: 'scolarite',
-    title: 'Frais scolaires',
+    title: 'Finance scolaire',
     description: 'Scolarité en six versements, frais d’inscription, frais annexes et concessions.',
     icon: ReceiptText,
     table: 'student_charges',
@@ -146,3 +159,9 @@ export const modules: Record<string, Module> = {
     columns: ['Paramètre', 'Valeur actuelle', 'Action'],
   },
 };
+
+// Les quatre entrées financières partagent le moteur de trésorerie existant.
+modules['caisse-mobile-money'] = { ...modules.tresorerie, key: 'caisse-mobile-money', title: 'Caisse et comptes Mobile Money' };
+modules.banque = { ...modules.tresorerie, key: 'banque', title: 'Banque' };
+modules['transferts-internes'] = { ...modules.tresorerie, key: 'transferts-internes', title: 'Transferts internes' };
+modules['journal-tresorerie'] = { ...modules.tresorerie, key: 'journal-tresorerie', title: 'Journal de trésorerie (historique)' };
