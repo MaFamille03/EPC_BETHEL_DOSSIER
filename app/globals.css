@@ -548,7 +548,7 @@ input, select, textarea, button { max-width:100%; }
 @media (max-width: 620px) { .student-detail-footer { align-items:stretch; } .student-detail-shortcuts, .student-detail-footer-actions { width:100%; margin-right:0; } .student-detail-shortcuts .button, .student-detail-footer-actions .button { flex:1; white-space:normal; } .student-detail-footer-actions { justify-content:flex-end; } }
 
 
-/* EPC BETHEL 1.15.1 — barre Finance scolaire alignée, boutons uniformes */
+/* EPC BETHEL 1.15.2 — correction du registre des frais et synthèse compacte */
 .finance-page-heading{align-items:flex-start;gap:20px;flex-wrap:wrap}
 .finance-page-heading>div:first-child{flex:1 1 245px;min-width:220px}
 .finance-action-layout{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));align-items:stretch;flex:1 1 760px;min-width:0;gap:8px}
@@ -560,11 +560,11 @@ input, select, textarea, button { max-width:100%; }
 .installment-help>svg{flex:0 0 auto;margin-top:2px;color:var(--green-700)}
 .installment-help strong{display:block;font-size:12px;line-height:1.4}
 .installment-help p{margin:4px 0 0;color:#6c7d71;font-size:11px;line-height:1.55}
-.finance-summary-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 18px}
-.finance-summary-card{min-width:0;border:1px solid var(--line);background:#fff;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 12px rgba(12,105,0,.035)}
+.finance-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 14px}
+.finance-summary-card{min-width:0;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:5px;box-shadow:0 3px 12px rgba(12,105,0,.035)}
 .finance-summary-card>span{display:flex;align-items:center;gap:8px;color:#718078;font-size:12px}
 .finance-summary-card>span svg{color:var(--green-700);flex:0 0 auto}
-.finance-summary-card strong{font-size:21px;line-height:1.25;overflow-wrap:anywhere;color:#203a29}
+.finance-summary-card strong{font-size:19px;line-height:1.25;overflow-wrap:anywhere;color:#203a29}
 .finance-summary-card small{color:#8a958e;font-size:10px;line-height:1.5}
 .finance-summary-overdue small{color:#a45a30}
 .finance-summary-note{grid-column:1/-1;margin:-1px 3px 0;color:var(--muted);font-size:10px;line-height:1.5}
@@ -581,4 +581,4 @@ input, select, textarea, button { max-width:100%; }
 .fee-detail-summary strong{font-size:13px;color:#294934;overflow-wrap:anywhere}
 .finance-filter-bar+div.table-scroll{border-top:0}
 @media(max-width:1180px){.finance-page-heading{align-items:flex-start;flex-direction:column}.finance-page-heading>div:first-child{width:100%}.finance-action-layout{width:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,155px),1fr));flex:1 1 auto}.finance-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:640px){.finance-action-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}.finance-action-layout .button{width:100%;height:42px;min-height:42px;padding:0 8px;font-size:10px;white-space:normal;text-align:center;line-height:1.15}.finance-action-layout .button svg{width:14px;height:14px}.installment-help{padding:10px}.finance-summary-grid{grid-template-columns:1fr;gap:9px}.finance-summary-card{padding:13px}.finance-summary-card strong{font-size:19px}.finance-filter-bar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:12px;gap:9px}.finance-filter-bar label{min-width:0}.finance-filter-bar label select{font-size:10px;padding:0 7px}.finance-reset-filters{grid-column:1/-1;width:100%}.fee-detail-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.fee-detail-summary>div{padding:10px}.fee-detail-body{grid-template-columns:1fr}.fee-detail-modal{max-height:92vh}}
+@media(max-width:640px){.finance-action-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}.finance-action-layout .button{width:100%;height:42px;min-height:42px;padding:0 8px;font-size:10px;white-space:normal;text-align:center;line-height:1.15}.finance-action-layout .button svg{width:14px;height:14px}.installment-help{padding:10px}.finance-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.finance-summary-card{padding:10px;gap:5px}.finance-summary-card>span{font-size:11px}.finance-summary-card strong{font-size:16px}.finance-summary-card small{font-size:9px}.finance-filter-bar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:12px;gap:9px}.finance-filter-bar label{min-width:0}.finance-filter-bar label select{font-size:10px;padding:0 7px}.finance-reset-filters{grid-column:1/-1;width:100%}.fee-detail-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.fee-detail-summary>div{padding:10px}.fee-detail-body{grid-template-columns:1fr}.fee-detail-modal{max-height:92vh}}

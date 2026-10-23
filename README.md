@@ -1,14 +1,14 @@
 # EPC BETHEL — Application de gestion scolaire
 
 **Établissement :** EPC BETHEL ASSEMBLÉES DE DIEU JEAN FOLLY  
-**Version courante :** 1.15.1  
+**Version courante :** 1.15.2  
 **Stack :** Next.js 15, React 19, TypeScript, Supabase/PostgreSQL
 
 ## État de livraison
 
 EPC BETHEL est une base applicative avancée, mais elle **n’est pas certifiée prête pour la production**. Les dépendances n’ont pas pu être installées dans l’environnement de préparation, car le registre npm a renvoyé `EAI_AGAIN`. Le `typecheck`, la compilation Next.js, les migrations sur une base Supabase réelle et les tests de bout en bout restent donc à valider dans un environnement configuré.
 
-Les contrôles hors ligne actuels comprennent `npm run preflight` et **27 tests hors ligne** via `npm run test:release`. La livraison comprend les améliorations Finance scolaire V1.15.1 (libellés de réduction clarifiés, actions uniformes, indicateurs et échéanciers de 1 à 6 versements pour la scolarité et l’inscription), le module Notes et bulletins (migrations 016 et 018), le rapprochement bancaire transactionnel (migration 017) et les améliorations de Gestion des élèves en V1.13.0 et la fenêtre de formulaire élève élargie en V1.13.1 et les raccourcis directs vers Finance scolaire et Notes et bulletins depuis le dossier individuel en V1.13.2. Elle inclut le modèle Excel téléchargeable. Ces contrôles structurels ne remplacent pas la compilation ou les tests réels sur Supabase.
+Les contrôles hors ligne actuels comprennent `npm run preflight` et **27 tests hors ligne** via `npm run test:release`. La livraison comprend les améliorations Finance scolaire V1.15.2 (correction de l’ambiguïté SQL du registre, synthèse compacte en grille 2 × 2) et V1.15.1 (libellés de réduction clarifiés, actions uniformes, indicateurs et échéanciers de 1 à 6 versements pour la scolarité et l’inscription), le module Notes et bulletins (migrations 016 et 018), le rapprochement bancaire transactionnel (migration 017) et les améliorations de Gestion des élèves en V1.13.0 et la fenêtre de formulaire élève élargie en V1.13.1 et les raccourcis directs vers Finance scolaire et Notes et bulletins depuis le dossier individuel en V1.13.2. Elle inclut le modèle Excel téléchargeable. Ces contrôles structurels ne remplacent pas la compilation ou les tests réels sur Supabase.
 
 ## Fonctionnalités incluses
 
@@ -19,7 +19,7 @@ Les contrôles hors ligne actuels comprennent `npm run preflight` et **27 tests 
 - Achats, fournisseurs, réceptions, inventaire et maintenance du patrimoine.
 - Rapports de gestion, filtres, exports et impressions selon les modules.
 - Administration des accès : administrateur principal, observateur et modification.
-- Dix-neuf migrations SQL de référence, `001` à `019`.
+- Vingt migrations SQL de référence, `001` à `020`.
 
 ## Prérequis et installation locale
 
@@ -63,7 +63,7 @@ Le typecheck et le build doivent réussir avant tout déploiement.
 ## Migrations Supabase
 
 1. Créez un projet Supabase de développement et sauvegardez la base avant toute modification du schéma.
-2. Exécutez une migration à la fois, dans cet ordre : `001` à `009`, puis `010_add_observateur_role.sql`, `011_auth_admin_and_observer_access.sql`, `012_school_management_completion.sql`, `013_financial_integrity_reporting.sql` et `014_management_reports_asset_integration.sql`.
+2. Exécutez une migration à la fois, dans l’ordre numérique : `001` à `009`, puis `010_add_observateur_role.sql`, `011_auth_admin_and_observer_access.sql`, `012_school_management_completion.sql`, `013_financial_integrity_reporting.sql`, `014_management_reports_asset_integration.sql`, `015_admin_registration_code_settings.sql`, `016_notes_bulletins.sql`, `017_bank_reconciliation_workflow.sql`, `018_notes_bulletins_workflows.sql`, `019_finance_scolaire_reductions_echeanciers.sql` et enfin `020_fix_school_fee_ledger_ambiguity.sql`. Pour un projet déjà migré jusqu’à 019, appliquez uniquement la migration corrective 020 après sauvegarde et contrôle du statut des migrations.
 3. Vérifiez le résultat après chaque fichier. Au premier échec, arrêtez-vous et examinez l’état du schéma ; ne relancez pas aveuglément une migration partiellement exécutée.
 4. Configurez Supabase Auth pour la connexion par mot de passe et les URL autorisées. La création initiale de compte passe par une route serveur protégée par EPC_BETHEL_REGISTRATION_CODE et SUPABASE_SERVICE_ROLE_KEY.
 5. Vérifiez l’identité et la confirmation de `minnhindje@gmail.com`. Cette adresse est conçue comme administrateur principal. Ne permettez jamais à un utilisateur public de s’attribuer le rôle administrateur à partir d’un champ de formulaire.

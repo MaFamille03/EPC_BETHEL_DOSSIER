@@ -1,5 +1,11 @@
 # Journal des versions — EPC BETHEL
 
+## 1.15.2 — Correction du chargement des frais et synthèse 2 × 2
+
+- Correction de l'ambiguïté PostgreSQL `gross_amount` dans `get_school_fee_ledger_filtered` en qualifiant explicitement les colonnes du CTE. La nouvelle migration `020_fix_school_fee_ledger_ambiguity.sql` remplace la fonction sans changer son contrat RPC ni les règles de calcul.
+- Les quatre indicateurs « Total net facturé », « Réductions appliquées », « Paiements validés » et « Reste à recouvrer » sont affichés en grille de deux colonnes et deux lignes, y compris sur petit écran, avec des cartes plus compactes.
+- Contrôles statiques, tests hors ligne, intégrité de l'archive et présence de la migration corrective vérifiés. La migration et les calculs doivent encore être exécutés et testés en préproduction Supabase.
+
 ## 1.15.1 — Finance scolaire plus lisible
 
 - Les libellés visibles utilisent « réduction » et « demandes de réduction » plutôt que « concession », sans renommer les objets SQL afin de préserver la compatibilité avec Supabase.

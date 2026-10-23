@@ -39,8 +39,8 @@ test('la configuration de paquet expose les commandes requises', () => {
 test('les migrations SQL sont présentes et numérotées sans trou', () => {
   const directory = path.join(root, 'supabase/migrations');
   const files = fs.readdirSync(directory).filter((name) => /^\d{3}_.+\.sql$/.test(name)).sort();
-  assert.equal(files.length, 19);
-  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 19 }, (_, i) => i + 1));
+  assert.equal(files.length, 20);
+  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 20 }, (_, i) => i + 1));
 });
 
 test('les routes serveur nécessaires au parcours des comptes existent', () => {
@@ -223,10 +223,10 @@ test('Finance scolaire présente les réductions et les échéanciers variables'
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.15.1');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.15\.1/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.15\.1/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.15\.1/m);
+  assert.equal(pkg.version, '1.15.2');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.15\.2/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.15\.2/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.15\.2/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
@@ -299,7 +299,7 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.15.1');
+  assert.equal(packageInfo.version, '1.15.2');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
   assert.match(source, /Échéancier de \{installmentCount\} versement/);
@@ -307,6 +307,10 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   assert.match(source, /create_installment_student_charge/);
   assert.match(migration, /p_fee_code not in \('SCOLARITE','INSCRIPTION'\)/);
   assert.match(migration, /cardinality\(p_due_dates\) > 6/);
+  const fixMigration = read('supabase/migrations/020_fix_school_fee_ledger_ambiguity.sql');
+  assert.match(fixMigration, /charge_rows\.gross_amount>0 and charge_rows\.amount_due=0/);
+  assert.match(fixMigration, /classified\.payment_status=p_payment_status/);
+  assert.match(css, /finance-summary-grid\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(css, /finance-action-layout \.button\{width:100%;height:44px;min-height:44px/);
   assert.match(css, /finance-action-layout \.button\{width:100%;height:42px;min-height:42px/);
   assert.match(css, /installment-help/);

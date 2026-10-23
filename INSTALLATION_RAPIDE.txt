@@ -1,4 +1,4 @@
-EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.15.1)
+EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.15.2)
 
 IMPORTANT
 Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pré-livraison). La compilation complète et les migrations n'ont pas encore été validées sur un projet Supabase réel. Commence toujours par un projet de développement et une sauvegarde.
@@ -37,6 +37,7 @@ Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pr
    017_bank_reconciliation_workflow.sql
    018_notes_bulletins_workflows.sql
    019_finance_scolaire_reductions_echeanciers.sql
+   020_fix_school_fee_ledger_ambiguity.sql
 
 8. Dans Supabase Auth, configurer le fournisseur e-mail, les paramètres de connexion par mot de passe, les URL autorisées et les redirections de l'application. Tester la création de compte avec code d'accès, puis la connexion par adresse e-mail et mot de passe depuis /login et /register. Le fonctionnement réel dépend de la configuration e-mail et des URL du projet Supabase.
 
