@@ -1,5 +1,32 @@
 # Journal des versions — EPC BETHEL
 
+## 1.15.1 — Finance scolaire plus lisible
+
+- Les libellés visibles utilisent « réduction » et « demandes de réduction » plutôt que « concession », sans renommer les objets SQL afin de préserver la compatibilité avec Supabase.
+- La barre d’action Finance scolaire utilise une grille responsive : boutons alignés et de même hauteur (44 px sur grand écran, 42 px sur mobile), avec des libellés plus courts et une répartition plus claire entre actions principales et outils.
+- L’écran de création explique que les frais de scolarité et d’inscription/réinscription peuvent être répartis de 1 à 6 versements et que les dates d’échéance doivent être chronologiques.
+- Une aide visuelle dans le formulaire clarifie la ventilation des montants et le traitement d’une réduction approuvée ; les calculs et l’écriture des frais restent effectués par la base de données.
+- Ajout d’un test de pré-livraison dédié à la compréhension des libellés, au nombre de versements et à l’uniformité des boutons. Build complet et essais Supabase réels restent à effectuer en préproduction.
+
+## 1.15.0 — Clarification de Finance scolaire
+
+- Le vocabulaire visible de l’application privilégie « réduction » et « réductions et aides » plutôt que « concession » ; les noms techniques des tables et RPC restent inchangés pour préserver la compatibilité Supabase.
+- Réorganisation des actions Finance scolaire en deux groupes (actions principales et outils), avec une hauteur homogène de 44 px sur ordinateur et 42 px sur mobile. Ajout d’un accès « Demander une réduction » dans l’écran de suivi des réductions.
+- Réduction du terme ambigu dans les raccourcis du tableau de bord.
+- La création des frais de scolarité et d’inscription/réinscription conserve un échéancier variable de 1 à 6 versements, avec une date par versement et contrôle de l’ordre chronologique. Les frais annexes et autres restent à paiement unique.
+- Les quatre indicateurs de synthèse s’appuient sur les agrégats SQL complets, et les filtres permettent de cibler l’année, la classe, la nature des frais et la situation de paiement.
+- Tests hors ligne mis à jour pour vérifier les actions réorganisées, le vocabulaire visible, le badge supprimé et les versements variables. L’installation des dépendances, le build complet et les essais sur Supabase de préproduction restent requis avant production.
+
+## 1.14.0 — Finance scolaire clarifiée et échéanciers flexibles
+
+- Remplacement du libellé « concession » dans les textes visibles par « réduction » ou « réduction et aide », plus compréhensible pour l’équipe de gestion. Le nom technique des tables et RPC reste inchangé pour préserver la base existante.
+- Suppression du badge statique « 6 » à côté de Finance scolaire : il ne représentait aucune donnée réelle.
+- Harmonisation des boutons de la barre d’action Finance scolaire (hauteur commune, retours à la ligne maîtrisés et disposition adaptée aux petits écrans).
+- Clarification de la synthèse financière : montant net dû, réductions appliquées, paiements validés et reste à recouvrer dont les retards.
+- Frais de scolarité et frais d’inscription/réinscription peuvent être planifiés de 1 à 6 versements avec dates d’échéance contrôlées. Les frais annexes et autres frais restent en paiement unique.
+- Ajout de fonctions RPC pour les filtres financiers, la synthèse et le détail des versements ; l’export de Finance scolaire récupère toutes les lignes correspondant aux filtres, au-delà des 100 lignes visibles par page.
+- La migration 019 doit être appliquée et testée sur Supabase de préproduction avant déploiement. Compilation complète, typecheck et essais sur Supabase réel non validés dans cet environnement.
+
 ## 1.13.2 — Raccourcis depuis le dossier élève
 
 - Le nom et les prénoms de chaque élève sont désormais cliquables dans la liste et ouvrent le dossier individuel avec les coordonnées et l’historique scolaire.

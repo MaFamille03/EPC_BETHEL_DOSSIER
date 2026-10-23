@@ -91,7 +91,7 @@ export const modules: Record<string, Module> = {
   scolarite: {
     key: 'scolarite',
     title: 'Finance scolaire',
-    description: 'Scolarité en six versements, frais d’inscription, frais annexes et concessions.',
+    description: 'Gérez les frais de scolarité et d’inscription, leurs versements de 1 à 6 échéances, les frais annexes et les réductions accordées.',
     icon: ReceiptText,
     table: 'student_charges',
     columns: ['Élève', 'Nature des frais', 'Montant dû', 'Déjà payé', 'Reste à payer', 'Situation'],

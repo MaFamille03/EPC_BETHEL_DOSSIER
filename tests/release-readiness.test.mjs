@@ -39,8 +39,8 @@ test('la configuration de paquet expose les commandes requises', () => {
 test('les migrations SQL sont présentes et numérotées sans trou', () => {
   const directory = path.join(root, 'supabase/migrations');
   const files = fs.readdirSync(directory).filter((name) => /^\d{3}_.+\.sql$/.test(name)).sort();
-  assert.equal(files.length, 18);
-  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 18 }, (_, i) => i + 1));
+  assert.equal(files.length, 19);
+  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 19 }, (_, i) => i + 1));
 });
 
 test('les routes serveur nécessaires au parcours des comptes existent', () => {
@@ -168,7 +168,7 @@ test('les tableaux scolaires démarrent vides et restent vides hors connexion', 
   assert.ok(exists('supabase/migrations/017_bank_reconciliation_workflow.sql'));
   assert.match(source, /useState\(50\)/);
   assert.match(source, /student-list-pagination/);
-  assert.match(source, /section!==['\"]eleves['\"]&&<div className=['\"]metric-strip['\"]/);
+  assert.match(source, /section!=='eleves'&&section!=='scolarite'&&<div className=['\"]metric-strip['\"]/);
   const studentImport = read('components/student-import.tsx');
   assert.match(studentImport, /student-template-download/);
   assert.match(studentImport, /Télécharger les erreurs CSV/);
@@ -192,21 +192,58 @@ test('le mode aperçu explique qu’aucune donnée réelle n’est chargée et b
   const shell = read('components/app-shell.tsx');
   const modulePage = read('components/module-page.tsx');
   assert.match(shell, /Aucune donnée réelle n’est chargée et les modifications sont désactivées/);
-  assert.match(modulePage, /!isReadOnly&&connected&&!\(section==='scolarite'&&concessionView\)/);
-  assert.match(modulePage, /Aucune donnée réelle chargée/);
+  assert.match(modulePage, /showForm&&!isReadOnly/);
+  assert.match(modulePage, /connected&&!isReadOnly&&!concessionView/);
+  assert.match(modulePage, /La scolarité et l’inscription\/réinscription peuvent être payées en 1 à 6 versements/);
 });
 
 
+test('Finance scolaire présente les réductions et les échéanciers variables', () => {
+  const source = read('components/module-page.tsx');
+  const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
+  const shell = read('components/app-shell.tsx');
+  const modules = read('lib/modules.ts');
+  assert.match(source, /Gérer les réductions/);
+  assert.match(source, /Nombre de versements/);
+  assert.match(source, /create_installment_student_charge/);
+  assert.match(source, /Finance scolaire.*Enregistrer un paiement/s);
+  assert.match(source, /finance-action-layout/);
+  assert.match(migration, /cardinality\(p_due_dates\) > 6/);
+  assert.match(migration, /p_fee_code not in \('SCOLARITE','INSCRIPTION'\)/);
+  assert.match(migration, /get_school_fee_summary/);
+  assert.match(migration, /get_school_fee_ledger_filtered/);
+  assert.doesNotMatch(shell, /nav-count\">6/);
+  assert.match(modules, /versements de 1 à 6 échéances.*réductions accordées/);
+  assert.match(source, /Demander une réduction/);
+  assert.match(source, /Inscription \/ réinscription/);
+  assert.match(source, /Scolarité annuelle/);
+  assert.match(read('app/globals.css'), /finance-action-layout \.button\{width:100%;height:44px;min-height:44px/);
+  assert.doesNotMatch(read('app/page.tsx'), /échéances et concessions/i);
+});
+
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.13.2');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.13\.2/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.13\.2/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.13\.2/m);
+  assert.equal(pkg.version, '1.15.1');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.15\.1/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.15\.1/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.15\.1/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
 
+
+
+test('Finance scolaire regroupe les actions et explique clairement les réductions', () => {
+  const source = read('components/module-page.tsx');
+  const css = read('app/globals.css');
+  assert.match(source, /finance-action-group finance-action-main/);
+  assert.match(source, /finance-action-group finance-action-tools/);
+  assert.match(source, /Demander une réduction/);
+  assert.match(source, /Demande de réduction transmise/);
+  assert.match(source, /Réductions appliquées/);
+  assert.match(css, /finance-action-layout/);
+  assert.match(css, /height:42px;min-height:42px/);
+});
 
 test('le dossier élève expose les raccourcis Finance scolaire et Notes et bulletins avec présélection', () => {
   const modulePage = read('components/module-page.tsx');
@@ -257,11 +294,30 @@ test('le guide de déploiement Notes exige une migration 018 et des essais en pr
   assert.match(guide, /Les notes manquantes et les absences ne sont pas automatiquement converties en zéro/);
 });
 
+test('Finance scolaire explique les versements et garde des boutons uniformes', () => {
+  const source = read('components/module-page.tsx');
+  const css = read('app/globals.css');
+  const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
+  const packageInfo = JSON.parse(read('package.json'));
+  assert.equal(packageInfo.version, '1.15.1');
+  assert.match(source, /Demandes de réduction/);
+  assert.match(source, /Gérer les réductions/);
+  assert.match(source, /Échéancier de \{installmentCount\} versement/);
+  assert.match(source, /Nombre de versements/);
+  assert.match(source, /create_installment_student_charge/);
+  assert.match(migration, /p_fee_code not in \('SCOLARITE','INSCRIPTION'\)/);
+  assert.match(migration, /cardinality\(p_due_dates\) > 6/);
+  assert.match(css, /finance-action-layout \.button\{width:100%;height:44px;min-height:44px/);
+  assert.match(css, /finance-action-layout \.button\{width:100%;height:42px;min-height:42px/);
+  assert.match(css, /installment-help/);
+  assert.doesNotMatch(source, />\s*Concession(s)?\s*</i);
+});
+
 test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 24, 'la suite de contrôle doit contenir exactement 24 tests');
-  assert.match(read('README.md'), /24 tests hors ligne/);
+  assert.equal(count, 27, 'la suite de contrôle doit contenir exactement 27 tests');
+  assert.match(read('README.md'), /27 tests hors ligne/);
   assert.match(read('CHANGELOG.md'), /23 tests hors ligne/);
   assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);
   assert.doesNotMatch(read('README.md'), /12 contrôles structurels hors ligne/);

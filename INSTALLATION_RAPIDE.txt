@@ -1,4 +1,4 @@
-EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.13.2)
+EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.15.1)
 
 IMPORTANT
 Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pré-livraison). La compilation complète et les migrations n'ont pas encore été validées sur un projet Supabase réel. Commence toujours par un projet de développement et une sauvegarde.
@@ -32,6 +32,11 @@ Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pr
    012_school_management_completion.sql
    013_financial_integrity_reporting.sql
    014_management_reports_asset_integration.sql
+   015_admin_registration_code_settings.sql
+   016_notes_bulletins.sql
+   017_bank_reconciliation_workflow.sql
+   018_notes_bulletins_workflows.sql
+   019_finance_scolaire_reductions_echeanciers.sql
 
 8. Dans Supabase Auth, configurer le fournisseur e-mail, les paramètres de connexion par mot de passe, les URL autorisées et les redirections de l'application. Tester la création de compte avec code d'accès, puis la connexion par adresse e-mail et mot de passe depuis /login et /register. Le fonctionnement réel dépend de la configuration e-mail et des URL du projet Supabase.
 
@@ -63,7 +68,7 @@ FONCTIONNALITÉS CONCERNÉES PAR L’ÉTAPE 5
 
 SCÉNARIOS À TESTER AVANT TOUTE UTILISATION RÉELLE
 - Connexion OTP, invitation, inscription par code et tests des profils administrateur, modification et observateur.
-- Frais annuels, réduction/concession, six échéances, paiement partiel, paiement complet et refus d'un trop-perçu.
+- Frais annuels, réductions, échéanciers de 1 à 6 versements, paiement partiel, paiement complet et refus d'un trop-perçu.
 - Dépense en brouillon, validation avec solde suffisant/insuffisant, annulation et contrepassation.
 - Transfert caisse → banque : les deux mouvements doivent être liés et le total de trésorerie ne doit pas changer.
 - Compte dont la date d'ouverture est future et refus des opérations futures.

@@ -6,7 +6,7 @@
 @media(max-width:640px){.topbar{padding:0 14px}.breadcrumb{font-size:10px}.breadcrumb span{margin:0 5px}.topbar-actions{gap:7px}.global-search{width:34px;padding:0;justify-content:center;border:0;background:transparent}.global-search span,.global-search kbd{display:none}.topbar-divider,.mini-profile>svg{display:none}.mini-profile{display:none}.page-content{padding:20px 13px 12px}.page-heading{align-items:flex-start;flex-direction:column;margin-bottom:20px;gap:15px}.page-heading h1{font-size:24px}.page-heading p{font-size:11px}.heading-actions{width:100%;flex-wrap:wrap}.heading-actions .button{flex:1}.welcome-card{padding:23px 20px;min-height:230px;margin-bottom:25px}.welcome-copy{max-width:100%}.welcome-copy h2{font-size:24px}.welcome-copy p{max-width:270px;font-size:10px}.welcome-art{position:absolute;right:-45px;bottom:-42px;opacity:.23;margin:0;transform:scale(.85)}.welcome-orb.orb-one{right:-190px}.section-heading h2{font-size:14px}.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:18px}.stat-card{padding:13px 12px;min-height:151px}.stat-top{margin-bottom:12px}.stat-icon{height:31px;width:31px}.stat-change{font-size:8px;padding:4px}.stat-label{font-size:10px}.stat-value{font-size:21px}.stat-value small{font-size:9px}.stat-bottom{font-size:8px;flex-wrap:wrap}.stat-bottom strong{font-size:8px}.stat-spark{width:50px;right:9px;bottom:38px;opacity:.4}.section-heading{align-items:flex-start;gap:8px}.select-button{font-size:9px;padding:7px}.revenue-panel,.class-panel,.recent-panel,.tasks-panel{padding:15px 13px}.panel-heading h2{font-size:13px}.revenue-summary{gap:8px;flex-wrap:wrap}.revenue-summary>strong{font-size:21px}.revenue-summary>span{font-size:9px}.revenue-summary em{font-size:8px}.chart-area{height:160px}.chart-y{width:27px;font-size:8px}.bar-set{gap:4px}.bar{width:min(24px,75%)}.chart-note{display:none}.donut-wrap{gap:20px;padding:23px 0}.donut{width:125px;height:125px}.donut:before{inset:13px}.donut-center strong{font-size:21px}.donut-legend{gap:13px;min-width:100px}.recent-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:9px}.recent-person{grid-column:2;grid-row:1}.recent-date{grid-column:2;grid-row:2;margin-top:-5px}.recent-amount{grid-column:3;grid-row:1/3;font-size:9px}.person-avatar{grid-column:1;grid-row:1/3}.app-footer{font-size:8px;gap:10px;line-height:1.5}.app-footer span:last-child{text-align:right}.metric-strip{gap:7px}.metric-mini{padding:11px 9px}.metric-mini>span{font-size:8px}.metric-mini>strong{font-size:15px}.metric-mini>small{font-size:8px}.panel-toolbar{align-items:flex-start;flex-direction:column;padding:15px 13px}.table-actions{width:100%;gap:6px}.table-search{flex:1;min-width:0}.table-search input{font-size:10px}.button-icon-text{font-size:9px}.table-footer{padding:12px;font-size:9px}.modal-body{grid-template-columns:1fr;padding:18px}.modal-header{padding:19px 18px 15px}.modal-footer{padding:13px 18px 18px}.login-page{display:block}.login-visual{display:none}.login-form-side{min-height:100vh;padding:65px 24px 70px;justify-content:center}.mobile-login-brand{display:flex;align-items:center;gap:10px;margin-bottom:44px}.mobile-login-brand strong{font-family:Manrope,sans-serif;font-size:15px;color:#193d29;letter-spacing:.04em}.login-welcome{margin-bottom:28px}.login-icon{margin-bottom:18px}.login-welcome h2{font-size:28px}.login-copyright{bottom:23px}.login-form-wrap{max-width:400px;width:100%}.login-security{line-height:1.5}}
 @media print{.sidebar,.topbar,.heading-actions,.demo-banner,.app-footer,.table-actions,.icon-button{display:none!important}.main-area{margin:0}.page-content{padding:0}.panel,.stat-card{box-shadow:none;break-inside:avoid}.table-scroll{overflow:visible}table{min-width:0}td,th{font-size:8pt;padding:8px}.page-heading{margin-bottom:14px}}
 
-/* Concessions : actions compactes et adaptables aux petits écrans. */
+/* Réductions scolaires : adaptations responsive du module Finance scolaire. */
 .row-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.row-actions .button{min-height:34px;padding:7px 10px;font-size:12px;white-space:nowrap}
 @media(max-width:640px){.row-actions{min-width:170px}.row-actions .button{flex:1}}
 
@@ -546,3 +546,39 @@ input, select, textarea, button { max-width:100%; }
 
 /* Raccourcis depuis le dossier individuel de l’élève */
 @media (max-width: 620px) { .student-detail-footer { align-items:stretch; } .student-detail-shortcuts, .student-detail-footer-actions { width:100%; margin-right:0; } .student-detail-shortcuts .button, .student-detail-footer-actions .button { flex:1; white-space:normal; } .student-detail-footer-actions { justify-content:flex-end; } }
+
+
+/* EPC BETHEL 1.15.1 — barre Finance scolaire alignée, boutons uniformes */
+.finance-page-heading{align-items:flex-start;gap:20px;flex-wrap:wrap}
+.finance-page-heading>div:first-child{flex:1 1 245px;min-width:220px}
+.finance-action-layout{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));align-items:stretch;flex:1 1 760px;min-width:0;gap:8px}
+.finance-action-group{display:contents}
+.finance-action-layout .button{width:100%;height:44px;min-height:44px;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:0 10px;font-size:11px;line-height:1;box-sizing:border-box}
+.finance-action-layout .button svg{flex:0 0 auto}
+.finance-action-layout .button:disabled{opacity:.65;cursor:wait}
+.installment-help{grid-column:1/-1;display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1px solid #dfeae1;background:#f7fbf7;border-radius:10px;color:#395845}
+.installment-help>svg{flex:0 0 auto;margin-top:2px;color:var(--green-700)}
+.installment-help strong{display:block;font-size:12px;line-height:1.4}
+.installment-help p{margin:4px 0 0;color:#6c7d71;font-size:11px;line-height:1.55}
+.finance-summary-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.finance-summary-card{min-width:0;border:1px solid var(--line);background:#fff;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 12px rgba(12,105,0,.035)}
+.finance-summary-card>span{display:flex;align-items:center;gap:8px;color:#718078;font-size:12px}
+.finance-summary-card>span svg{color:var(--green-700);flex:0 0 auto}
+.finance-summary-card strong{font-size:21px;line-height:1.25;overflow-wrap:anywhere;color:#203a29}
+.finance-summary-card small{color:#8a958e;font-size:10px;line-height:1.5}
+.finance-summary-overdue small{color:#a45a30}
+.finance-summary-note{grid-column:1/-1;margin:-1px 3px 0;color:var(--muted);font-size:10px;line-height:1.5}
+.finance-filter-bar{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;padding:14px 16px;background:#fbfdfb;border-bottom:1px solid var(--line)}
+.finance-filter-bar label{display:flex;flex-direction:column;gap:6px;min-width:145px;flex:1}
+.finance-filter-bar label>span{font-weight:700;font-size:10px;color:#7e8c82}
+.finance-filter-bar label select{width:100%;height:40px;border:1px solid #e0e8e1;border-radius:8px;background:#fff;color:#304138;padding:0 10px;font-size:11px}
+.finance-reset-filters{height:40px;min-height:40px;align-self:flex-end;white-space:nowrap}
+.fee-detail-button{height:34px;min-height:34px;padding:0 10px;font-size:10px;white-space:nowrap}
+.fee-detail-modal{width:min(930px,100%)}
+.fee-detail-summary{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.fee-detail-summary>div{min-width:0;display:flex;flex-direction:column;gap:7px;padding:12px;background:#f8fbf8;border:1px solid #e7eee7;border-radius:9px}
+.fee-detail-summary span{font-size:10px;color:#7b897f}
+.fee-detail-summary strong{font-size:13px;color:#294934;overflow-wrap:anywhere}
+.finance-filter-bar+div.table-scroll{border-top:0}
+@media(max-width:1180px){.finance-page-heading{align-items:flex-start;flex-direction:column}.finance-page-heading>div:first-child{width:100%}.finance-action-layout{width:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,155px),1fr));flex:1 1 auto}.finance-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.finance-action-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}.finance-action-layout .button{width:100%;height:42px;min-height:42px;padding:0 8px;font-size:10px;white-space:normal;text-align:center;line-height:1.15}.finance-action-layout .button svg{width:14px;height:14px}.installment-help{padding:10px}.finance-summary-grid{grid-template-columns:1fr;gap:9px}.finance-summary-card{padding:13px}.finance-summary-card strong{font-size:19px}.finance-filter-bar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:12px;gap:9px}.finance-filter-bar label{min-width:0}.finance-filter-bar label select{font-size:10px;padding:0 7px}.finance-reset-filters{grid-column:1/-1;width:100%}.fee-detail-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.fee-detail-summary>div{padding:10px}.fee-detail-body{grid-template-columns:1fr}.fee-detail-modal{max-height:92vh}}
