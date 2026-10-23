@@ -76,3 +76,8 @@ Ces commandes ne nécessitent pas de connexion Supabase mais ne remplacent pas l
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` ou `NEXT_PUBLIC_SUPABASE_ANON_KEY` : clé publique pour le navigateur et la validation des sessions. Les routes serveur acceptent également `SUPABASE_PUBLISHABLE_KEY` ou `SUPABASE_ANON_KEY`.
 - `SUPABASE_SECRET_KEY` ou `SUPABASE_SERVICE_ROLE_KEY` : clé serveur privée, jamais préfixée par `NEXT_PUBLIC_`.
 Le code d’accès d’inscription se définit désormais dans **Paramètres → Utilisateurs et autorisations** après connexion de `minnhindje@gmail.com`. Appliquer la migration `015_admin_registration_code_settings.sql` avant de l’utiliser. Après modification des variables Vercel, redéployer le projet.
+
+
+## Module Notes et bulletins — version 1.11.0
+
+Avant de déployer cette version, appliquer `supabase/migrations/018_notes_bulletins_workflows.sql` après les migrations 001 à 017 sur une base de préproduction sauvegardée. Vérifier la saisie collective, les statuts d’absence, les trois méthodes de calcul, la préparation des brouillons, la publication et l’impression PDF. Ne pas appliquer la migration directement en production sans validation préalable.

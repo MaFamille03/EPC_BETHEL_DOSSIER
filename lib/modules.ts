@@ -68,7 +68,7 @@ export const modules: Record<string, Module> = {
   'notes-bulletins': {
     key: 'notes-bulletins',
     title: 'Notes et bulletins',
-    description: 'Cette fonctionnalité doit être raccordée aux données scolaires existantes avant de pouvoir saisir ou publier des notes et des bulletins.',
+    description: 'Configurez les évaluations, saisissez les notes par classe, consultez les résultats individuels et préparez les bulletins trimestriels.',
     icon: GraduationCap,
     columns: ['Élève', 'Classe', 'Matière', 'Évaluation', 'Note', 'Période'],
   },

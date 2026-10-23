@@ -39,8 +39,8 @@ test('la configuration de paquet expose les commandes requises', () => {
 test('les migrations SQL sont présentes et numérotées sans trou', () => {
   const directory = path.join(root, 'supabase/migrations');
   const files = fs.readdirSync(directory).filter((name) => /^\d{3}_.+\.sql$/.test(name)).sort();
-  assert.equal(files.length, 17);
-  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 17 }, (_, i) => i + 1));
+  assert.equal(files.length, 18);
+  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 18 }, (_, i) => i + 1));
 });
 
 test('les routes serveur nécessaires au parcours des comptes existent', () => {
@@ -67,7 +67,7 @@ test('le code d’inscription se configure dans les paramètres et reste haché 
   assert.match(settingsRoute, /export\s+async\s+function\s+PUT/);
   assert.match(settingsRoute, /scryptSync/);
   assert.match(settingsRoute, /minnhindje@gmail\.com/);
-  assert.match(migration, /ENABLE ROW LEVEL SECURITY/);
+  assert.match(migration, /enable row level security/i);
 });
 
 test('l’adresse principale est cohérente dans les contrôles de sécurité', () => {
@@ -188,20 +188,60 @@ test('le mode aperçu explique qu’aucune donnée réelle n’est chargée et b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.10.5');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.10\.5/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.10\.5/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.10\.5/m);
+  assert.equal(pkg.version, '1.11.0');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.11\.0/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.11\.0/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.11\.0/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
+});
+
+
+test('le module Notes et bulletins expose les parcours primaire et trimestriel', () => {
+  const component = read('components/notes-bulletins-page.tsx');
+  const migration = read('supabase/migrations/018_notes_bulletins_workflows.sql');
+  assert.match(component, /Saisie collective/);
+  assert.match(component, /Résultats individuels/);
+  assert.match(component, /Bulletins trimestriels/);
+  assert.match(component, /Pondération par catégorie/);
+  assert.match(component, /window\.print\(\)/);
+  assert.match(migration, /create table if not exists public\.school_assessments/);
+  assert.match(migration, /create table if not exists public\.school_grade_rules/);
+  assert.match(migration, /create table if not exists public\.school_bulletins/);
+});
+
+test('les notes distinguent les absences des notes manquantes et gardent un audit', () => {
+  const component = read('components/notes-bulletins-page.tsx');
+  const migration = read('supabase/migrations/018_notes_bulletins_workflows.sql');
+  assert.match(component, /absent_excused/);
+  assert.match(component, /absent_unexcused/);
+  assert.match(component, /status !== 'missing'/);
+  assert.match(migration, /school_grade_audit_write/);
+  assert.match(migration, /grade\.updated/);
+  assert.match(migration, /student_grades_score_range_check/);
+});
+
+test('la migration Notes applique les contrôles RLS et ne crée pas de politique de suppression', () => {
+  const migration = read('supabase/migrations/018_notes_bulletins_workflows.sql');
+  assert.match(migration, /enable row level security/i);
+  assert.match(migration, /school_bulletins_update/);
+  assert.match(migration, /school_assessments_update/);
+  assert.doesNotMatch(migration, /for delete to authenticated/i);
+});
+
+test('le guide de déploiement Notes exige une migration 018 et des essais en préproduction', () => {
+  const guide = read('ETAPE_10_NOTES_BULLETINS.md');
+  assert.match(guide, /018_notes_bulletins_workflows\.sql/);
+  assert.match(guide, /préproduction/);
+  assert.match(guide, /Les notes manquantes et les absences ne sont pas automatiquement converties en zéro/);
 });
 
 test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 19, 'la suite de contrôle doit contenir exactement 19 tests');
-  assert.match(read('README.md'), /19 tests hors ligne/);
-  assert.match(read('CHANGELOG.md'), /19 tests hors ligne/);
-  assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /19 tests hors ligne/);
+  assert.equal(count, 23, 'la suite de contrôle doit contenir exactement 23 tests');
+  assert.match(read('README.md'), /23 tests hors ligne/);
+  assert.match(read('CHANGELOG.md'), /23 tests hors ligne/);
+  assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);
   assert.doesNotMatch(read('README.md'), /12 contrôles structurels hors ligne/);
 });
 

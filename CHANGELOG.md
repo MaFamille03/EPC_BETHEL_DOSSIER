@@ -1,5 +1,14 @@
 # Journal des versions — EPC BETHEL
 
+## 1.11.0 — Module Notes et bulletins du primaire
+
+- Ajout des évaluations par classe, matière, trimestre, barème et coefficient.
+- Saisie collective des notes avec statuts distincts pour absences, dispenses et notes manquantes.
+- Moyennes configurables et préparation/publication des bulletins trimestriels.
+- Aperçu imprimable du bulletin publié et export CSV des relevés individuels.
+- Migration Supabase 018, contrôles RLS et journalisation des modifications de notes.
+- Contrôle hors ligne : 23 tests hors ligne réussis. Le typecheck/build complet et les essais Supabase doivent être réalisés sur une machine connectée et en préproduction.
+
 ## 1.10.5 — Organisation du menu et consolidation de trésorerie
 - Organisation de la navigation en cinq rubriques principales conformément au cahier des charges.
 - Raccordement des entrées financières au module de trésorerie existant.
@@ -39,7 +48,7 @@
 - La cloche ouvre un état vide explicite : aucune source de notifications n’est déclarée connectée à ce stade, aucune alerte fictive n’est affichée.
 - Documentation racine et guide d’installation alignés sur la version 1.9.4 ; ajout de tests de cohérence documentaire et des commandes de barre supérieure.
 - Suppression de `tsconfig.tsbuildinfo`, artefact de compilation généré, de l’archive livrée.
-- La suite actuelle comprend **19 tests hors ligne** ; le précontrôle conserve son avertissement relatif à l’absence de `package-lock.json`. Compilation complète, exécution Supabase et déploiement Vercel toujours non validés.
+- La suite de cette version comprenait **19 tests hors ligne** ; le précontrôle conservait son avertissement relatif à l’absence de `package-lock.json`. Compilation complète, exécution Supabase et déploiement Vercel restaient non validés.
 
 ## 1.9.3 — Étape 8 : mode aperçu sûr et absence de données fictives
 
