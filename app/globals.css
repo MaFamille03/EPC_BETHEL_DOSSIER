@@ -423,3 +423,10 @@ input, select, textarea, button { max-width:100%; }
 .student-result-picker select:focus{outline:none;border-color:var(--green-600,#168000);box-shadow:0 0 0 3px rgba(22,128,0,.12)}
 .bulletin-workflow-hint{margin:0 0 12px;padding:10px 12px;border-left:3px solid var(--green-600,#168000);border-radius:0 8px 8px 0;background:#f3f8f2;color:#536657;font-size:13px;line-height:1.45}
 @media(max-width:640px){.notes-bulletins-sticky{padding-top:7px;padding-bottom:8px;margin-bottom:10px}.notes-bulletins-filter-panel{padding:9px}.student-result-picker{width:100%}.student-result-picker select{height:40px}.bulletin-workflow-hint{font-size:12px;padding:9px 10px}}
+
+/* Gestion des élèves : filtres et pagination dédiés */
+.student-filter,.student-page-size{min-height:36px;max-width:180px;border:1px solid #e1e8e2;border-radius:8px;background:#fff;color:#526157;padding:0 10px;font-size:11px;outline:none}
+.student-filter:focus,.student-page-size:focus{border-color:#79ae88;box-shadow:0 0 0 3px #eaf5ed}
+.table-actions .student-filter{flex-shrink:0}
+@media(max-width:900px){.student-filter{max-width:145px}}
+@media(max-width:640px){.table-actions{flex-wrap:wrap}.table-actions .student-filter{flex:1;max-width:none;min-width:125px}.student-page-size{max-width:105px;font-size:10px;padding:0 5px}}
