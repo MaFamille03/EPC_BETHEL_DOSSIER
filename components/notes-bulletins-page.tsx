@@ -339,21 +339,23 @@ export function NotesBulletinsPage() {
   ];
 
   return <>
-    <div className="page-heading">
+    <div className="notes-bulletins-sticky">
+    <div className="page-heading notes-bulletins-heading">
       <div><div className="eyebrow">SUIVI PÉDAGOGIQUE · PRIMAIRE</div><h1>Notes et bulletins</h1><p>Préparez les évaluations, suivez les résultats et publiez les bulletins trimestriels.</p></div>
       <div className="heading-actions"><button className="button button-secondary" onClick={() => void refresh()} disabled={loading}><RefreshCw size={16}/> Actualiser</button></div>
     </div>
     {!connected && <div className="inline-notice"><AlertCircle size={16}/> Mode aperçu : aucune note réelle n’est chargée. Configurez Supabase et appliquez les migrations scolaires.</div>}
     {notice && <div className="inline-notice" role="status" style={errorNotice ? { borderColor: 'var(--danger, #b91c1c)' } : undefined}>{errorNotice ? <AlertCircle size={16}/> : <Check size={16}/>} {notice}</div>}
-    <section className="panel">
-      <div className="form-grid">
+    <section className="panel notes-bulletins-filter-panel">
+      <div className="form-grid notes-bulletins-filters">
         <label className="form-field"><span>Année scolaire</span><select value={yearId} onChange={(e) => setYearId(e.target.value)}><option value="">Choisir une année</option>{years.map((y) => <option key={y.id} value={y.id}>{y.label}{y.is_current ? ' · En cours' : ''}{y.is_closed ? ' · Clôturée' : ''}</option>)}</select></label>
         <label className="form-field"><span>Trimestre</span><select value={term} onChange={(e) => setTerm(e.target.value as Term)}>{TERMS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}</select></label>
         <label className="form-field"><span>Classe</span><select value={classId} onChange={(e) => { setClassId(e.target.value); setAssessmentId(''); }}><option value="">Toutes les classes</option>{classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
       </div>
       {currentYear?.is_closed && <div className="inline-notice"><AlertCircle size={16}/> Cette année scolaire est clôturée. La consultation reste disponible, mais les nouvelles saisies doivent être bloquées.</div>}
-      <div className="table-actions" style={{ marginTop: 16, flexWrap: 'wrap' }}>{tabs.map((item) => { const Icon = item.icon; return <button key={item.id} className={`button ${tab === item.id ? 'button-primary' : 'button-secondary'}`} onClick={() => setTab(item.id)}><Icon size={15}/>{item.label}</button>; })}</div>
+      <div className="table-actions notes-bulletins-tabs">{tabs.map((item) => { const Icon = item.icon; return <button key={item.id} className={`button ${tab === item.id ? 'button-primary' : 'button-secondary'}`} onClick={() => setTab(item.id)}><Icon size={15}/>{item.label}</button>; })}</div>
     </section>
+    </div>
 
     {tab === 'overview' && <>
       <div className="metric-strip">
