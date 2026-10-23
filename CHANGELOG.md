@@ -1,5 +1,16 @@
 # Journal des versions — EPC BETHEL
 
+## 1.13.0 — Amélioration de la gestion des élèves
+
+- Suppression des trois cartes de métriques dans la page élèves, sans toucher aux autres rubriques ; le bouton Actualiser reste disponible dans l’en-tête.
+- Déplacement de la pagination et du compteur au-dessus du tableau, à côté du titre « Liste des élèves ».
+- Passage à 50 élèves par page par défaut (choix 10 et 25 conservés) et affichage des noms/prénoms longs sur plusieurs lignes.
+- Import Excel préservé dans un panneau repliable ; le modèle vierge est téléchargeable depuis la page, y compris en lecture seule ou hors connexion. Les erreurs/doublons ont un rapport CSV téléchargeable et la liste s’actualise après l’import.
+- Vérification préalable des matricules existants, rapport d’import plus explicite et actualisation de la liste après import réussi.
+- Ajout d’une fiche de consultation avec l’identité, le responsable légal, les notes administratives et l’historique des inscriptions, ainsi que de sections distinctes dans le formulaire de modification.
+- Aucun changement du schéma de base ni des RPC scolaires. La recherche reste limitée aux dossiers chargés (maximum actuel 1 000) ; pagination serveur, responsables légaux et affectation en classe dans l’import Excel restent des évolutions distinctes.
+- L’analyse syntaxique et l’intégrité de l’archive sont contrôlées ; build complet et tests réels Supabase non validés dans cet environnement.
+
 ## 1.11.3 — Finition du module Notes et bulletins
 
 - Suppression du message ambigu laissant entendre que l’accès à la préparation des bulletins est réservé à l’administrateur ; les permissions effectives restent contrôlées par les rôles et les règles d’accès existantes.

@@ -1,25 +1,25 @@
 # EPC BETHEL — Application de gestion scolaire
 
 **Établissement :** EPC BETHEL ASSEMBLÉES DE DIEU JEAN FOLLY  
-**Version courante :** 1.11.3  
+**Version courante :** 1.13.0  
 **Stack :** Next.js 15, React 19, TypeScript, Supabase/PostgreSQL
 
 ## État de livraison
 
 EPC BETHEL est une base applicative avancée, mais elle **n’est pas certifiée prête pour la production**. Les dépendances n’ont pas pu être installées dans l’environnement de préparation, car le registre npm a renvoyé `EAI_AGAIN`. Le `typecheck`, la compilation Next.js, les migrations sur une base Supabase réelle et les tests de bout en bout restent donc à valider dans un environnement configuré.
 
-Les contrôles hors ligne actuels comprennent `npm run preflight` et **23 tests hors ligne** via `npm run test:release`. La livraison comprend le module Notes et bulletins (migrations 016 et 018) et le rapprochement bancaire transactionnel (migration 017). Ces contrôles structurels ne remplacent pas la compilation ou les tests réels sur Supabase.
+Les contrôles hors ligne actuels comprennent `npm run preflight` et **23 tests hors ligne** via `npm run test:release`. La livraison comprend le module Notes et bulletins (migrations 016 et 018), le rapprochement bancaire transactionnel (migration 017) et les améliorations de Gestion des élèves en V1.13.0. Elle inclut le modèle Excel téléchargeable. Ces contrôles structurels ne remplacent pas la compilation ou les tests réels sur Supabase.
 
 ## Fonctionnalités incluses
 
 - Tableau de bord, navigation et recherche rapide des modules.
 - Authentification par adresse e-mail et mot de passe ; création de compte avec confirmation du mot de passe et code d’accès. Réinitialisation du mot de passe par e-mail.
-- Gestion des élèves, responsables légaux, inscriptions, classes et années scolaires.
+- Gestion des élèves, responsables légaux, inscriptions, classes et années scolaires ; import Excel avec aperçu et modèle vierge téléchargeable.
 - Frais scolaires, six échéances, concessions, encaissements, reçus, dépenses et trésorerie.
 - Achats, fournisseurs, réceptions, inventaire et maintenance du patrimoine.
 - Rapports de gestion, filtres, exports et impressions selon les modules.
 - Administration des accès : administrateur principal, observateur et modification.
-- Quatorze migrations SQL de référence, `001` à `014`.
+- Dix-huit migrations SQL de référence, `001` à `018`.
 
 ## Prérequis et installation locale
 

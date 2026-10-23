@@ -1,0 +1,5 @@
+EPC BETHEL — Version 1.13.0
+
+Gestion des élèves : nouvelle pagination en haut de la liste, 50 élèves par page par défaut, cartes supérieures supprimées uniquement sur cette page, noms longs sur plusieurs lignes, import Excel préservé dans un panneau repliable et modèle Excel téléchargeable depuis l’application. Le contrôle des doublons fournit désormais un bilan d’import plus explicite.
+
+Aucun changement de migration SQL. Build complet et tests Supabase non exécutés dans l’environnement de préparation. Voir ETAPE_12_GESTION_ELEVES.md.

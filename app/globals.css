@@ -430,3 +430,68 @@ input, select, textarea, button { max-width:100%; }
 .table-actions .student-filter{flex-shrink:0}
 @media(max-width:900px){.student-filter{max-width:145px}}
 @media(max-width:640px){.table-actions{flex-wrap:wrap}.table-actions .student-filter{flex:1;max-width:none;min-width:125px}.student-page-size{max-width:105px;font-size:10px;padding:0 5px}}
+
+
+/* EPC BETHEL V1.13.0 — Gestion des élèves */
+.student-import-panel{padding:16px 20px;margin-bottom:18px}
+.student-import-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.student-import-details{flex:1 1 320px;min-width:0}
+.student-import-details>summary{display:flex;align-items:center;gap:12px;flex-wrap:wrap;cursor:pointer;list-style:none;color:#263d2c;min-height:40px}
+.student-import-details>summary::-webkit-details-marker{display:none}
+.student-import-summary-title{display:inline-flex;align-items:center;gap:9px;font-family:Manrope,sans-serif;font-size:14px;font-weight:800}
+.student-import-summary-title svg{color:#2e7949}
+.student-import-summary-note{color:#7e8c81;font-size:11px}
+.student-import-details>summary:after{content:'＋';color:#398454;font-weight:700;margin-left:2px}
+.student-import-details[open]>summary:after{content:'−'}
+.student-import-content{padding-top:16px}
+.student-template-download{flex-shrink:0}
+.student-panel-toolbar{display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:18px 20px}
+.student-toolbar-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;width:100%;min-width:0}
+.student-list-heading{min-width:175px}
+.student-list-heading h2{margin:0 0 5px;font-family:Manrope,sans-serif;font-size:15px;color:#26372b}
+.student-list-heading p{margin:0;color:#8b978e;font-size:11px}
+.student-list-pagination{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap;min-width:0;color:#66766a;font-size:11px}
+.student-list-pagination>span{white-space:nowrap}
+.student-list-pagination>span strong{color:#35483a}
+.student-table-actions{width:100%;flex-wrap:wrap;justify-content:flex-start}
+.student-table-actions .table-search{flex:1 1 230px;min-width:200px;max-width:420px}
+.student-table-actions .student-filter{max-width:190px}
+.student-table-panel .table-footer{display:none}
+.student-table-panel table{min-width:850px;table-layout:auto}
+.student-table-panel td.student-name-cell{white-space:normal;min-width:210px;max-width:420px;overflow-wrap:anywhere;word-break:normal;line-height:1.45}
+.student-table-panel td.student-name-cell .cell-strong{white-space:normal;overflow-wrap:anywhere}
+@media(max-width:1000px){.student-list-pagination{justify-content:flex-start}.student-toolbar-top{align-items:flex-start;flex-direction:column}.student-table-actions .table-search{max-width:none;flex-basis:100%}}
+@media(max-width:640px){.student-import-panel{padding:13px}.student-import-heading{align-items:stretch}.student-import-details>summary{align-items:flex-start;flex-direction:column;gap:6px}.student-template-download{width:100%}.student-panel-toolbar{padding:14px 12px}.student-list-pagination{gap:6px}.student-list-pagination>span{white-space:normal;flex-basis:100%;line-height:1.5}.student-table-actions .student-filter{max-width:none;flex:1 1 130px}.student-table-actions .table-search{min-width:0;flex-basis:100%}.student-list-heading h2{font-size:16px}}
+
+/* Dossier individuel et historique scolaire */
+.form-section-heading{grid-column:1/-1;margin:6px 0 -2px;padding-bottom:8px;border-bottom:1px solid #e8eee9;color:#28553a;font:800 13px Manrope,sans-serif}
+.student-school-context{grid-column:1/-1;padding:13px 15px;border:1px solid #e0e9e1;border-radius:10px;background:#f7faf7}
+.student-school-context strong{font-size:12px;color:#28553a}
+.student-school-context p{margin:5px 0 0;color:#66766a;font-size:11px;line-height:1.6}
+.student-row-actions{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+.student-row-actions .button{min-height:31px;padding:0 9px;font-size:10px}
+.student-detail-modal{width:min(920px,100%)}
+.student-detail-modal .modal-header p{margin:7px 0 0;font-size:11px;color:#879389}
+.student-detail-body{display:block;max-height:calc(90vh - 150px);overflow:auto}
+.student-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.student-detail-grid>section,.student-history-section,.student-admin-notes{border:1px solid #e5ece6;border-radius:11px;padding:15px;min-width:0}
+.student-detail-body h3{margin:0 0 12px;color:#294b34;font:800 13px Manrope,sans-serif}
+.student-detail-grid dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0}
+.student-detail-grid dl>div{min-width:0}
+.student-detail-grid dt{margin-bottom:4px;color:#8a968d;font-size:10px}
+.student-detail-grid dd{margin:0;color:#35483a;font-size:12px;font-weight:600;overflow-wrap:anywhere}
+.student-history-section{margin-top:15px}
+.student-history-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.student-history-heading h3{margin-bottom:4px}
+.student-history-heading p{margin:0 0 12px;color:#88958b;font-size:11px}
+.student-history-heading>span{color:#758278;font-size:11px}
+.student-history-section .table-scroll{border:1px solid #edf1ed;border-radius:8px}
+.student-history-section table{min-width:690px}
+.student-history-section td,.student-history-section th{white-space:normal;overflow-wrap:anywhere}
+.student-history-section td.student-history-notes{min-width:140px;max-width:230px}
+.student-history-section .empty-cell{padding:22px 10px}
+.student-admin-notes{margin-top:15px}
+.student-admin-notes p{margin:0;color:#68786c;font-size:12px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.import-preview-head{flex-wrap:wrap}
+.import-preview-head .button{min-height:32px;padding:0 10px}
+@media(max-width:640px){.student-row-actions{justify-content:flex-start}.student-row-actions .button{min-height:30px}.student-detail-modal .modal-body{padding:14px}.student-detail-grid{grid-template-columns:1fr}.student-detail-grid dl{grid-template-columns:repeat(2,minmax(0,1fr))}.student-detail-grid>section,.student-history-section,.student-admin-notes{padding:12px}.student-detail-modal .modal-header h2{font-size:16px}}

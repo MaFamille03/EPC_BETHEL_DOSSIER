@@ -166,6 +166,17 @@ test('les tableaux scolaires démarrent vides et restent vides hors connexion', 
   assert.ok(exists('supabase/migrations/016_notes_bulletins.sql'));
   assert.ok(exists('components/bank-reconciliation-page.tsx'));
   assert.ok(exists('supabase/migrations/017_bank_reconciliation_workflow.sql'));
+  assert.match(source, /useState\(50\)/);
+  assert.match(source, /student-list-pagination/);
+  assert.match(source, /section!==['\"]eleves['\"]&&<div className=['\"]metric-strip['\"]/);
+  const studentImport = read('components/student-import.tsx');
+  assert.match(studentImport, /student-template-download/);
+  assert.match(studentImport, /Télécharger les erreurs CSV/);
+  assert.match(studentImport, /Matricule déjà présent dans la base/);
+  assert.match(studentImport, /select\('student_number'\)\.in\('student_number',batch\)/);
+  assert.match(source, /async function viewStudentHistory/);
+  assert.match(source, /Identité de l’élève/);
+  assert.ok(exists('public/modele-importation-eleves-epc-bethel.xlsx'));
 });
 
 test('l’absence de profil authentifié est en lecture seule par défaut', () => {
@@ -188,10 +199,10 @@ test('le mode aperçu explique qu’aucune donnée réelle n’est chargée et b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.11.2');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.11\.2/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.11\.2/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.11\.2/m);
+  assert.equal(pkg.version, '1.13.0');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.13\.0/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.13\.0/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.13\.0/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
