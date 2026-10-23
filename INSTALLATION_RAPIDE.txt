@@ -1,4 +1,4 @@
-EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.11.0)
+EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.11.2)
 
 IMPORTANT
 Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pré-livraison). La compilation complète et les migrations n'ont pas encore été validées sur un projet Supabase réel. Commence toujours par un projet de développement et une sauvegarde.
@@ -81,7 +81,7 @@ LIMITES CONNUES
 - Ne jamais ajouter de secrets réels à l'archive. Ne déployer en production qu'après réussite des tests, vérification RLS, sauvegarde et revue des migrations.
 
 
-MIGRATION VERSION 1.11.0
+MIGRATION VERSION 1.11.2
 Exécuter une seule fois supabase/migrations/015_admin_registration_code_settings.sql dans Supabase SQL Editor. Ensuite, se connecter avec minnhindje@gmail.com et définir le code dans Paramètres > Utilisateurs et autorisations. Les clés serveur SUPABASE_SECRET_KEY ou SUPABASE_SERVICE_ROLE_KEY doivent rester uniquement dans les variables serveur Vercel.
 
 
@@ -93,5 +93,5 @@ Le module Notes et bulletins permet de saisir des notes sur 20, avec coefficient
 Le module Banque permet d’importer un relevé CSV avec les colonnes date, libelle, debit, credit (reference facultative), puis de rapprocher les lignes avec les mouvements validés du compte bancaire correspondant.
 Ne lancez pas les migrations directement en production sans sauvegarde et validation préalable.
 
-MODULE NOTES ET BULLETINS (1.11.0)
+MODULE NOTES ET BULLETINS (1.11.2)
 Appliquer supabase/migrations/018_notes_bulletins_workflows.sql après les migrations 001 à 017, après sauvegarde et validation en préproduction. Voir ETAPE_10_NOTES_BULLETINS.md.

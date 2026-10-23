@@ -1,6 +1,6 @@
 # Journal des versions — EPC BETHEL
 
-## 1.11.0 — Module Notes et bulletins du primaire
+## 1.11.2 — Module Notes et bulletins du primaire
 
 - Ajout des évaluations par classe, matière, trimestre, barème et coefficient.
 - Saisie collective des notes avec statuts distincts pour absences, dispenses et notes manquantes.
@@ -159,3 +159,8 @@
 - Ajout de la migration `015_admin_registration_code_settings.sql`.
 - Les API d’administration acceptent les clés Supabase publishable/anon et secret/service_role actuelles.
 - La création de compte vérifie le code stocké côté serveur ; plus besoin de la variable `EPC_BETHEL_REGISTRATION_CODE`.
+
+## 1.11.2 — Harmonisation des cinq vues Notes et bulletins
+- Mise en page cohérente des vues Vue d’ensemble, Saisie des notes, Résultats des élèves, Bulletins trimestriels et Configuration.
+- Filtres alignés sur une ligne sur écran large et navigation horizontale persistante.
+- Espacements, formulaires, tableaux et métriques adaptés aux écrans étroits pour éviter les chevauchements.
