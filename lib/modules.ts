@@ -43,7 +43,7 @@ export const navigation = [
   {
     label: 'Finances',
     items: [
-      { key: 'caisse-mobile-money', title: 'Caisse et comptes Mobile Money', icon: Smartphone },
+      { key: 'caisse-mobile-money', title: 'Caisse et Mobile Money', icon: Smartphone },
       { key: 'banque', title: 'Banque', icon: Landmark },
       { key: 'transferts-internes', title: 'Transferts internes', icon: ArrowLeftRight },
       { key: 'journal-tresorerie', title: 'Journal de trésorerie (historique)', icon: ReceiptText },
@@ -163,7 +163,7 @@ export const modules: Record<string, Module> = {
 };
 
 // Les quatre rubriques utilisent le même socle sécurisé, mais leurs vues et listes sont spécialisées.
-modules['caisse-mobile-money'] = { ...modules.tresorerie, key: 'caisse-mobile-money', title: 'Caisse et comptes Mobile Money', description: 'Gérez les liquidités physiques et les portefeuilles Mobile Money, indépendamment des comptes bancaires.', icon: Smartphone };
+modules['caisse-mobile-money'] = { ...modules.tresorerie, key: 'caisse-mobile-money', title: 'Caisse et Mobile Money', description: 'Gérez un registre unique de caisse pour les espèces, Orange Money, Wave et Moov Money. Les comptes bancaires restent dans la rubrique Banque.', icon: Smartphone };
 modules.banque = { ...modules.tresorerie, key: 'banque', title: 'Banque', description: 'Suivez les soldes et mouvements bancaires, puis rapprochez-les avec les relevés importés.', icon: Landmark };
 modules['transferts-internes'] = { ...modules.tresorerie, key: 'transferts-internes', title: 'Transferts internes', description: 'Transférez de l’argent entre deux comptes actifs et consultez chaque transfert lié sans le compter en recette ou dépense.', icon: ArrowLeftRight };
 modules['journal-tresorerie'] = { ...modules.tresorerie, key: 'journal-tresorerie', title: 'Journal de trésorerie (historique)', description: 'Consultez les mouvements de tous les comptes et exportez l’historique filtré.', icon: ReceiptText };

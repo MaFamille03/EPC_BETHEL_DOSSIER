@@ -39,8 +39,8 @@ test('la configuration de paquet expose les commandes requises', () => {
 test('les migrations SQL sont présentes et numérotées sans trou', () => {
   const directory = path.join(root, 'supabase/migrations');
   const files = fs.readdirSync(directory).filter((name) => /^\d{3}_.+\.sql$/.test(name)).sort();
-  assert.equal(files.length, 21);
-  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 21 }, (_, i) => i + 1));
+  assert.equal(files.length, 23);
+  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 23 }, (_, i) => i + 1));
 });
 
 test('les routes serveur nécessaires au parcours des comptes existent', () => {
@@ -223,10 +223,10 @@ test('Finance scolaire présente les réductions et les échéanciers variables'
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.16.1');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.16\.1/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.16\.1/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.16\.1/m);
+  assert.equal(pkg.version, '1.18.0');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.18\.0/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.18\.0/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.18\.0/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
@@ -310,7 +310,7 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.16.1');
+  assert.equal(packageInfo.version, '1.18.0');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
   assert.match(source, /Échéancier de \{installmentCount\} versement/);
@@ -331,9 +331,9 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
 test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 32, 'la suite de contrôle doit contenir exactement 32 tests');
-  assert.match(read('README.md'), /32 tests hors ligne/);
-  assert.match(read('CHANGELOG.md'), /23 tests hors ligne/);
+  assert.equal(count, 35, 'la suite de contrôle doit contenir exactement 35 tests');
+  assert.match(read('README.md'), /35 tests hors ligne/);
+  assert.match(read('CHANGELOG.md'), /Tests locaux : 35 réussis sur 35/);
   assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);
   assert.doesNotMatch(read('README.md'), /12 contrôles structurels hors ligne/);
 });
@@ -372,7 +372,7 @@ test('les quatre rubriques de trésorerie ont des vues distinctes', () => {
   assert.match(treasury, /transaction.transaction_type === 'transfer'/);
   assert.match(treasury, /Chaque transfert est présenté une seule fois/);
   assert.match(treasury, /if \(mode === 'journal'\) return txs/);
-  assert.match(modules, /portefeuilles Mobile Money/);
+  assert.match(modules, /registre unique de caisse pour les espèces, Orange Money, Wave et Moov Money/);
 });
 
 test('le type Mobile Money est migré et la création de comptes est auditée côté SQL', () => {
@@ -395,10 +395,63 @@ test('les paiements et dépenses proposent un compte cohérent avec le mode de r
   const expenses = read('components/expenses-page.tsx');
   const migration = read('supabase/migrations/021_treasury_account_types_and_creation.sql');
   assert.match(payments, /accountsForPaymentMethod/);
-  assert.match(payments, /account\.kind===expectedKind/);
+  assert.match(payments, /account\.kind==='cash'/);
+  assert.match(payments, /register_student_payment_with_provider/);
+  assert.match(payments, /mobile_money_provider/);
   assert.match(expenses, /accountsForExpenseMethod/);
-  assert.match(expenses, /account\.kind===expectedKind/);
+  assert.match(expenses, /account\.kind==='cash'/);
+  assert.match(expenses, /create_expense_with_provider/);
+  assert.match(expenses, /mobile_money_provider/);
   assert.match(migration, /payments_account_method_match/);
   assert.match(migration, /expenses_account_method_match/);
-  assert.match(migration, /Pour un paiement Mobile Money, choisissez un portefeuille Mobile Money/);
+  assert.match(migration, /mobile_money/);
+});
+
+
+test('caisse unique utilise les opérateurs Mobile Money comme canaux de paiement', () => {
+  const payments = read('components/payments-page.tsx');
+  const expenses = read('components/expenses-page.tsx');
+  const migration = read('supabase/migrations/022_cash_register_single_ledger_and_controls.sql');
+  const treasury = read('components/treasury-page.tsx');
+  assert.match(payments, /accountsForPaymentMethod=\(accounts:Option\[\],method:string\)=>\{if\(method==='especes'\|\|method==='mobile_money'\)/);
+  assert.match(expenses, /accountsForExpenseMethod=\(accounts:Option\[\],method:string\)=>\{if\(method==='especes'\|\|method==='mobile_money'\)/);
+  assert.match(payments, /Orange Money/);
+  assert.match(payments, /Wave/);
+  assert.match(payments, /Moov Money/);
+  assert.match(migration, /L’opérateur est un moyen de paiement, pas un compte séparé/);
+  assert.match(migration, /cash_method_balance\(v_channel,v_when,null\)/);
+  assert.match(migration, /create or replace function public\.validate_expense/);
+  assert.match(treasury, /Caisse théorique en espèces/);
+  assert.match(treasury, /Caisse physique réelle/);
+});
+
+test('les lignes manuelles de caisse sont ajoutées, modifiables ou supprimables avec trace d’audit', () => {
+  const treasury = read('components/treasury-page.tsx');
+  const migration = read('supabase/migrations/022_cash_register_single_ledger_and_controls.sql');
+  assert.match(treasury, /Ajouter une ligne de caisse/);
+  assert.match(treasury, /update_manual_cash_movement/);
+  assert.match(treasury, /delete_manual_cash_movement/);
+  assert.match(migration, /create or replace function public\.create_manual_cash_movement/);
+  assert.match(migration, /create or replace function public\.update_manual_cash_movement/);
+  assert.match(migration, /create or replace function public\.delete_manual_cash_movement/);
+  assert.match(migration, /motif de modification/);
+  assert.match(migration, /motif de suppression est obligatoire/);
+  assert.match(migration, /deleted_transaction',to_jsonb\(v_tx\)/);
+});
+
+
+test('la caisse utilise un seul registre avec comptage physique et actions manuelles protégées', () => {
+  const treasury = read('components/treasury-page.tsx');
+  const migration = read('supabase/migrations/023_cash_register_edit_delete_guardrails.sql');
+  const modules = read('lib/modules.ts');
+  assert.match(modules, /title: 'Caisse et Mobile Money'/);
+  assert.match(treasury, /Caisse théorique en espèces/);
+  assert.match(treasury, /Caisse physique réelle/);
+  assert.match(treasury, /cash-register-panel-actions/);
+  assert.match(treasury, /Ajouter une ligne de caisse/);
+  assert.match(treasury, /<th>Référence<\/th><th>Date<\/th><th>Libellé<\/th><th>Moyen de paiement<\/th><th>Entrée<\/th><th>Sortie<\/th><th>Solde<\/th><th>Statut<\/th><th>Actions<\/th>/);
+  assert.match(migration, /registre unique de caisse principal/);
+  assert.match(migration, /moyen de paiement d’origine/);
+  assert.match(migration, /update_manual_cash_movement/);
+  assert.match(migration, /delete_manual_cash_movement/);
 });

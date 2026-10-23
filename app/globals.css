@@ -638,3 +638,42 @@ input, select, textarea, button { max-width:100%; }
 @media(max-width:520px){.treasury-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.treasury-account-grid{grid-template-columns:minmax(0,1fr)}.treasury-account-form-body{grid-template-columns:minmax(0,1fr)}.treasury-actions .button{flex:1 1 130px}.treasury-table-filters{align-items:stretch;flex-direction:column}.treasury-account-filter{max-width:none;min-width:0;flex-basis:auto}.treasury-table-filters .table-search{width:100%}}
 
 .payment-account-warning{display:block;margin-top:6px;color:#9b5f29;font-size:11px;line-height:1.45}
+
+
+/* EPC BETHEL V1.17.0 — Caisse unique, canaux de paiement visibles et densité réduite. */
+.cash-register-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.cash-register-summary-grid .metric-mini{min-width:0;padding:13px 15px}
+.cash-register-summary-grid .metric-mini>span{font-size:11px;line-height:1.35}
+.cash-register-summary-grid .metric-mini>small{font-size:10px;line-height:1.45}
+.cash-register-panel{padding:15px 17px;margin-bottom:15px}
+.cash-method-balances{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0 12px}
+.cash-method-balances>div{min-width:0;display:grid;grid-template-columns:9px minmax(0,1fr);gap:5px 8px;align-items:center;padding:10px 12px;background:#f8fbf8;border:1px solid #e6eee6;border-radius:9px}
+.cash-method-balances>div>strong{grid-column:2;font-size:13px;line-height:1.3;overflow-wrap:anywhere;color:#25452f}
+.cash-method-balances>div>span:not(.cash-method-dot){font-size:11px;color:#627268;overflow-wrap:anywhere}
+.cash-method-dot{grid-row:1 / span 2;width:8px;height:8px;border-radius:50%;background:#799881}
+.cash-dot-orange{background:#f07c22}.cash-dot-wave{background:#3a8bd6}.cash-dot-moov{background:#66a641}.cash-dot-other{background:#8c7bc4}
+.cash-register-explainer{margin-bottom:0;font-size:11px;line-height:1.5}
+.cash-movement-table{min-width:1080px}
+.cash-movement-table th,.cash-movement-table td{vertical-align:middle}
+.cash-movement-table th:nth-child(1){min-width:110px}.cash-movement-table th:nth-child(3){min-width:180px}.cash-movement-table th:nth-child(4){min-width:140px}.cash-movement-table th:nth-child(9){min-width:190px}
+.cash-running-balance{white-space:nowrap;font-size:11px}
+.cash-row-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.cash-row-actions .button{height:30px;min-height:30px;padding:0 8px;font-size:10px;white-space:nowrap}
+.cash-row-locked{display:block;max-width:165px;font-size:10px;line-height:1.4;color:#839087}
+@media(max-width:720px){.cash-register-panel{padding:12px}.cash-register-summary-grid{gap:8px}.cash-register-summary-grid .metric-mini{padding:10px}.cash-method-balances{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.cash-method-balances>div{padding:8px 6px;gap:5px}.cash-method-balances>div>span:not(.cash-method-dot){font-size:10px}.cash-method-balances>div>strong{font-size:11px}}
+@media(max-width:430px){.cash-register-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cash-method-balances{grid-template-columns:1fr}.cash-method-balances>div{grid-template-columns:9px minmax(0,1fr);padding:9px 11px}.cash-method-balances>div>strong{grid-column:2}}
+
+/* V1.18.0 — caisse unique : actions regroupées avec les indicateurs de caisse */
+.cash-register-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.cash-register-panel-heading>div:first-child{flex:1 1 340px;min-width:0}
+.cash-register-panel-heading p{max-width:760px;line-height:1.5}
+.cash-register-panel-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.cash-register-panel-actions .button{height:40px;min-height:40px;white-space:nowrap}
+.cash-register-panel .cash-register-explainer{margin-top:10px}
+.cash-movement-table{min-width:1120px}
+.cash-movement-table th,.cash-movement-table td{vertical-align:middle}
+.cash-movement-table th:nth-child(1){min-width:110px}
+.cash-movement-table th:nth-child(3){min-width:220px}
+.cash-movement-table th:nth-child(4){min-width:145px}
+.cash-movement-table th:nth-child(9){min-width:190px}
+@media(max-width:720px){.cash-register-panel-heading{align-items:stretch;gap:10px}.cash-register-panel-actions{justify-content:flex-start;width:100%}.cash-register-panel-actions .button{flex:1 1 180px;justify-content:center}.cash-movement-table{min-width:1080px}}

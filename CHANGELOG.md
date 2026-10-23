@@ -1,3 +1,22 @@
+## 1.18.0 — Caisse unique et contrôle des mouvements
+
+- Libellé du menu simplifié en « Caisse et Mobile Money » pour éviter de laisser croire qu’il faut ouvrir plusieurs comptes. Le compte bancaire reste dans sa propre rubrique.
+- Dans le panneau de caisse, les actions « Compter la caisse » et « Ajouter une ligne de caisse » sont désormais placées à côté de la synthèse de caisse théorique, de la caisse physique et des soldes par moyen de paiement.
+- Le tableau de caisse conserve l’ordre demandé : Référence, Date, Libellé, Moyen de paiement, Entrée, Sortie, Solde, Statut, Actions.
+- La modification/suppression des lignes saisies manuellement est renforcée côté SQL : seules les lignes de la caisse principale peuvent être modifiées ou supprimées, le motif reste obligatoire et les changements susceptibles de rendre un canal négatif sont refusés. Les encaissements, dépenses et transferts liés se corrigent dans leurs modules d’origine afin de préserver la traçabilité.
+- Migration `023_cash_register_edit_delete_guardrails.sql` : garde-fous de mise à jour/suppression des lignes manuelles de caisse.
+- Tests locaux : 35 réussis sur 35. Le build complet et les migrations doivent être validés sur une base de préproduction avant la production.
+
+## 1.17.0 — Caisse unique et moyens Mobile Money
+
+- La rubrique Caisse utilise un seul compte de trésorerie principal : les espèces et Orange Money, Wave ou Moov Money sont des moyens/canaux, pas des comptes de caisse distincts. La rubrique Banque reste séparée.
+- Les formulaires d’encaissement et de dépense associent les opérations en espèces et Mobile Money à la caisse principale. Le formulaire propose le fournisseur Orange Money, Wave ou Moov Money et l’affiche dans le journal, les exports et les reçus.
+- La migration `022_cash_register_single_ledger_and_controls.sql` ajoute la catégorisation des mouvements, un comptage physique horodaté, le calcul de caisse théorique, ainsi que des RPC contrôlées et auditées pour saisir, modifier ou supprimer les lignes manuelles de caisse. Les paiements, dépenses et transferts issus de leurs modules restent protégés contre l’édition/suppression directe dans le journal.
+- Le contrôle des dépenses utilise le solde du moyen de paiement sélectionné lorsqu’il s’agit de la caisse commune, au lieu de mélanger espèces et Mobile Money.
+- Affichage compact en grille 2 colonnes pour les indicateurs de caisse, soldes Orange/Wave/Moov, tableau ordonné Référence, Date, Libellé, Moyen de paiement, Entrée, Sortie, Solde, Statut et Actions.
+- L’écran n’offre plus la création de plusieurs comptes de caisse ou de portefeuilles Mobile Money ; la création de comptes demeure dans la rubrique Banque.
+- Tests locaux : 34 réussis sur 34. La migration SQL, les permissions RLS, le typecheck complet et le build doivent être vérifiés sur une base de préproduction avant la production.
+
 ## 1.16.1 — Import Excel avec commande visible
 
 - Dans Gestion des élèves, le panneau « Importer les élèves depuis Excel » affiche désormais un libellé visible « Déplier » lorsqu’il est fermé et « Réplier » lorsqu’il est ouvert, à la place des symboles plus/moins.

@@ -1,4 +1,4 @@
-EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.16.1)
+EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.18.0)
 
 IMPORTANT
 Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pré-livraison). La compilation complète et les migrations n'ont pas encore été validées sur un projet Supabase réel. Commence toujours par un projet de développement et une sauvegarde.
@@ -113,3 +113,25 @@ FONCTIONNALITÉS V1.16.0 — TRÉSORERIE (conservées en V1.16.1)
 AMÉLIORATION V1.16.1 — GESTION DES ÉLÈVES
 - Le panneau « Importer les élèves depuis Excel » affiche un bouton textuel « Déplier » quand il est fermé et « Réplier » quand il est ouvert, à la place des symboles plus/moins.
 - Le téléchargement du modèle Excel et le processus d’import restent inchangés.
+
+
+AMÉLIORATION V1.17.0 — CAISSE UNIQUE ET MOBILE MONEY
+
+- La caisse principale est le compte unique servant à enregistrer les entrées/sorties en espèces, Orange Money, Wave ou Moov Money. La Banque reste une rubrique séparée.
+- Les formulaires d’encaissement et de dépense affichent un choix d’opérateur lorsqu’on sélectionne Mobile Money.
+- Un bouton « Ajouter une ligne de caisse » permet d’enregistrer une correction manuelle avec audit ; les reçus, dépenses et transferts restent gérés depuis leurs modules d’origine.
+- « Caisse théorique », dernier comptage physique et écart sont présentés sur la page Caisse.
+
+ÉTAPE SUPPLÉMENTAIRE DE BASE DE DONNÉES
+1. Sauvegardez la base Supabase.
+2. Vérifiez que les migrations 001 à 021 sont appliquées avant de lancer la migration 022.
+3. En préproduction, exécutez une seule fois le fichier supabase/migrations/022_cash_register_single_ledger_and_controls.sql.
+4. Testez un paiement espèces, un paiement Orange Money/Wave/Moov, une dépense par canal, un comptage physique, une ligne manuelle et ses contrôles de modification/suppression.
+5. Ne déployez pas en production avant d’avoir validé les soldes, les autorisations RLS et le build Next.js.
+
+
+AMÉLIORATION V1.18.0 — CAISSE UNIQUE
+- L’interface « Caisse et Mobile Money » utilise un seul registre de caisse pour les espèces, Orange Money, Wave et Moov Money. La rubrique Banque reste séparée.
+- Les actions de comptage physique et d’ajout de ligne sont placées dans le panneau de caisse. Les mouvements manuels restent modifiables/supprimables avec motif et journal d’audit. Les reçus et dépenses liés doivent être corrigés dans leurs modules.
+- Après sauvegarde de la base et validation de la migration 022 en préproduction, vérifiez puis exécutez une seule fois `supabase/migrations/023_cash_register_edit_delete_guardrails.sql`. Ne rejouez pas les anciennes migrations déjà appliquées.
+- Testez : ajout d’une entrée/sortie en espèces, Orange Money, Wave et Moov Money ; comptage physique ; modification/suppression d’une ligne manuelle ; refus de modification d’un encaissement ou d’une dépense liés.
