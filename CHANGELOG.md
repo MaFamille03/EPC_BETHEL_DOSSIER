@@ -1,3 +1,10 @@
+## 1.18.1 — Correction du build Vercel
+
+- Correction d’une comparaison TypeScript impossible dans le formulaire bancaire : le formulaire ne s’affiche que dans la rubrique Banque, il ne doit donc pas tester le mode Caisse/Mobile Money.
+- Le formulaire de création est désormais explicitement bancaire ; le choix d’un compte caisse ou d’un portefeuille Mobile Money a été retiré de ce formulaire.
+- La caisse reste un registre unique : espèces, Orange Money, Wave et Moov Money sont des moyens/canaux de paiement, tandis que la création de comptes bancaires reste séparée.
+- Tests de livraison mis à jour et vérification dédiée du formulaire bancaire. **Tests de pré-livraison : 36 réussis sur 36.** Le build Next.js complet doit être relancé sur Vercel pour confirmer la correction dans l’environnement de production.
+
 ## 1.18.0 — Caisse unique et contrôle des mouvements
 
 - Libellé du menu simplifié en « Caisse et Mobile Money » pour éviter de laisser croire qu’il faut ouvrir plusieurs comptes. Le compte bancaire reste dans sa propre rubrique.

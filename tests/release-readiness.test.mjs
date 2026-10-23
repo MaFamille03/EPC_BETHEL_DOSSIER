@@ -221,12 +221,20 @@ test('Finance scolaire présente les réductions et les échéanciers variables'
   assert.doesNotMatch(read('app/page.tsx'), /échéances et concessions/i);
 });
 
+test('le formulaire de création de compte de trésorerie est bancaire et sans branche de caisse impossible', () => {
+  const source = read('components/treasury-page.tsx');
+  assert.match(source, /showAccountForm && isAdmin && !isReadOnly && mode === 'bank'/);
+  assert.match(source, /kindAllowed = mode === 'bank' && accountForm\.kind === 'bank'/);
+  assert.doesNotMatch(source, /mode === 'cash-mobile-money' && <label className="form-field"><span>Type de compte \*<\/span>/);
+  assert.match(source, /<h2>Nouveau compte bancaire<\/h2>/);
+});
+
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.18.0');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.18\.0/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.18\.0/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.18\.0/m);
+  assert.equal(pkg.version, '1.18.1');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.18\.1/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.18\.1/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.18\.1/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
@@ -310,7 +318,7 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.18.0');
+  assert.equal(packageInfo.version, '1.18.1');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
   assert.match(source, /Échéancier de \{installmentCount\} versement/);
@@ -331,9 +339,9 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
 test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 35, 'la suite de contrôle doit contenir exactement 35 tests');
-  assert.match(read('README.md'), /35 tests hors ligne/);
-  assert.match(read('CHANGELOG.md'), /Tests locaux : 35 réussis sur 35/);
+  assert.equal(count, 36, 'la suite de contrôle doit contenir exactement 36 tests');
+  assert.match(read('README.md'), /36 tests hors ligne/);
+  assert.match(read('CHANGELOG.md'), /Tests de pré-livraison : 36 réussis sur 36/);
   assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);
   assert.doesNotMatch(read('README.md'), /12 contrôles structurels hors ligne/);
 });
