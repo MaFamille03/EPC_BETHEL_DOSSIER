@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Bell,
+  CircleHelp,
   ChevronDown,
   LogOut,
   Search,
@@ -32,7 +33,7 @@ const roleLabels: Record<EPCAppRole, string> = {
   modification: 'Modification · gestion des données',
 };
 
-type OpenMenu = 'search' | 'notifications' | 'profile' | null;
+type OpenMenu = 'search' | 'notifications' | 'profile' | 'help' | null;
 
 export function TopbarMenus({ role, userName, userEmail, navigationGroups, onLogout }: TopbarMenusProps) {
   const router = useRouter();
@@ -149,6 +150,27 @@ export function TopbarMenus({ role, userName, userEmail, navigationGroups, onLog
         )}
       </div>
 
+      <div className="topbar-menu-anchor topbar-help-anchor">
+        <button
+          type="button"
+          className="topbar-help-trigger"
+          aria-label="Besoin d’aide ?"
+          aria-expanded={openMenu === 'help'}
+          onClick={() => setOpenMenu(openMenu === 'help' ? null : 'help')}
+        >
+          <CircleHelp size={17} aria-hidden="true" />
+          <span>Besoin d’aide ?</span>
+        </button>
+        {openMenu === 'help' && (
+          <div className="topbar-popover topbar-help-popover" role="dialog" aria-label="Aide et ressources">
+            <div className="topbar-popover-heading">Besoin d’aide ?</div>
+            <div className="topbar-help-content">
+              <strong>Consultez le guide d’utilisation.</strong>
+              <p>Pour obtenir de l’aide sur une fonctionnalité ou un accès, contactez l’administrateur de l’établissement.</p>
+            </div>
+          </div>
+        )}
+      </div>
       <div className="topbar-divider" />
       <div className="topbar-menu-anchor">
         <button

@@ -301,3 +301,13 @@ input, select, textarea, button { max-width:100%; }
   .page-heading h1 { font-size:23px; }
   .form-footnote { font-size:11px; }
 }
+
+/* Aide accessible depuis la barre supérieure, à côté du menu de compte. */
+.topbar-help-trigger{display:inline-flex;align-items:center;gap:7px;height:35px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--green-800);font:600 11px 'DM Sans',sans-serif;white-space:nowrap;cursor:pointer}
+.topbar-help-trigger:hover,.topbar-help-trigger[aria-expanded="true"]{background:#f0f7f1;border-color:#c9dfce}
+.topbar-help-trigger svg{flex-shrink:0}
+.topbar-help-popover{width:min(300px,calc(100vw - 28px))}
+.topbar-help-content{padding:14px 15px 16px;color:#34463a;font-size:12px;line-height:1.6}
+.topbar-help-content strong{font-size:12px}
+.topbar-help-content p{margin:7px 0 0;color:#758179}
+@media(max-width:760px){.topbar-help-trigger{width:35px;padding:0;justify-content:center}.topbar-help-trigger span{display:none}.topbar-actions{gap:10px}}
