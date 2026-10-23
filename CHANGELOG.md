@@ -1,9 +1,12 @@
-## 1.19.0 — Formulaires superposés façon UserForm
-- Gestion des élèves et Finance scolaire utilisent une fenêtre de saisie large, avec en-tête, zone de champs défilante et actions persistantes, au-dessus de la page existante.
-- Notes et bulletins : création d’évaluation, saisie collective des notes, configuration des règles de calcul et ajout de matière déplacés dans des fenêtres modales.
-- La page reste visible derrière les fenêtres ; annulation/clic extérieur ferment le formulaire, et les opérations réussies ferment la fenêtre après enregistrement.
-- Ajout de dispositions responsive pour les formulaires sur ordinateur, tablette et mobile ; aucune migration SQL.
-- Contrôles réalisés : Tests de pré-livraison : 38 réussis sur 38. Contrôle structurel : 11 réussis, 1 avertissement lié au package-lock.json, et analyse syntaxique de 29 fichiers sans erreur. La compilation Next.js complète et les tests sur une base Supabase réelle restent à effectuer.
+## 1.18.2 — Formulaires superposés façon UserForm
+
+- Les formulaires de création/modification des élèves, de création des frais scolaires, de détail des échéanciers et d’encaissement sont rendus directement sous `document.body` au moyen de portails React. La page source reste visible en arrière-plan et n’est pas déplacée vers le formulaire.
+- Dans Notes et bulletins, la création d’une évaluation, la saisie collective des notes, la configuration des règles de calcul et l’ajout d’une matière s’ouvrent maintenant dans des fenêtres modales superposées.
+- Ajout de boutons explicites pour ouvrir chaque formulaire ; fermeture par le bouton de fermeture, Annuler/Fermer ou clic sur le fond de la fenêtre. Les filtres et la page de départ restent conservés.
+- Mise en page adaptée aux écrans mobiles et au contenu long : en-tête/pied de fenêtre stables et zone de formulaire défilante.
+- Aucun changement au schéma Supabase ni aux règles de calcul des frais, des notes ou des bulletins.
+- La suite de régression compte désormais 37 tests hors ligne, dont un contrôle dédié aux fenêtres superposées des trois modules.
+- Contrôle syntaxique TypeScript/JSX effectué localement. Installation npm et build complet non exécutés : le registre de dépendances n’a pas répondu dans l’environnement de préparation. Les tests hors ligne doivent être lancés avec `npm run test:release` et la compilation validée avant le déploiement.
 
 ## 1.18.1 — Correction du build Vercel
 
