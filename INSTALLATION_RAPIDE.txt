@@ -1,4 +1,4 @@
-EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.19.2)
+EPC BETHEL — INSTALLATION RAPIDE (VERSION 1.20.0)
 
 IMPORTANT
 Cette archive contient le code source consolidé des étapes 1 à 7 (revue de pré-livraison). La compilation complète et les migrations n'ont pas encore été validées sur un projet Supabase réel. Commence toujours par un projet de développement et une sauvegarde.
@@ -70,7 +70,7 @@ FONCTIONNALITÉS CONCERNÉES PAR L’ÉTAPE 5
 
 SCÉNARIOS À TESTER AVANT TOUTE UTILISATION RÉELLE
 - Connexion OTP, invitation, inscription par code et tests des profils administrateur, modification et observateur.
-- Frais annuels, réductions, échéanciers de 1 à 6 versements, paiement partiel, paiement complet et refus d'un trop-perçu.
+- Frais annuels, réductions, six dates annuelles fixes configurées dans Paramètres, paiements partiels et successifs, prévention des doubles enregistrements.
 - Dépense en brouillon, validation avec solde suffisant/insuffisant, annulation et contrepassation.
 - Transfert caisse → banque : les deux mouvements doivent être liés et le total de trésorerie ne doit pas changer.
 - Compte dont la date d'ouverture est future et refus des opérations futures.

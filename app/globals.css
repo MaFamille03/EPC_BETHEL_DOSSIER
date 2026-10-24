@@ -879,3 +879,63 @@ input, select, textarea, button { max-width:100%; }
 .fee-payment-balance-summary>p { grid-column:1/-1; margin:0; color:#6b796e; font-size:11px; line-height:1.5; }
 @media(max-width:700px) { .fee-payment-balance-summary { grid-template-columns:repeat(2,minmax(0,1fr)); padding:9px; gap:7px; } .fee-payment-balance-summary>p { grid-column:1/-1; } }
 @media(max-width:420px) { .fee-payment-balance-summary { grid-template-columns:minmax(0,1fr); } }
+
+/* V1.20.0 — échéances annuelles centralisées dans Paramètres et densité de la synthèse financière */
+.annual-payment-schedule-panel{margin:14px 0 18px;padding:14px;border:1px solid #e1ebe2;border-radius:12px;background:#fbfdfb}
+.annual-payment-schedule-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(210px,280px);align-items:end;gap:16px}
+.annual-payment-schedule-heading h3{display:flex;align-items:center;gap:7px;margin:0 0 5px;color:#294633;font-size:14px}
+.annual-payment-schedule-heading h3 svg{color:var(--green-700)}
+.annual-payment-schedule-heading p{margin:0;color:#708075;font-size:11px;line-height:1.5;max-width:680px}
+.annual-payment-schedule-heading .form-field{margin:0;min-width:0}
+.annual-payment-schedule-heading .form-field select{height:36px;min-height:36px}
+.annual-schedule-status{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding:9px 11px;border:1px solid #e4ebe5;border-radius:8px;background:#fff}
+.annual-schedule-status strong{font-size:11px;color:#33483a}
+.annual-schedule-status span{font-size:10px;color:#758278}
+.annual-schedule-status.is-configured{border-color:#cfe3d2;background:#f5fbf5}
+.annual-schedule-status.is-missing{border-color:#ecdcc1;background:#fffaf2}
+.annual-schedule-dates{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin-top:9px}
+.annual-schedule-dates>div{display:flex;flex-direction:column;gap:4px;min-width:0;padding:8px;border:1px solid #e8eee9;border-radius:8px;background:#fff}
+.annual-schedule-dates span,.tariff-annual-schedule-readonly span{font-size:9px;color:#7e8b81}
+.annual-schedule-dates strong{font-size:11px;color:#24432d;overflow-wrap:anywhere}
+.annual-schedule-actions{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:10px}
+.annual-schedule-actions .button{min-height:34px;height:34px;font-size:11px}
+.annual-schedule-modal{width:min(700px,calc(100vw - 32px));max-height:calc(100dvh - 28px);display:flex;flex-direction:column;overflow:hidden}
+.annual-schedule-modal>.modal-header,.annual-schedule-modal .modal-footer{flex:0 0 auto}
+.annual-schedule-modal form{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.annual-schedule-modal-body{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:13px}
+.annual-schedule-date-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.annual-schedule-date-fields .form-field{margin:0}
+.annual-schedule-date-fields input[readonly]{background:#f5f8f5;color:#48594d;border-color:#e3ebe4;cursor:default}
+.tariff-annual-schedule-readonly{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #dfe9e1;border-radius:9px;background:#f8fbf8}
+.tariff-annual-schedule-readonly>strong{display:flex;align-items:center;gap:6px;color:#2f4b36;font-size:11px}
+.tariff-annual-schedule-readonly>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.tariff-annual-schedule-readonly>div>span{padding:6px 7px;border-radius:6px;background:#fff;border:1px solid #e7eee7;font-size:10px;color:#647268}
+.tariff-annual-schedule-readonly small{font-size:10px;line-height:1.5;color:#77857b}
+.student-enrollment-required{grid-column:1/-1;align-items:flex-start}
+.student-enrollment-section-heading{border-bottom:1px solid #e0ebe1;margin-top:7px;padding-bottom:8px}
+.finance-summary-grid.finance-summary-sticky{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:7px;margin-bottom:8px;border-radius:10px;box-shadow:0 4px 12px rgba(24,55,34,.045)}
+.finance-summary-sticky .finance-summary-card{gap:2px;padding:7px 9px;border-radius:8px;box-shadow:none}
+.finance-summary-sticky .finance-summary-card>span{gap:5px;font-size:10px;line-height:1.2}
+.finance-summary-sticky .finance-summary-card>span svg{width:13px;height:13px}
+.finance-summary-sticky .finance-summary-card strong{font-size:15px;line-height:1.18}
+.finance-summary-sticky .finance-summary-card small{font-size:9px;line-height:1.2;min-height:0}
+.finance-summary-sticky .finance-summary-discounts{grid-column:auto}
+.finance-summary-sticky .finance-summary-note{display:none}
+@media(max-width:760px){
+ .annual-payment-schedule-heading{grid-template-columns:minmax(0,1fr);gap:10px}
+ .annual-schedule-dates{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .finance-summary-grid.finance-summary-sticky{grid-template-columns:repeat(3,minmax(0,1fr));max-height:none;overflow:visible;gap:4px;padding:5px;top:68px}
+ .finance-summary-sticky .finance-summary-card{padding:6px 5px;gap:3px}
+ .finance-summary-sticky .finance-summary-card>span{font-size:9px;align-items:flex-start}
+ .finance-summary-sticky .finance-summary-card strong{font-size:12px;line-height:1.2}
+ .finance-summary-sticky .finance-summary-card small{font-size:8px}
+}
+@media(max-width:620px){
+ .annual-payment-schedule-panel{padding:10px;margin:10px 0 14px}
+ .annual-schedule-status{align-items:flex-start;flex-direction:column;gap:4px}
+ .annual-schedule-date-fields{grid-template-columns:minmax(0,1fr)}
+ .tariff-annual-schedule-readonly>div{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .annual-schedule-modal{width:calc(100vw - 12px);max-height:calc(100dvh - 12px)}
+ .finance-summary-grid.finance-summary-sticky{top:64px}
+ .finance-summary-sticky .finance-summary-card strong{font-size:11px}
+}

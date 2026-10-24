@@ -39,8 +39,8 @@ test('la configuration de paquet expose les commandes requises', () => {
 test('les migrations SQL sont présentes et numérotées sans trou', () => {
   const directory = path.join(root, 'supabase/migrations');
   const files = fs.readdirSync(directory).filter((name) => /^\d{3}_.+\.sql$/.test(name)).sort();
-  assert.equal(files.length, 24);
-  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 24 }, (_, i) => i + 1));
+  assert.equal(files.length, 25);
+  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 25 }, (_, i) => i + 1));
 });
 
 test('les routes serveur nécessaires au parcours des comptes existent', () => {
@@ -194,18 +194,19 @@ test('le mode aperçu explique qu’aucune donnée réelle n’est chargée et b
   assert.match(shell, /Aucune donnée réelle n’est chargée et les modifications sont désactivées/);
   assert.match(modulePage, /showForm&&!isReadOnly/);
   assert.match(modulePage, /connected&&!isReadOnly&&!concessionView/);
-  assert.match(modulePage, /La scolarité et l’inscription\/réinscription peuvent être payées en 1 à 6 versements/);
+  assert.match(modulePage, /Frais enregistrés selon les six échéances fixes définies dans Paramètres/);
 });
 
 
-test('Finance scolaire présente les réductions et les échéanciers variables', () => {
+test('Finance scolaire présente les réductions et réutilise le calendrier annuel fixe', () => {
   const source = read('components/module-page.tsx');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const shell = read('components/app-shell.tsx');
   const modules = read('lib/modules.ts');
   assert.match(source, /Gérer les réductions/);
-  assert.match(source, /Nombre de versements/);
-  assert.match(source, /create_installment_student_charge/);
+  assert.match(source, /create_student_charge_with_annual_schedule/);
+  assert.doesNotMatch(source, /Nombre de versements/);
+  assert.match(source, /six échéances fixes définies dans Paramètres/);
   assert.match(source, /Finance scolaire.*Enregistrer un paiement/s);
   assert.match(source, /finance-action-layout/);
   assert.match(migration, /cardinality\(p_due_dates\) > 6/);
@@ -213,7 +214,7 @@ test('Finance scolaire présente les réductions et les échéanciers variables'
   assert.match(migration, /get_school_fee_summary/);
   assert.match(migration, /get_school_fee_ledger_filtered/);
   assert.doesNotMatch(shell, /nav-count\">6/);
-  assert.match(modules, /versements de 1 à 6 échéances.*réductions accordées/);
+  assert.match(modules, /six échéances annuelles fixes configurées dans Paramètres.*réductions accordées/);
   assert.match(source, /Demander une réduction/);
   assert.match(source, /Inscription \/ réinscription/);
   assert.match(source, /Scolarité annuelle/);
@@ -231,10 +232,10 @@ test('le formulaire de création de compte de trésorerie est bancaire et sans b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.19.2');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.19\.2/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.19\.2/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.19\.2/m);
+  assert.equal(pkg.version, '1.20.0');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.20\.0/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.20\.0/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.20\.0/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
@@ -319,12 +320,12 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.19.2');
+  assert.equal(packageInfo.version, '1.20.0');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
-  assert.match(source, /Échéancier de \{installmentCount\} versement/);
-  assert.match(source, /Nombre de versements/);
-  assert.match(source, /create_installment_student_charge/);
+  assert.match(source, /create_student_charge_with_annual_schedule/);
+  assert.doesNotMatch(source, /Nombre de versements/);
+  assert.match(source, /six échéances fixes définies dans Paramètres/);
   assert.match(migration, /p_fee_code not in \('SCOLARITE','INSCRIPTION'\)/);
   assert.match(migration, /cardinality\(p_due_dates\) > 6/);
   const fixMigration = read('supabase/migrations/020_fix_school_fee_ledger_ambiguity.sql');
@@ -367,8 +368,8 @@ test('les corps de création et de mise à jour des catégories de frais sont s�
 test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 42, 'la suite de contrôle doit contenir exactement 42 tests');
-  assert.match(read('README.md'), /42 tests hors ligne/);
+  assert.equal(count, 45, 'la suite de contrôle doit contenir exactement 45 tests');
+  assert.match(read('README.md'), /45 tests hors ligne/);
   assert.match(read('CHANGELOG.md'), /42 tests hors ligne/);
   assert.match(read('CHANGELOG.md'), /Tests de pré-livraison : 36 réussis sur 36/);
   assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);
@@ -539,4 +540,45 @@ test('la fiche individuelle des notes permet les trois trimestres et protège le
   assert.match(migration, /guard_student_grade_mutation/);
   assert.match(migration, /Les notes d’une année scolaire clôturée ne peuvent plus être modifiées/);
   assert.match(migration, /grade\.deleted/);
+});
+
+
+test('V1.20.0 impose classe et année scolaire active dès le dossier élève', () => {
+  const source = read('components/module-page.tsx');
+  const migration = read('supabase/migrations/025_annual_payment_schedule_and_required_student_class.sql');
+  assert.match(source, /setSchoolYearOptions\(\(yearData\|\|\[\]\)\.filter\(\(r:any\)=>r\.is_current&&!r\.is_closed\)/);
+  assert.match(source, /Choisir la classe de l’élève/);
+  assert.match(source, /required=\{!editingStudentId\}/);
+  assert.match(source, /create_student_profile_with_enrollment/);
+  assert.match(migration, /if p_class_id is null or p_school_year_id is null then raise exception/);
+  assert.match(migration, /p_guardian_name.*p_guardian_phone/s);
+});
+
+test('les six échéances sont paramétrées une fois par année et réutilisées par les frais', () => {
+  const manager = read('components/class-fee-tariffs-manager.tsx');
+  const modulePage = read('components/module-page.tsx');
+  const migration = read('supabase/migrations/025_annual_payment_schedule_and_required_student_class.sql');
+  assert.match(manager, /Calendrier annuel des six échéances/);
+  assert.match(manager, /save_school_year_payment_schedule/);
+  assert.match(manager, /corriger exceptionnellement/i);
+  assert.match(modulePage, /create_student_charge_with_annual_schedule/);
+  assert.doesNotMatch(modulePage, /formKeys=.*Nombre de versements/);
+  assert.match(migration, /create table if not exists public\.school_year_payment_schedules/i);
+  assert.match(migration, /existing_charges_unchanged',true/i);
+  assert.match(migration, /p_due_dates\[v_i\] <= p_due_dates\[v_i-1\]/);
+  assert.match(migration, /where school_year_id=p_school_year_id/);
+});
+
+test('la synthèse Finance scolaire comporte exactement les six indicateurs demandés', () => {
+  const source = read('components/module-page.tsx');
+  const css = read('app/globals.css');
+  assert.match(source, /Total net attendu/);
+  assert.match(source, /Total reçu à ce jour/);
+  assert.match(source, /Reste à recevoir/);
+  assert.match(source, /Total de la scolarité/);
+  assert.match(source, /Total des frais annexes et droits d’inscription/);
+  assert.match(source, /Total des réductions appliquées/);
+  assert.match(source, /feeSummary\.annex_total \+ feeSummary\.registration_total/);
+  assert.match(css, /finance-summary-grid\.finance-summary-sticky\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.doesNotMatch(source, /finance-summary-note/);
 });

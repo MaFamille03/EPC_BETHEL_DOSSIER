@@ -1,3 +1,14 @@
+## 1.20.0 — Dossier élève complet et échéances annuelles fixes
+
+- La création d’un élève impose maintenant la classe et l’année scolaire en cours, en plus des informations d’identité et du responsable légal.
+- Le choix d’année du dossier élève n’affiche que l’année scolaire active non clôturée, conformément aux règles d’inscription SQL existantes.
+- Les six échéances sont configurées dans Paramètres une seule fois par année scolaire ; elles sont verrouillées après enregistrement et un paiement en retard ne les décale pas.
+- La création de tarifs et de frais utilise le calendrier annuel défini dans Paramètres ; les charges, échéanciers et paiements historiques ne sont pas modifiés lors d’une correction du calendrier.
+- La synthèse fixe de Finance scolaire est compacte : deux lignes de trois indicateurs, avec le total net attendu, les paiements confirmés, le reste, la scolarité, les frais annexes et droits d’inscription, ainsi que les réductions.
+- Ajout de la migration SQL `025_annual_payment_schedule_and_required_student_class.sql`.
+- Tests de pré-livraison : 45 réussis sur 45 ; précontrôle : 11 réussis, 0 échec, 1 avertissement (lockfile npm absent).
+- Notes et bulletins n’ont pas été modifiés dans cette livraison, conformément à la demande.
+
 ## 1.19.2 — Correction du chargement des soldes de frais dans le formulaire d’encaissement
 
 - Remplace l’appel à `.finally()` sur le résultat PromiseLike de Supabase par deux branches `.then()` (succès et erreur), compatibles avec son type de retour.
