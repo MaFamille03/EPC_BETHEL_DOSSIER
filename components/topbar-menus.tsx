@@ -28,7 +28,7 @@ type TopbarMenusProps = {
 };
 
 const roleLabels: Record<EPCAppRole, string> = {
-  admin: 'Administrateur principal',
+  admin: 'Administrateur',
   observateur: 'Observateur · lecture seule',
   modification: 'Modification · gestion des données',
 };

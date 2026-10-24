@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
-const PRIMARY_ADMIN_EMAIL = 'minnhindje@gmail.com';
 type Role = 'admin' | 'observateur' | 'modification';
 const editableRoles: Exclude<Role, 'admin'>[] = ['observateur', 'modification'];
 
@@ -22,20 +21,17 @@ function clients(token?: string) {
   return { auth, admin };
 }
 
-async function requirePrimaryAdmin(req: NextRequest) {
+async function requireAdmin(req: NextRequest) {
   const header = req.headers.get('authorization') || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : '';
   if (!token) throw new Error('Authentification requise.');
   const { auth, admin } = clients(token);
   const { data: { user }, error } = await auth.auth.getUser(token);
   if (error || !user) throw new Error('Session invalide.');
-  if (user.email?.trim().toLowerCase() !== PRIMARY_ADMIN_EMAIL) {
-    throw new Error('Accès réservé au compte administrateur principal.');
-  }
   const { data: profile, error: profileError } = await admin
     .from('profiles').select('id,role,is_active').eq('id', user.id).maybeSingle();
   if (profileError || !profile || profile.role !== 'admin' || !profile.is_active) {
-    throw new Error('Le compte administrateur n’est pas actif. Contactez l’administrateur principal.');
+    throw new Error('Accès réservé à un profil Administrateur actif.');
   }
   return { user, admin };
 }
@@ -49,14 +45,17 @@ function statusFor(message: string) {
 
 export async function GET(req: NextRequest) {
   try {
-    const { admin } = await requirePrimaryAdmin(req);
+    const { admin } = await requireAdmin(req);
     const [{ data: profiles, error: profileError }, { data: userList, error: userError }] = await Promise.all([
       admin.from('profiles').select('id,full_name,role,is_active,created_at').order('created_at', { ascending: false }).limit(1000),
       admin.auth.admin.listUsers({ page: 1, perPage: 1000 }),
     ]);
     if (profileError || userError) throw new Error(profileError?.message || userError?.message || 'Lecture des comptes impossible.');
-    const emailById = new Map(userList.users.map(user => [user.id, user.email || '']));
-    const users = (profiles || []).map(profile => ({ ...profile, email: emailById.get(profile.id) || '' }));
+    const authById = new Map(userList.users.map(user => [user.id, user]));
+    const users = (profiles || []).map(profile => {
+      const authUser = authById.get(profile.id);
+      return { ...profile, email: authUser?.email || '', email_confirmed: Boolean(authUser?.email_confirmed_at) };
+    });
     return NextResponse.json({ users }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Erreur serveur';
@@ -66,7 +65,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { admin } = await requirePrimaryAdmin(req);
+    const { admin } = await requireAdmin(req);
     const body = await req.json();
     const email = String(body.email || '').trim().toLowerCase();
     const full_name = String(body.full_name || '').trim();
@@ -78,9 +77,6 @@ export async function POST(req: NextRequest) {
     }
     if (!full_name || full_name.length > 120) {
       return NextResponse.json({ error: 'Le nom complet est obligatoire (120 caractères maximum).' }, { status: 400 });
-    }
-    if (email === PRIMARY_ADMIN_EMAIL) {
-      return NextResponse.json({ error: 'L’adresse administrateur principal ne peut pas être invitée comme un autre utilisateur.' }, { status: 400 });
     }
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV !== 'production' ? req.nextUrl.origin : '');
     if (!siteUrl) return NextResponse.json({ error: 'Le service d’invitation n’est pas configuré. Contactez l’administrateur.' }, { status: 503 });
@@ -95,7 +91,7 @@ export async function POST(req: NextRequest) {
       { id: data.user.id, full_name, role: 'observateur', is_active: true },
       { onConflict: 'id' },
     );
-    if (profileError) throw new Error(`Invitation créée mais profil non enregistré : ${profileError.message}. Contactez l’administrateur principal.`);
+    if (profileError) throw new Error(`Invitation créée mais profil non enregistré : ${profileError.message}. Contactez l’administrateur de l’établissement.`);
     return NextResponse.json({ ok: true, userId: data.user.id, role: 'observateur' }, { status: 201 });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Erreur serveur';
@@ -105,11 +101,11 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { user, admin } = await requirePrimaryAdmin(req);
+    const { user, admin } = await requireAdmin(req);
     const body = await req.json();
     const userId = String(body.userId || '');
     if (!userId) return NextResponse.json({ error: 'Identifiant utilisateur manquant.' }, { status: 400 });
-    if (userId === user.id) return NextResponse.json({ error: 'Le compte administrateur principal ne peut pas être modifié depuis cette interface.' }, { status: 400 });
+    if (userId === user.id) return NextResponse.json({ error: 'Le compte administrateur ne peut pas être modifié depuis cette interface.' }, { status: 400 });
 
     const [{ data: targetProfile, error: targetProfileError }, { data: targetAuth, error: targetAuthError }] = await Promise.all([
       admin.from('profiles').select('id,role,is_active').eq('id', userId).maybeSingle(),
@@ -118,14 +114,14 @@ export async function PATCH(req: NextRequest) {
     if (targetProfileError || targetAuthError || !targetProfile || !targetAuth.user) {
       return NextResponse.json({ error: 'Utilisateur introuvable.' }, { status: 404 });
     }
-    if (targetAuth.user.email?.toLowerCase() === PRIMARY_ADMIN_EMAIL || targetProfile.role === 'admin') {
-      return NextResponse.json({ error: 'Le compte administrateur principal est protégé.' }, { status: 400 });
+    if (targetProfile.role === 'admin') {
+      return NextResponse.json({ error: 'Le profil administrateur se gère depuis Paramètres → Profil administrateur.' }, { status: 400 });
     }
 
     const nextRole = body.role === undefined ? targetProfile.role : body.role;
     const nextActive = body.is_active === undefined ? targetProfile.is_active : body.is_active;
     if (!editableRoles.includes(nextRole as Exclude<Role, 'admin'>)) {
-      return NextResponse.json({ error: 'Le niveau d’accès doit être Observateur ou Modification ; l’administrateur est réservé à minnhindje@gmail.com.' }, { status: 400 });
+      return NextResponse.json({ error: 'Le niveau d’accès doit être Observateur ou Modification. Le rôle administrateur se gère depuis Paramètres.' }, { status: 400 });
     }
     if (typeof nextActive !== 'boolean') return NextResponse.json({ error: 'État du compte invalide.' }, { status: 400 });
 

@@ -8,7 +8,6 @@ import { UserPlus, RefreshCw, ShieldCheck, Mail, UserRound, CheckCircle2, AlertC
 type Role = 'admin' | 'observateur' | 'modification';
 type EditableRole = Exclude<Role, 'admin'>;
 type UserRow = { id: string; email: string; full_name: string; role: Role; is_active: boolean; created_at: string };
-const PRIMARY_ADMIN_EMAIL = 'minnhindje@gmail.com';
 
 export default function UsersPage() {
   const [rows, setRows] = useState<UserRow[]>([]);
@@ -61,8 +60,8 @@ export default function UsersPage() {
   async function update(row: UserRow, patch: Partial<Pick<UserRow, 'role' | 'is_active'>>) {
     const client = supabase();
     if (!client) return;
-    if (row.email.toLowerCase() === PRIMARY_ADMIN_EMAIL || row.role === 'admin') {
-      setError('Le compte administrateur principal est protégé.'); return;
+    if (row.role === 'admin') {
+      setError('Le profil administrateur se gère depuis Paramètres.'); return;
     }
     setError(''); setNotice('');
     try {
@@ -80,7 +79,7 @@ export default function UsersPage() {
   }
 
   return <AppShell>
-    <div className="page-heading"><div><div className="eyebrow">ADMINISTRATION</div><h1>Utilisateurs et autorisations</h1><p>Les nouveaux comptes sont en lecture seule par défaut. Attribue ensuite Lecture seule ou Modification à chaque compte ; l’administration reste réservée au compte principal.</p></div><button className="button button-secondary" onClick={() => void load()} disabled={loading}><RefreshCw size={16}/> Actualiser</button></div>
+    <div className="page-heading"><div><div className="eyebrow">ADMINISTRATION</div><h1>Utilisateurs et autorisations</h1><p>Les nouveaux comptes sont en lecture seule par défaut. Attribuez ensuite Lecture seule ou Modification ; le transfert du rôle Administrateur se fait dans Paramètres.</p></div><button className="button button-secondary" onClick={() => void load()} disabled={loading}><RefreshCw size={16}/> Actualiser</button></div>
     {!isSupabaseConfigured() && <div className="inline-notice"><ShieldCheck size={16}/> Mode aperçu : la connexion aux données doit être activée pour gérer les comptes.</div>}
     {error && <div className="inline-notice"><AlertCircle size={16}/>{error}</div>}
     {notice && <div className="inline-notice"><CheckCircle2 size={16}/>{notice}</div>}
@@ -100,10 +99,10 @@ export default function UsersPage() {
     <section className="panel table-panel"><div className="panel-toolbar"><div><h2>Comptes enregistrés</h2><p>{rows.length} compte{rows.length > 1 ? 's' : ''} chargé{rows.length > 1 ? 's' : ''}</p></div></div>
       <div className="table-scroll"><table><thead><tr><th>Utilisateur</th><th>Autorisation</th><th>État du compte</th><th>Inscription</th><th>Actions</th></tr></thead><tbody>
         {rows.map(row => {
-          const isPrimary = row.email.toLowerCase() === PRIMARY_ADMIN_EMAIL || row.role === 'admin';
+          const isPrimary = row.role === 'admin';
           return <tr key={row.id}>
-            <td><div className="admin-user-cell"><span className="person-avatar green">{isPrimary ? <ShieldCheck size={16}/> : <UserRound size={16}/>}</span><span><strong>{row.full_name || 'Nom non renseigné'}</strong><small>{row.email}</small>{isPrimary && <small className="field-help">Compte principal protégé</small>}</span></div></td>
-            <td>{isPrimary ? <span className="role-pill role-pill-admin"><LockKeyhole size={13}/> Administrateur principal</span> : <select aria-label={`Autorisation de ${row.email}`} value={row.role} onChange={e => void update(row, { role: e.target.value as EditableRole })}><option value="observateur">Lecture seule — consulter les informations</option><option value="modification">Modification — gérer les données de l’école</option></select>}</td>
+            <td><div className="admin-user-cell"><span className="person-avatar green">{isPrimary ? <ShieldCheck size={16}/> : <UserRound size={16}/>}</span><span><strong>{row.full_name || 'Nom non renseigné'}</strong><small>{row.email}</small>{isPrimary && <small className="field-help">Géré dans Paramètres</small>}</span></div></td>
+            <td>{isPrimary ? <span className="role-pill role-pill-admin"><LockKeyhole size={13}/> Administrateur</span> : <select aria-label={`Autorisation de ${row.email}`} value={row.role} onChange={e => void update(row, { role: e.target.value as EditableRole })}><option value="observateur">Lecture seule — consulter les informations</option><option value="modification">Modification — gérer les données de l’école</option></select>}</td>
             <td><span className={`status-pill ${row.is_active ? 'status-good' : 'status-warn'}`}><i/>{row.is_active ? 'Actif' : 'Désactivé'}</span></td>
             <td>{row.created_at ? new Date(row.created_at).toLocaleDateString('fr-FR') : '—'}</td>
             <td>{isPrimary ? <span className="field-help">Protection active</span> : <button className="button button-secondary" onClick={() => void update(row, { is_active: !row.is_active })}>{row.is_active ? 'Désactiver' : 'Réactiver'}</button>}</td>
@@ -112,6 +111,6 @@ export default function UsersPage() {
         {!rows.length && <tr><td colSpan={5} className="empty-cell">{loading ? 'Chargement…' : 'Aucun utilisateur retourné. Vérifiez la configuration et les droits administrateur.'}</td></tr>}
       </tbody></table></div>
     </section>
-    <div className="inline-notice"><ShieldCheck size={16}/><span>Les niveaux d’accès disponibles sont Lecture seule et Modification. L’administration est réservée au compte principal : {PRIMARY_ADMIN_EMAIL}.</span></div>
+    <div className="inline-notice"><ShieldCheck size={16}/><span>Les niveaux d’accès disponibles ici sont Lecture seule et Modification. Pour changer d’administrateur, ouvrez Paramètres → Profil administrateur.</span></div>
   </AppShell>;
 }

@@ -1,54 +1,36 @@
-# Déploiement d’EPC BETHEL sur Vercel
+# Déploiement EPC BETHEL — Vercel et Supabase
 
-Cette archive consolide les modifications des étapes 1 à 9. Le dossier courant est la racine du projet : `package.json`, `app/`, `components/`, `lib/` et `supabase/` doivent se trouver au même niveau dans le dépôt GitHub.
+Cette version corrige la gestion des droits administrateur et ajoute le transfert contrôlé du rôle depuis Paramètres. Les variables déjà présentes dans Vercel peuvent être conservées ; aucune variable dédiée au code d’inscription n’est requise.
 
-> **État important :** les contrôles hors ligne réussissent, mais le build Next.js et les migrations sur une vraie base Supabase n’ont pas encore été validés dans l’environnement de préparation. Traiter cette version comme une candidate de préproduction, pas comme une production déjà vérifiée.
+## Variables d’environnement
 
-## Méthode recommandée : GitHub puis Vercel
+Vérifiez dans Vercel que les variables existantes sont bien définies pour les environnements utilisés :
 
-1. Téléchargez et décompressez l’archive. Ne poussez pas l’archive ZIP elle-même : poussez son contenu, avec `package.json` à la racine du dépôt.
-2. Créez un dépôt GitHub privé et chargez tous les fichiers du dossier. Ne chargez jamais un fichier `.env.local` contenant des secrets.
-3. Avant la production, depuis un ordinateur où le registre npm est accessible, ouvrez un terminal à la racine du projet et exécutez :
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` ou `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `NEXT_PUBLIC_SITE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY` ou `SUPABASE_SECRET_KEY` côté serveur uniquement
 
-   ```bash
-   npm install
-   npm run test:release
-   npm run preflight
-   npm run typecheck
-   npm run build
-   ```
+Ne copiez jamais de valeur secrète dans ce dépôt. `NEXT_PUBLIC_SITE_URL` doit correspondre à l’URL canonique autorisée dans Supabase Auth.
 
-   Gardez `package-lock.json` dans le dépôt après la réussite de `npm install`. Le fichier n’est pas inclus ici car sa génération a échoué dans l’environnement de préparation (`EAI_AGAIN registry.npmjs.org`).
-4. Dans Vercel, utilisez **Add New → Project**, importez le dépôt GitHub, vérifiez que le répertoire racine est `./` et que le framework est détecté comme **Next.js**. La commande de build est `npm run build`.
-5. Configurez les variables d’environnement ci-dessous pour les environnements nécessaires. N’ajoutez aucune valeur secrète au code ni au dépôt GitHub.
-6. Déployez d’abord un aperçu (Preview), vérifiez les journaux de build et testez le site. Ne basculez pas en production avant la validation des migrations et des permissions.
+## Mise à jour d’un projet déjà déployé
 
-## Variables d’environnement Vercel
+1. Sauvegardez la base Supabase et confirmez la dernière migration réellement appliquée.
+2. Déployez le code via le flux GitHub/Vercel habituel.
+3. Si la base est à la version de schéma 025, exécutez **uniquement** `supabase/migrations/026_transferable_admin_profile.sql` dans Supabase, après validation en préproduction.
+4. Vérifiez que le profil Administrateur existant est actif et que l’accès fonctionne.
+5. Dans l’application, testez l’invitation d’un utilisateur, la confirmation d’e-mail, les rôles Observateur/Modification et le transfert administrateur vers un compte confirmé.
+6. Vérifiez qu’après le transfert, l’ancien compte devient Modification et que le nouveau compte a accès à l’administration.
 
-Récupérez les valeurs Supabase depuis **Project Settings → API** de votre projet Supabase. Les noms des variables doivent être écrits exactement ainsi :
+Ne réécrivez pas les migrations 001–025 et ne réexécutez pas l’ensemble des migrations sur une base déjà utilisée. Vercel déploie le code de l’application, mais pas les migrations PostgreSQL à votre place.
 
-| Variable | Valeur |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | URL de votre projet Supabase, du type `https://xxxx.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé publique/anon de ce projet Supabase |
-| `NEXT_PUBLIC_SITE_URL` | URL canonique de l’application déployée, par exemple `https://votre-projet.vercel.app` |
-| `SUPABASE_SERVICE_ROLE_KEY` | Clé service Supabase, réservée au serveur ; **ne jamais** lui ajouter `NEXT_PUBLIC_` |
-| `EPC_BETHEL_REGISTRATION_CODE` | Secret aléatoire d’au moins 24 caractères, utilisé pour autoriser les inscriptions ; ce n’est pas le code mot de passe de connexion |
+## Initialisation d’un nouveau projet Supabase vide
 
-Si le domaine Vercel n’existe pas encore, vous pouvez effectuer un premier déploiement Preview, puis renseigner `NEXT_PUBLIC_SITE_URL` avec l’URL canonique et redéployer. Configurez aussi dans Supabase Auth l’URL du site, les redirections autorisées, les e-mails/mot de passe et le modèle d’invitation.
+Le script `supabase/setup/INSTALLATION_COMPLETE.sql` regroupe les migrations 001 à 026 dans leur ordre d’origine. Il est destiné exclusivement à une base vide : ne l’exécutez pas sur la base actuellement utilisée. Pour initialiser le premier administrateur sur une base neuve, suivez `supabase/setup/README.md`.
 
-## Migrations Supabase — à faire avant les tests métier
+## Vérifications de livraison
 
-1. Utilisez un projet Supabase de développement et faites une sauvegarde avant tout changement de schéma.
-2. Exécutez les 14 fichiers de `supabase/migrations/` dans l’ordre numérique, de `001_initial_schema.sql` à `014_management_reports_asset_integration.sql`.
-3. Contrôlez chaque migration au fur et à mesure. Arrêtez-vous au premier échec et examinez l’état de la base ; ne relancez pas aveuglément une migration partiellement exécutée.
-4. Vérifiez les politiques RLS, les droits d’exécution des fonctions SQL et les trois profils : administrateur principal, observateur et modification.
-5. Vérifiez que l’adresse `minnhindje@gmail.com` est bien confirmée et reconnue comme administrateur principal. Ne donnez jamais le rôle admin depuis un champ public de formulaire.
-6. Testez les inscriptions, dossiers élèves, frais/échéances, concessions, encaissements, annulations, dépenses, transferts, achats, réceptions, inventaire, maintenance et rapports avant toute donnée réelle.
-
-## Déploiement par le terminal (alternative)
-
-Sur un poste où Node.js 20.9 ou plus récent, npm, un accès réseau et la CLI Vercel sont disponibles :
+Sur une machine de développement connectée au registre npm :
 
 ```bash
 npm install
@@ -56,28 +38,6 @@ npm run test:release
 npm run preflight
 npm run typecheck
 npm run build
-npx vercel
 ```
 
-Vérifiez la préproduction avant d’utiliser `npx vercel --prod`. N’exécutez pas le déploiement de production tant que `typecheck`, `build`, les migrations et les tests fonctionnels ne sont pas concluants.
-
-## Contrôles locaux déjà disponibles
-
-```bash
-npm run test:release
-npm run preflight
-```
-
-Ces commandes ne nécessitent pas de connexion Supabase mais ne remplacent pas le build Next.js, les tests d’intégration SQL/RLS ou les tests du navigateur.
-
-
-## Variables requises pour les paramètres administrateur (v1.9.8)
-- `NEXT_PUBLIC_SUPABASE_URL` : URL du projet Supabase.
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` ou `NEXT_PUBLIC_SUPABASE_ANON_KEY` : clé publique pour le navigateur et la validation des sessions. Les routes serveur acceptent également `SUPABASE_PUBLISHABLE_KEY` ou `SUPABASE_ANON_KEY`.
-- `SUPABASE_SECRET_KEY` ou `SUPABASE_SERVICE_ROLE_KEY` : clé serveur privée, jamais préfixée par `NEXT_PUBLIC_`.
-Le code d’accès d’inscription se définit désormais dans **Paramètres → Utilisateurs et autorisations** après connexion de `minnhindje@gmail.com`. Appliquer la migration `015_admin_registration_code_settings.sql` avant de l’utiliser. Après modification des variables Vercel, redéployer le projet.
-
-
-## Module Notes et bulletins — version 1.11.0
-
-Avant de déployer cette version, appliquer `supabase/migrations/018_notes_bulletins_workflows.sql` après les migrations 001 à 017 sur une base de préproduction sauvegardée. Vérifier la saisie collective, les statuts d’absence, les trois méthodes de calcul, la préparation des brouillons, la publication et l’impression PDF. Ne pas appliquer la migration directement en production sans validation préalable.
+Conservez `package-lock.json` généré dans le dépôt. Avant une mise en production, faites aussi des tests fonctionnels des paiements, annulations, échéances, dépenses, notes, permissions RLS et de la procédure de transfert administrateur dans un environnement de préproduction.

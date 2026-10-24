@@ -49,10 +49,6 @@ export default function AuthScreen() {
       await client.auth.signOut(); setLoading(false);
       setError('Votre accès à EPC BETHEL a été désactivé par l’administrateur de l’établissement. Vous ne pouvez plus vous connecter. Si vous pensez qu’il s’agit d’une erreur, veuillez contacter l’administration.'); return;
     }
-    if (normalized === 'minnhindje@gmail.com' && profile.role !== 'admin') {
-      await client.auth.signOut(); setLoading(false);
-      setError('Votre compte n’a pas encore les droits d’administration nécessaires. Contactez l’administrateur principal.'); return;
-    }
     setLoading(false); router.replace('/'); router.refresh();
   }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AppShell } from '@/components/app-shell';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { useEPCAccess } from '@/components/access-context';
@@ -11,12 +12,14 @@ import { Building2, Save, RefreshCw, CheckCircle2, AlertCircle, ShieldCheck, Key
 import { ModalPortal } from '@/components/modal-portal';
 
 type SchoolSettings = { school_name: string; phone: string; email: string; address: string };
+type ManagedUser = { id: string; email: string; full_name: string; role: 'admin' | 'observateur' | 'modification'; is_active: boolean; email_confirmed?: boolean };
 const initialSchool: SchoolSettings = {
   school_name: 'EPC BETHEL ASSEMBLÉES DE DIEU JEAN FOLLY',
   phone: '', email: '', address: '',
 };
 
 function SettingsContent() {
+  const router = useRouter();
   const { isReadOnly, isAdmin } = useEPCAccess();
   const [school, setSchool] = useState<SchoolSettings>(initialSchool);
   const [loading, setLoading] = useState(false);
@@ -31,6 +34,12 @@ function SettingsContent() {
   const [showAdminCodeForm, setShowAdminCodeForm] = useState(false);
   const [codeNotice, setCodeNotice] = useState('');
   const [codeError, setCodeError] = useState('');
+  const [managedUsers, setManagedUsers] = useState<ManagedUser[]>([]);
+  const [transferTarget, setTransferTarget] = useState('');
+  const [transferConfirmation, setTransferConfirmation] = useState('');
+  const [savingTransfer, setSavingTransfer] = useState(false);
+  const [transferNotice, setTransferNotice] = useState('');
+  const [transferError, setTransferError] = useState('');
   const connected = isSupabaseConfigured();
 
   const load = useCallback(async () => {
@@ -62,6 +71,56 @@ function SettingsContent() {
   }, []);
 
   useEffect(() => { if (isAdmin) void loadAdminCodeStatus(); }, [isAdmin, loadAdminCodeStatus]);
+
+  const loadManagedUsers = useCallback(async () => {
+    const client = supabase();
+    if (!client) return;
+    const { data: sessionData } = await client.auth.getSession();
+    const token = sessionData.session?.access_token;
+    if (!token) return;
+    try {
+      const response = await fetch('/api/admin/users', { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Impossible de charger les comptes.');
+      setManagedUsers(Array.isArray(result.users) ? result.users : []);
+    } catch (e) {
+      setTransferError(e instanceof Error ? e.message : 'Impossible de charger les comptes.');
+    }
+  }, []);
+
+  useEffect(() => { if (isAdmin) void loadManagedUsers(); }, [isAdmin, loadManagedUsers]);
+
+  async function transferAdministrator(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setTransferError(''); setTransferNotice('');
+    const target = managedUsers.find(user => user.id === transferTarget && user.role !== 'admin' && user.is_active && user.email_confirmed);
+    if (!target) { setTransferError('Sélectionnez un compte actif dont l’adresse e-mail est confirmée.'); return; }
+    if (transferConfirmation.trim() !== 'TRANSFERER') { setTransferError('Saisissez TRANSFERER pour confirmer l’opération.'); return; }
+    if (!window.confirm(`Confirmer le transfert du rôle Administrateur à ${target.full_name || target.email} (${target.email}) ? Votre compte deviendra Modification et sera déconnecté.`)) return;
+    const client = supabase();
+    if (!client) { setTransferError('La connexion à Supabase est indisponible.'); return; }
+    const { data: sessionData } = await client.auth.getSession();
+    const token = sessionData.session?.access_token;
+    if (!token) { setTransferError('Votre session a expiré. Reconnectez-vous.'); return; }
+    setSavingTransfer(true);
+    try {
+      const response = await fetch('/api/admin/transfer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ newAdminUserId: target.id, confirmation: transferConfirmation.trim() }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Le transfert n’a pas pu être effectué.');
+      setTransferNotice('Transfert effectué. Votre compte conserve le niveau Modification ; vous allez être déconnecté.');
+      await client.auth.signOut();
+      router.replace('/login?administration-transferee=1');
+      router.refresh();
+    } catch (e) {
+      setTransferError(e instanceof Error ? e.message : 'Le transfert n’a pas pu être effectué.');
+    } finally {
+      setSavingTransfer(false);
+    }
+  }
 
   async function saveAdminCode(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -127,6 +186,28 @@ function SettingsContent() {
         {codeNotice && !showAdminCodeForm && <div className="inline-notice"><CheckCircle2 size={16}/>{codeNotice}</div>}
         {codeError && !showAdminCodeForm && <div className="inline-notice" role="alert"><AlertCircle size={16}/>{codeError}</div>}
         <button type="button" className="button button-primary" onClick={() => { setAdminCode(''); setCodeError(''); setCodeNotice(''); setShowAdminCodeForm(true); }}><KeyRound size={16}/>{codeConfigured ? 'Modifier le code d’accès' : 'Définir le code d’accès'}</button>
+      </div>
+    </section>}
+    {isAdmin && <section className="panel settings-panel">
+      <div className="panel-heading"><div><h2><ShieldCheck size={19}/> Profil administrateur</h2><p>Transférez la responsabilité administrative à un autre membre actif de l’établissement.</p></div></div>
+      <div className="settings-form">
+        <div className="inline-notice"><ShieldCheck size={16}/><span>Le compte choisi doit déjà être créé, actif et confirmé par e-mail. Après le transfert, ce compte devient Administrateur ; votre compte conserve le niveau Modification et sera déconnecté.</span></div>
+        {transferNotice && <div className="inline-notice"><CheckCircle2 size={16}/>{transferNotice}</div>}
+        {transferError && <div className="inline-notice" role="alert"><AlertCircle size={16}/>{transferError}</div>}
+        <form className="settings-form" onSubmit={transferAdministrator}>
+          <label className="form-field"><span>Nouvel administrateur *</span>
+            <select required value={transferTarget} onChange={event => setTransferTarget(event.target.value)}>
+              <option value="">Sélectionner un compte actif confirmé</option>
+              {managedUsers.filter(user => user.role !== 'admin' && user.is_active && user.email_confirmed).map(user => <option key={user.id} value={user.id}>{user.full_name || 'Nom non renseigné'} — {user.email}</option>)}
+            </select>
+          </label>
+          {!managedUsers.some(user => user.role !== 'admin' && user.is_active && user.email_confirmed) && <p className="form-footnote">Aucun autre compte éligible. Invitez un utilisateur, puis attendez qu’il confirme son adresse e-mail et active son compte avant de transférer l’administration.</p>}
+          <label className="form-field"><span>Confirmation de sécurité : saisissez TRANSFERER *</span>
+            <input required value={transferConfirmation} onChange={event => setTransferConfirmation(event.target.value.toUpperCase())} autoComplete="off" placeholder="TRANSFERER" pattern="TRANSFERER" />
+          </label>
+          <p className="form-footnote">Cette opération est enregistrée en base dans une transaction unique. Elle ne change pas les données scolaires ou financières.</p>
+          <div><button type="submit" className="button button-primary" disabled={!connected || savingTransfer || !transferTarget || transferConfirmation.trim() !== 'TRANSFERER'}><ShieldCheck size={16}/>{savingTransfer ? 'Transfert en cours…' : 'Transférer le rôle administrateur'}</button></div>
+        </form>
       </div>
     </section>}
     {showSchoolForm && !isReadOnly && <ModalPortal><div className="modal-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !savingSchool) setShowSchoolForm(false); }}>

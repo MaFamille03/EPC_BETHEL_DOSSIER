@@ -31,8 +31,9 @@ function walk(dir) {
 for (const p of [
   'package.json', 'README.md', '.env.example', '.gitignore', 'next.config.ts', 'tsconfig.json',
   'app/page.tsx', 'app/login/page.tsx', 'app/register/page.tsx', 'app/utilisateurs/page.tsx',
-  'app/api/auth/register/route.ts', 'app/api/admin/users/route.ts', 'app/api/admin/registration-code/route.ts', 'components/app-shell.tsx',
+  'app/api/auth/register/route.ts', 'app/api/admin/users/route.ts', 'app/api/admin/registration-code/route.ts', 'app/api/admin/transfer/route.ts', 'components/app-shell.tsx',
   'lib/supabase.ts', 'supabase/migrations/015_admin_registration_code_settings.sql',
+  'supabase/migrations/026_transferable_admin_profile.sql', 'supabase/setup/INSTALLATION_COMPLETE.sql',
 ]) {
   if (!exists(p)) fail(`Fichier ou dossier requis absent : ${p}`);
 }
@@ -56,7 +57,7 @@ for (const key of ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']) {
 }
 if (!/^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=/m.test(envExample) && !/^NEXT_PUBLIC_SUPABASE_ANON_KEY=/m.test(envExample)) fail('Une clé publique Supabase est absente de .env.example.');
 if (envExample.includes('YOUR_PROJECT.supabase.co') && !envExample.match(/^SUPABASE_SERVICE_ROLE_KEY=.+$/m)) {
-  pass('Le fichier d’exemple ne contient pas de clé de service ou de code d’inscription renseigné.');
+  pass('Le fichier d’exemple ne contient pas de clé secrète renseignée.');
 } else {
   warn('Contrôler manuellement .env.example : il doit contenir uniquement des exemples, jamais de secret réel.');
 }
@@ -121,10 +122,12 @@ if (fs.existsSync(migrationDir)) {
   fail('Dossier de migrations Supabase absent.');
 }
 
-const requiredReports = ['RAPPORT_CONTROLE_QUALITE.md', 'ETAPE_6_NOTES.txt'];
+const requiredReports = ['README.md', 'CHANGELOG.md', 'CHECKLIST_MISE_EN_SERVICE.md'];
 for (const p of requiredReports) if (!exists(p)) fail(`Rapport requis absent : ${p}`);
 if (exists('package-lock.json')) pass('package-lock.json présent.');
-else warn('package-lock.json absent : prévoir npm install sur une machine connectée pour figer les versions avant production.');
+else warn('package-lock.json absent : le générer avec npm install sur une machine connectée, puis le conserver dans Git.');
+if (envExample.includes('EPC_BETHEL_REGISTRATION_CODE')) fail('Ancienne variable EPC_BETHEL_REGISTRATION_CODE encore présente dans .env.example.');
+else pass('L’ancienne variable du code d’inscription est absente du modèle d’environnement.');
 
 console.log('\nEPC BETHEL — CONTRÔLE LOCAL PRÉ-DÉPLOIEMENT');
 for (const item of passes) console.log(`PASS  ${item}`);

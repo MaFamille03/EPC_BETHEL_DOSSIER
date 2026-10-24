@@ -1,9 +1,0 @@
-EPC BETHEL — VERSION 1.10.2
-
-- Le filigrane utilise le logo officiel fourni par l’utilisateur, en grand format et avec une opacité faible pour préserver la lecture.
-- Le logo officiel de l’établissement est également remplacé par le fichier fourni.
-- Le guide Supabase distingue clairement les clés privées serveur des clés publiques.
-- Le guide précise que le code d’inscription se configure dans Paramètres > Utilisateurs et autorisations ; il ne sert pas à la connexion.
-- Les styles de réorganisation des paramètres et le filigrane global de la version 1.10.1 sont conservés.
-
-À vérifier avant production : npm install, npm run typecheck, npm run build, puis test réel de la confirmation e-mail et des rôles dans Supabase. La création du ZIP ne prouve pas que ces tests ont réussi.

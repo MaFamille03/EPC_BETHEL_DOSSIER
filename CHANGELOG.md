@@ -1,3 +1,13 @@
+## 1.21.0 — Transfert administrateur et installation SQL consolidée
+
+- Ajout d’un écran **Paramètres → Profil administrateur** permettant de transférer le rôle à un compte actif dont l’adresse e-mail est confirmée.
+- Le transfert est atomique : le nouveau compte devient Administrateur, tandis que l’ancien conserve le niveau Modification et doit se reconnecter.
+- Remplacement des contrôles d’accès fondés sur une adresse e-mail fixe par une vérification du rôle administrateur actif en base.
+- Suppression de la variable d’environnement historique du code d’inscription ; son hash est géré dans `admin_access_settings` depuis les paramètres.
+- Ajout de la migration `026_transferable_admin_profile.sql` et du script d’installation consolidé `supabase/setup/INSTALLATION_COMPLETE.sql` pour les nouvelles bases vides.
+- Nettoyage des guides d’installation et retrait des anciens comptes-rendus de versions de la racine. L’historique SQL 001–026 reste conservé pour protéger les bases déjà déployées.
+- Les migrations déjà appliquées ne doivent pas être fusionnées ou réécrites : appliquer seulement les nouvelles migrations manquantes sur une base existante.
+
 ## 1.20.0 — Dossier élève complet et échéances annuelles fixes
 
 - La création d’un élève impose maintenant la classe et l’année scolaire en cours, en plus des informations d’identité et du responsable légal.
@@ -338,7 +348,7 @@
 - Le code n’est jamais renvoyé au navigateur ; seul son condensat salé est stocké dans une table inaccessible aux rôles anon/authenticated.
 - Ajout de la migration `015_admin_registration_code_settings.sql`.
 - Les API d’administration acceptent les clés Supabase publishable/anon et secret/service_role actuelles.
-- La création de compte vérifie le code stocké côté serveur ; plus besoin de la variable `EPC_BETHEL_REGISTRATION_CODE`.
+- La création de compte vérifie le code stocké côté serveur ; aucune variable d’environnement dédiée n’est requise.
 
 ## 1.11.2 — Harmonisation des cinq vues Notes et bulletins
 - Mise en page cohérente des vues Vue d’ensemble, Saisie des notes, Résultats des élèves, Bulletins trimestriels et Configuration.

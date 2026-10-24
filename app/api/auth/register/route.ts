@@ -3,7 +3,6 @@ import { scryptSync, timingSafeEqual } from 'node:crypto';
 import { createSupabaseServiceClient } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
-const PRIMARY_ADMIN_EMAIL = 'minnhindje@gmail.com';
 function verifyRegistrationCode(received: string, stored: string) {
   const [salt, expected] = stored.split(':');
   if (!salt || !expected) return false;
@@ -23,7 +22,7 @@ export async function POST(request: NextRequest) {
   if (!admin) return NextResponse.json({ error: 'Le service est momentanément indisponible. Contactez l’administrateur de l’application.' }, { status: 503 });
   const { data: accessSettings, error: settingsError } = await admin.from('admin_access_settings').select('registration_code_hash').eq('id', true).maybeSingle();
   if (settingsError) return NextResponse.json({ error: 'Impossible de vérifier le code d’accès. Contactez l’administrateur puis réessayez.' }, { status: 503 });
-  if (!accessSettings?.registration_code_hash) return NextResponse.json({ error: 'Le code d’accès initial n’est pas encore défini. Connectez-vous avec le compte administrateur principal et définissez-le dans Paramètres → Utilisateurs et autorisations.' }, { status: 503 });
+  if (!accessSettings?.registration_code_hash) return NextResponse.json({ error: 'Le code d’accès initial n’est pas encore défini. Demandez à l’administrateur actif de le définir dans Paramètres → Utilisateurs et autorisations.' }, { status: 503 });
   if (!verifyRegistrationCode(code, accessSettings.registration_code_hash)) return NextResponse.json({ error: 'Code administrateur incorrect. Demandez le code d’accès à l’administrateur.' }, { status: 403 });
 
   // Ce point de terminaison valide uniquement le code d'inscription.

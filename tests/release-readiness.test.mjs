@@ -7,7 +7,6 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
 const exists = (relative) => fs.existsSync(path.join(root, relative));
-const primaryAdmin = 'minnhindje@gmail.com';
 
 function allSourceFiles(relativeDirectories) {
   const files = [];
@@ -26,6 +25,27 @@ function allSourceFiles(relativeDirectories) {
   return files;
 }
 
+
+test('le transfert administrateur est exposé dans Paramètres et contrôlé côté SQL', () => {
+  const settings = read('app/parametres/page.tsx');
+  const route = read('app/api/admin/transfer/route.ts');
+  const migration = read('supabase/migrations/026_transferable_admin_profile.sql');
+  assert.match(settings, /Profil administrateur/);
+  assert.match(settings, /TRANSFERER/);
+  assert.match(settings, /email_confirmed/);
+  assert.match(route, /transfer_epc_admin/);
+  assert.match(migration, /email_confirmed_at is not null/);
+  assert.match(migration, /role = 'modification'::public\.app_role/);
+  assert.match(migration, /grant execute on function public\.transfer_epc_admin\(uuid\) to authenticated/);
+});
+
+test('les instructions distinguent une base existante du script consolidé pour base vide', () => {
+  const readme = read('README.md');
+  assert.match(readme, /Ne l’exécutez jamais sur votre base existante/);
+  assert.match(readme, /026_transferable_admin_profile\.sql/);
+  assert.ok(exists('supabase/setup/INSTALLATION_COMPLETE.sql'));
+});
+
 test('la configuration de paquet expose les commandes requises', () => {
   const pkg = JSON.parse(read('package.json'));
   assert.equal(pkg.private, true);
@@ -39,14 +59,16 @@ test('la configuration de paquet expose les commandes requises', () => {
 test('les migrations SQL sont présentes et numérotées sans trou', () => {
   const directory = path.join(root, 'supabase/migrations');
   const files = fs.readdirSync(directory).filter((name) => /^\d{3}_.+\.sql$/.test(name)).sort();
-  assert.equal(files.length, 25);
-  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 25 }, (_, i) => i + 1));
+  assert.equal(files.length, 26);
+  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 26 }, (_, i) => i + 1));
 });
 
 test('les routes serveur nécessaires au parcours des comptes existent', () => {
   assert.ok(exists('app/api/auth/register/route.ts'));
   assert.ok(exists('app/api/admin/users/route.ts'));
   assert.ok(exists('app/api/admin/registration-code/route.ts'));
+  assert.ok(exists('app/api/admin/transfer/route.ts'));
+  assert.ok(exists('supabase/migrations/026_transferable_admin_profile.sql'));
   assert.ok(exists('supabase/migrations/015_admin_registration_code_settings.sql'));
   const register = read('app/api/auth/register/route.ts');
   const users = read('app/api/admin/users/route.ts');
@@ -66,18 +88,21 @@ test('le code d’inscription se configure dans les paramètres et reste haché 
   assert.match(read('components/auth-screen.tsx'), /signUp/);
   assert.match(settingsRoute, /export\s+async\s+function\s+PUT/);
   assert.match(settingsRoute, /scryptSync/);
-  assert.match(settingsRoute, /minnhindje@gmail\.com/);
+  assert.doesNotMatch(settingsRoute, /minnhindje@gmail\.com/);
   assert.match(migration, /enable row level security/i);
 });
 
-test('l’adresse principale est cohérente dans les contrôles de sécurité', () => {
-  const files = [
-    'components/auth-screen.tsx',
-    'app/api/admin/users/route.ts',
-    'app/utilisateurs/page.tsx',
-    'supabase/migrations/011_auth_admin_and_observer_access.sql',
+test('les droits administrateur actifs ne dépendent plus d’une adresse e-mail fixe', () => {
+  const activeSources = [
+    'components/auth-screen.tsx', 'app/api/admin/users/route.ts',
+    'app/api/admin/registration-code/route.ts', 'app/api/admin/transfer/route.ts',
+    'app/utilisateurs/page.tsx', 'app/parametres/page.tsx',
   ];
-  for (const file of files) assert.ok(read(file).toLowerCase().includes(primaryAdmin), `${file} doit protéger l’administrateur principal`);
+  for (const file of activeSources) assert.doesNotMatch(read(file).toLowerCase(), /minnhindje@gmail\.com/, `${file} ne doit pas figer l’adresse de l’administrateur`);
+  const migration = read('supabase/migrations/026_transferable_admin_profile.sql');
+  assert.match(migration, /public\.is_primary_epc_admin\(\)[\s\S]*?p\.role = 'admin'::public\.app_role/);
+  assert.match(migration, /create or replace function public\.transfer_epc_admin/);
+  assert.match(migration, /set_config\('epc\.admin_transfer', 'on', true\)/);
 });
 
 test('la connexion par mot de passe vérifie le profil actif et offre la réinitialisation', () => {
@@ -126,7 +151,8 @@ test('les exemples de configuration ne contiennent pas de secret réel', () => {
   assert.match(env, /^SUPABASE_SERVICE_ROLE_KEY=$/m);
   assert.match(env, /^SUPABASE_SERVICE_ROLE_KEY=$/m);
   assert.doesNotMatch(env, /^SUPABASE_SECRET_KEY=.+$/m);
-  assert.match(env, /^EPC_BETHEL_REGISTRATION_CODE=$/m);
+  assert.match(env, /^NEXT_PUBLIC_SITE_URL=http:\/\/localhost:3000$/m);
+  assert.doesNotMatch(env, /EPC_BETHEL_REGISTRATION_CODE/);
   assert.ok(!exists('.env.local'));
   assert.ok(!exists('.env.production'));
 });
@@ -145,8 +171,8 @@ test('la documentation prévient que les tests de préproduction restent obligat
   const readme = read('README.md');
   assert.match(readme, /npm run typecheck/);
   assert.match(readme, /npm run build/);
-  assert.match(readme, /de \*\*développement\*\*/i);
-  assert.match(readme, /n’est pas certifiée prête pour la production/i);
+  assert.match(readme, /tests hors ligne/i);
+  assert.match(readme, /essais métier en préproduction/i);
 });
 
 
@@ -232,11 +258,11 @@ test('le formulaire de création de compte de trésorerie est bancaire et sans b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.20.0');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.20\.0/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.20\.0/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.20\.0/m);
-  assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
+  assert.equal(pkg.version, '1.21.0');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.21\.0/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.21\.0/m);
+  assert.ok(!exists('INSTALLATION_RAPIDE.txt'));
+  assert.ok(exists('supabase/setup/INSTALLATION_COMPLETE.sql'));
 });
 
 
@@ -309,10 +335,10 @@ test('Import Excel s’ouvre dans une fenêtre superposée sans déplacer la pag
 });
 
 test('le guide de déploiement Notes exige une migration 018 et des essais en préproduction', () => {
-  const guide = read('ETAPE_10_NOTES_BULLETINS.md');
-  assert.match(guide, /018_notes_bulletins_workflows\.sql/);
+  const guide = read('README.md');
+  assert.match(guide, /supabase\/migrations\//);
   assert.match(guide, /préproduction/);
-  assert.match(guide, /Les notes manquantes et les absences ne sont pas automatiquement converties en zéro/);
+  assert.match(read('supabase/migrations/018_notes_bulletins_workflows.sql'), /absent_excused|absent_unexcused|missing/);
 });
 
 test('Finance scolaire explique les versements et garde des boutons uniformes', () => {
@@ -320,7 +346,7 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.20.0');
+  assert.equal(packageInfo.version, '1.21.0');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
   assert.match(source, /create_student_charge_with_annual_schedule/);
@@ -365,15 +391,13 @@ test('les corps de création et de mise à jour des catégories de frais sont s�
   assert.doesNotMatch(source, /const payload = categoryForm\.id \?/);
 });
 
-test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
+test('la suite hors ligne est documentée sans chiffres de tests obsolètes', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 45, 'la suite de contrôle doit contenir exactement 45 tests');
-  assert.match(read('README.md'), /45 tests hors ligne/);
-  assert.match(read('CHANGELOG.md'), /42 tests hors ligne/);
-  assert.match(read('CHANGELOG.md'), /Tests de pré-livraison : 36 réussis sur 36/);
-  assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);
-  assert.doesNotMatch(read('README.md'), /12 contrôles structurels hors ligne/);
+  assert.ok(count >= 40, 'la suite doit garder une couverture structurelle substantielle');
+  assert.match(read('README.md'), /npm run test:release/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.21\.0/m);
+  assert.doesNotMatch(read('README.md'), /\b(?:40|42|45) tests hors ligne/);
 });
 
 test('les commandes de barre supérieure proposent recherche, fermeture et menus du compte', () => {
@@ -581,4 +605,16 @@ test('la synthèse Finance scolaire comporte exactement les six indicateurs dema
   assert.match(source, /feeSummary\.annex_total \+ feeSummary\.registration_total/);
   assert.match(css, /finance-summary-grid\.finance-summary-sticky\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.doesNotMatch(source, /finance-summary-note/);
+});
+
+test('le schéma consolidé n’attribue jamais admin par adresse e-mail fixe', () => {
+  const setup = read('supabase/setup/INSTALLATION_COMPLETE.sql');
+  const migration = read('supabase/migrations/026_transferable_admin_profile.sql');
+  const guide = read('supabase/setup/README.md');
+  assert.doesNotMatch(setup, /minnhindje@gmail\.com|PRIMARY_ADMIN_EMAIL/i);
+  assert.match(setup, /bootstrap_epc_admin/);
+  assert.match(migration, /create or replace function public\.bootstrap_epc_admin/i);
+  assert.match(migration, /grant execute on function public\.bootstrap_epc_admin\(uuid\) to service_role/i);
+  assert.match(guide, /adresse e-mail fixe a été retiré/i);
+  assert.match(guide, /public\.bootstrap_epc_admin/);
 });

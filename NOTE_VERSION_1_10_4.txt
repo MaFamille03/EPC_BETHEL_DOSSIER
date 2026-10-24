@@ -1,5 +1,0 @@
-EPC BETHEL V1.10.4
-
-Ajustement du filigrane : logo plus petit, toujours entièrement visible grâce à background-size: contain, et légèrement moins transparent pour être davantage visible sans gêner la lecture.
-
-Archive vérifiée. La compilation Next.js et le rendu en production doivent être testés après déploiement.

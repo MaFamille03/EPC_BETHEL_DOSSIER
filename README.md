@@ -1,57 +1,85 @@
-# EPC BETHEL — Application de gestion scolaire
+# EPC BETHEL — Gestion scolaire et financière
 
-**Établissement :** EPC BETHEL ASSEMBLÉES DE DIEU JEAN FOLLY  
-**Version courante :** 1.20.0  
-**Stack :** Next.js 15, React 19, TypeScript, Supabase/PostgreSQL
+**Version courante :** 1.21.0
+**Stack :** Next.js 15, React 19, TypeScript, Supabase/PostgreSQL.
+**Déploiement :** GitHub + Vercel.
 
-## État de livraison
+## Objectif
 
-EPC BETHEL est une base applicative avancée, mais elle **n’est pas certifiée prête pour la production**. Les dépendances n’ont pas pu être installées dans l’environnement de préparation, car le registre npm a renvoyé `EAI_AGAIN`. Le `typecheck`, la compilation Next.js, les migrations sur une base Supabase réelle et les tests de bout en bout restent donc à valider dans un environnement configuré.
+Application interne de gestion scolaire pour EPC BETHEL ASSEMBLÉES DE DIEU JEAN FOLLY. Elle regroupe les dossiers des élèves, les inscriptions, les frais et échéances, la trésorerie, les notes et bulletins, les achats, le patrimoine, les rapports et l’administration des accès.
 
-Les contrôles hors ligne actuels comprennent `npm run preflight` et les **45 tests hors ligne** via `npm run test:release`. La livraison V1.20.0 rend la classe et l’année scolaire obligatoires à la création d’un dossier élève, centralise les six échéances fixes par année scolaire dans Paramètres et compacte la synthèse Finance scolaire en deux lignes de trois indicateurs. La migration 025 doit être appliquée et vérifiée en préproduction. La livraison V1.19.2 corrige la gestion asynchrone du chargement des soldes dans le formulaire d’encaissement. La livraison V1.19.1 corrige le typage TypeScript lors de l’ajout ou de la modification d’une catégorie de frais. La livraison V1.19.0 ajoute la configuration des tarifs par classe et année scolaire, les réductions ciblées, le traitement distinct des abandons et l’édition individuelle des notes. La migration 024 doit être validée en préproduction. La livraison V1.17.0 ajoute une caisse unique avec moyens de paiement Espèces, Orange Money, Wave et Moov Money, le comptage physique, les lignes manuelles de caisse auditées et la sélection du fournisseur dans les formulaires de paiement/dépense. La migration 022 doit être validée en préproduction. Elle conserve les améliorations de la livraison V1.16.1 de trésorerie V1.16.0 et clarifie la commande de dépliage de l’import Excel dans Gestion des élèves : les libellés visibles « Déplier » et « Réplier » remplacent les symboles ambigus. La livraison V1.16.0 distingue les vues Caisse/Mobile Money, Banque, Transferts internes et Journal de trésorerie, ajoute le type de compte Mobile Money et une création de compte transactionnelle/auditée (migration 021). Elle reprend aussi les améliorations Finance scolaire V1.15.3 (compteur et pagination déplacés près de la recherche), V1.15.2 (correction de l’ambiguïté SQL du registre, synthèse compacte en grille 2 × 2) et V1.15.1 (libellés de réduction clarifiés, actions uniformes, indicateurs et échéanciers de 1 à 6 versements pour la scolarité et l’inscription), le module Notes et bulletins (migrations 016 et 018), le rapprochement bancaire transactionnel (migration 017) et les améliorations de Gestion des élèves en V1.13.0 et la fenêtre de formulaire élève élargie en V1.13.1 et les raccourcis directs vers Finance scolaire et Notes et bulletins depuis le dossier individuel en V1.13.2. Elle inclut le modèle Excel téléchargeable. Ces contrôles structurels ne remplacent pas la compilation ou les tests réels sur Supabase.
+## Principales rubriques
 
-## Fonctionnalités incluses
+- **Vue générale :** indicateurs scolaires et financiers.
+- **Gestion scolaire :** dossiers des élèves, import Excel, frais de scolarité, notes et bulletins.
+- **Finances :** caisse/Mobile Money, banque, transferts internes, journal, dépenses et rapprochement bancaire.
+- **Établissement :** achats, inventaire et patrimoine.
+- **Administration :** utilisateurs et autorisations, paramètres, années scolaires, classes, tarifs et échéances annuelles.
 
-- Tableau de bord, navigation et recherche rapide des modules.
-- Authentification par adresse e-mail et mot de passe ; création de compte avec confirmation du mot de passe et code d’accès. Réinitialisation du mot de passe par e-mail.
-- Gestion des élèves, responsables légaux, inscriptions, classes et années scolaires ; dossier administratif enrichi, abandon distinct des remises, import Excel avec aperçu et modèle vierge téléchargeable.
-- Formulaires d’ajout et de modification en fenêtres superposées façon UserForm pour les élèves, les frais scolaires et les saisies de Notes et bulletins ; la page d’origine reste visible en arrière-plan. Notes et bulletins comprend aussi une fiche individuelle avec onglets des trois trimestres et gestion des notes existantes.
-- Frais scolaires avec tarifs configurables par classe et année, six échéances annuelles communes définies et verrouillées dans Paramètres, réductions ciblées et historisées, encaissements par catégorie avec reçu et idempotence, dépenses et trésorerie.
-- Achats, fournisseurs, réceptions, inventaire et maintenance du patrimoine.
-- Rapports de gestion, filtres, exports et impressions selon les modules.
-- Administration des accès : administrateur principal, observateur et modification.
-- Vingt-cinq migrations SQL de référence, `001` à `025`.
+## Architecture
 
-## Prérequis et installation locale
+- `app/` : pages et API serveur.
+- `components/` : modules d’interface et composants métier.
+- `lib/` : clients Supabase et logique partagée.
+- `supabase/migrations/` : historique SQL versionné de 001 à 026.
+- `supabase/setup/INSTALLATION_COMPLETE.sql` : script consolidé réservé à une **nouvelle base vide**. `supabase/setup/README.md` explique l’initialisation du premier administrateur.
+- `tests/` et `scripts/` : contrôles structurels hors ligne.
+- `public/` : logo, icônes, filigrane et modèle Excel d’import des élèves.
+- `documentation/` : spécifications techniques et documentation métier.
 
-- Node.js 20.9 ou supérieur.
-- Un projet Supabase de **développement**.
-- Un accès au registre npm pour installer les dépendances.
+## Variables d’environnement
 
-Depuis la racine du projet :
+Dans Vercel, conserver les variables déjà configurées. Le projet utilise :
+
+| Variable | Usage |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | URL du projet Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` ou `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Clé publique de navigateur |
+| `NEXT_PUBLIC_SITE_URL` | URL canonique du site, utilisée pour les liens d’invitation |
+| `SUPABASE_SERVICE_ROLE_KEY` ou `SUPABASE_SECRET_KEY` | Clé serveur privée, uniquement pour les routes serveur |
+
+Le code d’accès aux nouvelles inscriptions est stocké sous forme de hash dans `admin_access_settings` et se gère dans **Paramètres → Utilisateurs et autorisations**. Il ne nécessite pas de variable d’environnement dédiée. Ne jamais exposer la clé service dans un composant client, une variable `NEXT_PUBLIC_` ou Git.
+
+Le fichier `.env.example` fournit uniquement des exemples ; il ne contient aucun secret réel.
+
+## Migrations Supabase : lire avant d’exécuter
+
+### Projet existant
+
+Ne remplacez pas l’historique et ne réexécutez pas toutes les migrations sur une base déjà utilisée. Vérifiez la dernière migration réellement appliquée dans Supabase, faites une sauvegarde, puis appliquez **uniquement les migrations manquantes et dans l’ordre numérique**.
+
+Pour une base déjà à la migration 025, la modification de cette version est :
+
+`supabase/migrations/026_transferable_admin_profile.sql`
+
+Cette migration active le transfert contrôlé du rôle Administrateur dans Paramètres. Vercel ne déploie pas automatiquement les changements PostgreSQL : la migration doit être exécutée séparément dans Supabase après sauvegarde et validation en préproduction.
+
+### Nouvelle base vide uniquement
+
+Pour initialiser un nouveau projet Supabase vide, vous pouvez exécuter une seule fois :
+
+`supabase/setup/INSTALLATION_COMPLETE.sql`
+
+Ce script consolide le schéma et les évolutions de 001 à 026 pour une installation neuve ; le bootstrap historique par adresse e-mail fixe y est retiré. **Ne l’exécutez jamais sur votre base existante**, car il contient le schéma initial complet et les évolutions historiques. Suivez `supabase/setup/README.md` pour attribuer explicitement le premier rôle administrateur via une fonction SQL réservée à l’initialisation.
+
+Les migrations numérotées sont conservées comme historique de mise à niveau pour ne pas désynchroniser l’état d’une base déjà déployée.
+
+## Rôles et changement d’administrateur
+
+- **Administrateur :** gère les utilisateurs, les paramètres de sécurité et les autorisations.
+- **Modification :** gère les données métier autorisées, sans administrer les comptes.
+- **Observateur :** consulte les informations en lecture seule.
+
+Pour changer d’administrateur, ouvrez **Paramètres → Profil administrateur**. Sélectionnez un utilisateur déjà créé, actif et confirmé par e-mail, puis saisissez `TRANSFERER`. Le transfert s’effectue dans une transaction SQL : le compte choisi devient Administrateur et l’ancien compte conserve le niveau Modification. L’application déconnecte l’ancien administrateur à la fin de l’opération. Ne supprimez pas le profil administrateur avant d’avoir transféré le rôle.
+
+L’attribution du rôle Administrateur est bloquée dans les formulaires ordinaires ; seule la fonction SQL contrôlée autorise le transfert. Les nouveaux utilisateurs commencent avec le niveau Observateur.
+
+## Développement et contrôles
+
+Prérequis : Node.js 20.9 ou supérieur et npm.
 
 ```bash
 npm install
-cp .env.example .env.local
-```
-
-Sous Windows PowerShell, la seconde commande devient `Copy-Item .env.example .env.local`.
-
-Complétez `.env.local` avec les paramètres de votre projet :
-
-```dotenv
-NEXT_PUBLIC_SUPABASE_URL=https://VOTRE_PROJET.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=VOTRE_CLE_PUBLIQUE
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-EPC_BETHEL_REGISTRATION_CODE=
-SUPABASE_SERVICE_ROLE_KEY=
-```
-
-Renseignez `EPC_BETHEL_REGISTRATION_CODE` avec au moins 24 caractères aléatoires pour autoriser les inscriptions. `SUPABASE_SERVICE_ROLE_KEY` est strictement réservée aux routes serveur. Ne jamais la préfixer par `NEXT_PUBLIC_`, l’insérer dans un composant client ou la committer dans Git.
-
-Après avoir renseigné les variables, lancez :
-
-```bash
 npm run test:release
 npm run preflight
 npm run typecheck
@@ -59,56 +87,6 @@ npm run build
 npm run dev
 ```
 
-Le typecheck et le build doivent réussir avant tout déploiement.
+Conservez `package-lock.json` après l’installation sur une machine connectée au registre npm. Les tests hors ligne et le précontrôle vérifient la cohérence structurelle ; ils ne remplacent pas la compilation, les tests PostgreSQL/RLS ni les essais métier en préproduction.
 
-## Migrations Supabase
-
-1. Créez un projet Supabase de développement et sauvegardez la base avant toute modification du schéma.
-2. Exécutez une migration à la fois, dans l’ordre numérique : `001` à `009`, puis `010_add_observateur_role.sql`, `011_auth_admin_and_observer_access.sql`, `012_school_management_completion.sql`, `013_financial_integrity_reporting.sql`, `014_management_reports_asset_integration.sql`, `015_admin_registration_code_settings.sql`, `016_notes_bulletins.sql`, `017_bank_reconciliation_workflow.sql`, `018_notes_bulletins_workflows.sql`, `019_finance_scolaire_reductions_echeanciers.sql` puis `020_fix_school_fee_ledger_ambiguity.sql`, `021_treasury_account_types_and_creation.sql`, `022_cash_register_single_ledger_and_controls.sql`, `023_cash_register_edit_delete_guardrails.sql`, `024_student_fees_tariffs_and_status.sql` et `025_annual_payment_schedule_and_required_student_class.sql`. Pour un projet déjà migré jusqu’à 024, appliquez uniquement la migration 025 après sauvegarde et contrôle du statut des migrations. Configurez ensuite les six échéances de chaque année scolaire dans Paramètres avant toute nouvelle attribution de tarifs ou de frais.
-3. Vérifiez le résultat après chaque fichier. Au premier échec, arrêtez-vous et examinez l’état du schéma ; ne relancez pas aveuglément une migration partiellement exécutée.
-4. Configurez Supabase Auth pour la connexion par mot de passe et les URL autorisées. La création initiale de compte passe par une route serveur protégée par EPC_BETHEL_REGISTRATION_CODE et SUPABASE_SERVICE_ROLE_KEY.
-5. Vérifiez l’identité et la confirmation de `minnhindje@gmail.com`. Cette adresse est conçue comme administrateur principal. Ne permettez jamais à un utilisateur public de s’attribuer le rôle administrateur à partir d’un champ de formulaire.
-6. Testez les politiques RLS, les fonctions SQL et les parcours avec les trois rôles avant d’ajouter les données réelles de l’école.
-
-Les migrations sont des scripts de référence : leur présence dans le ZIP ne signifie pas qu’elles ont été exécutées sur le projet Supabase réel.
-
-## Rôles et autorisations
-
-- **Administrateur principal (`admin`)** : `minnhindje@gmail.com`, seul habilité à gérer les comptes et leurs niveaux d’accès.
-- **Observateur (`observateur`)** : consultation en lecture seule, attribuée par défaut aux nouveaux comptes.
-- **Modification (`modification`)** : gestion des données métier, sans administration des utilisateurs ni accès au journal de sécurité.
-
-Les restrictions visuelles de navigation ne suffisent pas : les permissions doivent être appliquées aussi par les routes serveur, PostgreSQL et les politiques RLS.
-
-## Classes prévues
-
-MS, GSA, GSB, CP1 A/B, CP2 A/B, CE1 A/B, CE2 A/B, CM1 A/B et CM2 A/B.
-
-## Contrôles hors ligne et limites
-
-- `npm run test:release` : **40 tests** de cohérence et de pré-livraison, sans accès réseau ou Supabase.
-- Appliquer `supabase/migrations/016_notes_bulletins.sql` pour activer la saisie des notes.
-- Appliquer `supabase/migrations/017_bank_reconciliation_workflow.sql` pour activer le rapprochement bancaire sécurisé.
-- Appliquer `supabase/migrations/018_notes_bulletins_workflows.sql` pour activer les évaluations, les règles de calcul et les bulletins trimestriels, après sauvegarde et validation en préproduction.
-- `npm run preflight` : contrôle de la structure, des imports locaux, des migrations, des tables/RPC référencées et de certains points de protection des secrets.
-- Les tests de barre supérieure vérifient la recherche rapide, les menus, la fermeture par clic extérieur et Échap ; la zone de notifications indique explicitement lorsqu’aucune source de notifications n’est connectée.
-- Le fichier `tsconfig.tsbuildinfo` est un artefact généré et n’est pas livré dans l’archive source.
-- `package-lock.json` n’est pas inclus, car la création du lockfile a échoué lorsque le registre npm était inaccessible. Générez-le sur une machine connectée et versionnez-le avant le déploiement.
-
-Le précontrôle local ne remplace pas `npm run typecheck`, `npm run build`, les tests d’intégration SQL/RLS, les tests dans le navigateur ou un déploiement de préproduction Vercel.
-
-## Mise en service
-
-Consultez `CHECKLIST_MISE_EN_SERVICE.md`, `RAPPORT_CONTROLE_QUALITE.md` et `RAPPORT_ETAPE_9_COHERENCE.md`. Avant la production, vérifiez au minimum : authentification OTP et invitations, matrice des trois rôles, dossiers élèves, inscriptions et transferts, échéanciers/demandes de réduction, paiements/annulations, dépenses/transferts, commandes/réceptions, inventaire/maintenance, rapports et exports, affichage responsive et sauvegarde/restauration.
-
-**Cette livraison reste un candidat de préproduction.** Aucun déploiement Vercel ni aucune validation des migrations sur le projet Supabase réel n’a été réalisé dans cette étape.
-
-## Archive consolidée pour GitHub/Vercel
-
-Cette livraison réunit les changements des étapes 1 à 9 et place `package.json` à la racine du projet. Avant l’import, lire `DEPLOIEMENT_VERCEL.md` et `LIVRAISON_FINALE_EPC_BETHEL.md`. La compilation et la validation Supabase restent à réaliser sur un environnement connecté ; ne pas considérer l’archive comme déjà déployée ou certifiée en production.
-
-
-### Code d’accès aux inscriptions
-Le compte administrateur principal définit ou remplace le code dans **Paramètres → Utilisateurs et autorisations**. Appliquer la migration `015_admin_registration_code_settings.sql` avant d’utiliser cette fonction. Le code est stocké sous forme de hash scrypt salé et n’est jamais renvoyé à l’interface.
-
-La version 1.18.0 précise que la Caisse et Mobile Money fonctionne comme un registre unique (espèces, Orange Money, Wave, Moov Money), affiche la caisse théorique et le dernier comptage physique, place les actions « Compter la caisse » et « Ajouter une ligne de caisse » dans le panneau concerné, réordonne le tableau des mouvements et renforce côté SQL les règles de modification/suppression des lignes manuelles. La migration 023 doit être appliquée après vérification de la migration 022 en préproduction. 
+Avant l’utilisation réelle, validez au minimum les rôles, la connexion, les invitations, les transferts de paiement, les encaissements, les annulations, les réductions, les échéances scolaires, les notes et bulletins, les rapports et le transfert d’administrateur sur une base de préproduction.

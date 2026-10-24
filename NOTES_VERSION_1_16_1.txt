@@ -1,9 +1,0 @@
-EPC BETHEL — VERSION 1.16.1
-
-Amélioration de Gestion des élèves :
-- Le panneau Importer les élèves depuis Excel affiche « Déplier » lorsqu’il est fermé et « Réplier » lorsqu’il est ouvert.
-- Les symboles plus et moins ont été remplacés par un libellé explicite et visible.
-- Le bouton Télécharger le modèle Excel, l’aperçu et le processus d’import ne sont pas modifiés.
-- Aucune migration SQL requise pour ce changement d’interface.
-
-Contrôles : voir RAPPORT_V1_16_1_IMPORT_EXCEL.md.
