@@ -102,8 +102,19 @@ export function ClassFeeTariffsManager() {
     event.preventDefault(); const client = supabase(); if (!client) { setError('Connexion à Supabase indisponible.'); return; }
     if (!categoryForm.name.trim() || !categoryForm.code.trim()) { setError('Le code et le nom de la catégorie sont obligatoires.'); return; }
     setSaving(true); setError('');
-    const payload = categoryForm.id ? { name: categoryForm.name.trim(), is_active: categoryForm.is_active } : { code: categoryForm.code.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '_'), name: categoryForm.name.trim(), kind: categoryForm.kind, is_active: categoryForm.is_active };
-    const result = categoryForm.id ? await client.from('fee_categories').update(payload).eq('id', categoryForm.id) : await client.from('fee_categories').insert(payload);
+    // Keep update and insert payloads separate: Supabase types the allowed fields
+    // differently for an update of an existing category versus a new category.
+    const result = categoryForm.id
+      ? await client.from('fee_categories').update({
+          name: categoryForm.name.trim(),
+          is_active: categoryForm.is_active,
+        }).eq('id', categoryForm.id)
+      : await client.from('fee_categories').insert({
+          code: categoryForm.code.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '_'),
+          name: categoryForm.name.trim(),
+          kind: categoryForm.kind,
+          is_active: categoryForm.is_active,
+        });
     setSaving(false);
     if (result.error) { setError(result.error.code === '23505' ? 'Ce code de catégorie existe déjà.' : 'Enregistrement de la catégorie impossible.'); return; }
     setShowCategoryForm(false); setNotice('Catégorie enregistrée. La désactivation conserve les frais et les reçus historiques.'); await refresh();

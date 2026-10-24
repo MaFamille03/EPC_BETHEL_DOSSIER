@@ -231,10 +231,10 @@ test('le formulaire de création de compte de trésorerie est bancaire et sans b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.19.0');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.19\.0/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.19\.0/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.19\.0/m);
+  assert.equal(pkg.version, '1.19.1');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.19\.1/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.19\.1/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.19\.1/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
@@ -319,7 +319,7 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.19.0');
+  assert.equal(packageInfo.version, '1.19.1');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
   assert.match(source, /Échéancier de \{installmentCount\} versement/);
@@ -357,11 +357,18 @@ test('les formulaires des trois modules s’ouvrent en fenêtres superposées', 
   assert.match(css, /\.notes-form-backdrop\{z-index:140/);
 });
 
+test('les corps de création et de mise à jour des catégories de frais sont séparés pour TypeScript', () => {
+  const source = read('components/class-fee-tariffs-manager.tsx');
+  assert.match(source, /from\('fee_categories'\)\.update\(\{[\s\S]*?name: categoryForm\.name\.trim\(\),[\s\S]*?is_active: categoryForm\.is_active,[\s\S]*?\}\)\.eq\('id', categoryForm\.id\)/);
+  assert.match(source, /from\('fee_categories'\)\.insert\(\{[\s\S]*?code: categoryForm\.code\.trim\(\)[\s\S]*?kind: categoryForm\.kind,[\s\S]*?is_active: categoryForm\.is_active,[\s\S]*?\}\)/);
+  assert.doesNotMatch(source, /const payload = categoryForm\.id \?/);
+});
+
 test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 40, 'la suite de contrôle doit contenir exactement 40 tests');
-  assert.match(read('README.md'), /40 tests hors ligne/);
+  assert.equal(count, 41, 'la suite de contrôle doit contenir exactement 41 tests');
+  assert.match(read('README.md'), /41 tests hors ligne/);
   assert.match(read('CHANGELOG.md'), /40 tests hors ligne/);
   assert.match(read('CHANGELOG.md'), /Tests de pré-livraison : 36 réussis sur 36/);
   assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);

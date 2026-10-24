@@ -1,3 +1,9 @@
+## 1.19.1 — Correction du build Vercel lors de l’enregistrement des catégories de frais
+
+- Correction de l’erreur TypeScript dans `components/class-fee-tariffs-manager.tsx` : les données envoyées lors de la modification d’une catégorie sont maintenant définies séparément de celles envoyées lors de sa création. Cela évite de transmettre à Supabase une union de types contenant les champs `code` et `kind` dans le chemin de mise à jour.
+- Aucun changement aux règles métier, à la structure Supabase ou au comportement des catégories de frais.
+- Les 41 tests de pré-livraison (dont un test ciblé sur cette régression) et le précontrôle structurel passent localement. Le build Next.js complet reste à confirmer : l’installation npm a expiré dans l’environnement de correction.
+
 ## 1.19.0 — Dossier élève, tarifs annuels, concessions et notes individuelles
 
 - Enrichissement du dossier élève avec adresse et coordonnées, affichage du statut d’inscription, saisie structurée des informations du responsable et inscription de l’élève avec l’année/la classe choisies.
