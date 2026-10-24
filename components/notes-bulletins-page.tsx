@@ -4,8 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   AlertCircle, BookOpen, Check, ChevronRight, ClipboardList, Download,
-  FileCheck2, FileText, GraduationCap, Plus, RefreshCw, Save, Settings2,
-  Users, X, XCircle,
+  Edit3, FileCheck2, FileText, GraduationCap, Plus, Printer, RefreshCw, Save, Settings2,
+  Trash2, Users, X, XCircle,
 } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { useEPCAccess } from '@/components/access-context';
@@ -93,6 +93,11 @@ export function NotesBulletinsPage() {
   const [showGradeEntryForm, setShowGradeEntryForm] = useState(false);
   const [showRuleForm, setShowRuleForm] = useState(false);
   const [showSubjectForm, setShowSubjectForm] = useState(false);
+  const [showStudentDetailNotes, setShowStudentDetailNotes] = useState(false);
+  const [individualTerm, setIndividualTerm] = useState<Term>('T1');
+  const [editingIndividualGradeId, setEditingIndividualGradeId] = useState<string | null>(null);
+  const [showIndividualGradeForm, setShowIndividualGradeForm] = useState(false);
+  const [individualGradeForm, setIndividualGradeForm] = useState({ subject_id: '', assessment_id: '', assessment_label: '', assessment_date: new Date().toISOString().slice(0, 10), score: '', score_max: '20', coefficient: '1', status: 'entered', remarks: '' });
 
   const announce = (message: string, isError = false) => { setNotice(message); setErrorNotice(isError); };
 
@@ -162,6 +167,7 @@ export function NotesBulletinsPage() {
   const classEnrollments = useMemo(() => yearEnrollments.filter((e) => !classId || e.class_id === classId).sort((a, b) => safeName(a).localeCompare(safeName(b), 'fr')), [yearEnrollments, classId]);
   const termAssessments = useMemo(() => assessments.filter((a) => a.school_year_id === yearId && a.term === term && (!classId || a.class_id === classId)), [assessments, yearId, term, classId]);
   const selectedAssessment = assessments.find((a) => a.id === assessmentId);
+  const studentPickerEnrollments = useMemo(() => enrollments.filter((e) => (!yearId || e.school_year_id === yearId) && (!classId || e.class_id === classId)).sort((a, b) => safeName(a).localeCompare(safeName(b), 'fr')), [enrollments, yearId, classId]);
   const currentGrades = useMemo(() => grades.filter((g) => g.term === term && yearEnrollments.some((e) => e.id === g.enrollment_id) && (!classId || yearEnrollments.find((e) => e.id === g.enrollment_id)?.class_id === classId)), [grades, term, yearEnrollments, classId]);
   const selectedRule = rules.find((r) => r.school_year_id === yearId && r.class_id === (classId || null)) || rules.find((r) => r.school_year_id === yearId && !r.class_id);
   const scale = Number(selectedRule?.report_scale || 20);
@@ -215,13 +221,19 @@ export function NotesBulletinsPage() {
   }, [grades, assessments]);
 
   const studentResults = useMemo(() => {
-    const enrollment = classEnrollments.find((e) => e.id === selectedEnrollmentId) || classEnrollments[0];
+    const enrollment = classEnrollments.find((e) => e.id === selectedEnrollmentId);
     if (!enrollment) return null;
     const rule = rules.find((r) => r.school_year_id === yearId && r.class_id === enrollment.class_id) || rules.find((r) => r.school_year_id === yearId && !r.class_id);
     const subjectsWithGrades = subjects.map((subject) => ({ subject, average: getSubjectAverage(enrollment.id, subject, term, rule) })).filter((x) => x.average !== null);
     const average = subjectsWithGrades.length ? round(subjectsWithGrades.reduce((s, item) => s + Number(item.average), 0) / subjectsWithGrades.length) : null;
     return { enrollment, subjectsWithGrades, average, rule };
   }, [yearEnrollments, classEnrollments, selectedEnrollmentId, subjects, term, rules, yearId, getSubjectAverage]);
+
+  useEffect(() => {
+    if (selectedEnrollmentId && !studentPickerEnrollments.some((enrollment) => enrollment.id === selectedEnrollmentId)) {
+      setSelectedEnrollmentId('');
+    }
+  }, [studentPickerEnrollments, selectedEnrollmentId]);
 
   async function createAssessment() {
     const client = supabase();
@@ -293,6 +305,83 @@ export function NotesBulletinsPage() {
     setSubjectCode(''); setSubjectName(''); setShowSubjectForm(false); announce('Matière ajoutée au référentiel.'); await refresh();
   }
 
+  function beginIndividualGrade(subjectId = '') {
+    setEditingIndividualGradeId(null);
+    setShowIndividualGradeForm(true);
+    setIndividualGradeForm({ subject_id: subjectId || subjects[0]?.id || '', assessment_id: '', assessment_label: '', assessment_date: new Date().toISOString().slice(0, 10), score: '', score_max: '20', coefficient: '1', status: 'entered', remarks: '' });
+  }
+
+  function editIndividualGrade(grade: Grade) {
+    const linkedAssessment = grade.assessment_id ? assessments.find((item) => item.id === grade.assessment_id) : undefined;
+    if (linkedAssessment?.status === 'locked' || currentYear?.is_closed || !mayEditIndividualGrades) return;
+    setEditingIndividualGradeId(grade.id);
+    setShowIndividualGradeForm(true);
+    setIndividualGradeForm({ subject_id: grade.subject_id, assessment_id: grade.assessment_id || '', assessment_label: grade.assessment_label, assessment_date: grade.assessment_date, score: grade.status === 'entered' ? String(grade.score) : '', score_max: String(grade.score_max), coefficient: String(grade.coefficient), status: grade.status, remarks: grade.remarks || '' });
+  }
+
+  async function saveIndividualGrade() {
+    const client = supabase();
+    const enrollment = selectedIndividualEnrollment;
+    if (!client || !enrollment || !mayEditIndividualGrades) { announce('La modification des notes est indisponible pour ce compte ou cette année scolaire.', true); return; }
+    const label = individualGradeForm.assessment_label.trim();
+    const subject = subjects.find((item) => item.id === individualGradeForm.subject_id);
+    const linkedAssessment = individualGradeForm.assessment_id ? assessments.find((item) => item.id === individualGradeForm.assessment_id) : undefined;
+    if (!subject) { announce('Sélectionnez une matière.', true); return; }
+    if (linkedAssessment && (linkedAssessment.school_year_id !== enrollment.school_year_id || linkedAssessment.class_id !== enrollment.class_id || linkedAssessment.subject_id !== subject.id || linkedAssessment.term !== individualTerm || linkedAssessment.status === 'cancelled')) { announce('Cette évaluation ne correspond pas à l’élève, à la classe ou au trimestre choisi.', true); return; }
+    if (!linkedAssessment && !label) { announce('Indiquez l’intitulé de la note.', true); return; }
+    const max = Number(linkedAssessment?.score_max ?? individualGradeForm.score_max);
+    const coefficient = Number(linkedAssessment?.coefficient ?? individualGradeForm.coefficient);
+    const score = individualGradeForm.status === 'entered' ? Number(individualGradeForm.score) : 0;
+    if (!Number.isFinite(max) || max <= 0 || max > 1000 || !Number.isFinite(coefficient) || coefficient <= 0 || coefficient > 20) { announce('Le barème doit être positif et le coefficient doit être compris entre 0 et 20.', true); return; }
+    if (individualGradeForm.status === 'entered' && (individualGradeForm.score.trim() === '' || !Number.isFinite(score) || score < 0 || score > max)) { announce(`La note doit être comprise entre 0 et ${max}.`, true); return; }
+    const date = linkedAssessment?.assessment_date || individualGradeForm.assessment_date;
+    if (!date || date > new Date().toISOString().slice(0, 10)) { announce('La date de la note est invalide ou dans le futur.', true); return; }
+    const effectiveLabel = linkedAssessment?.title || label;
+    const duplicate = grades.some((grade) => grade.id !== editingIndividualGradeId && grade.enrollment_id === enrollment.id && grade.subject_id === subject.id && grade.term === individualTerm && (linkedAssessment ? grade.assessment_id === linkedAssessment.id : !grade.assessment_id && grade.assessment_label.trim().toLocaleLowerCase() === effectiveLabel.toLocaleLowerCase()));
+    if (duplicate) { announce('Une note existe déjà pour cette matière et cet intitulé. Modifiez la note existante pour éviter un doublon.', true); return; }
+    if (linkedAssessment?.status === 'locked') { announce('Cette évaluation est verrouillée. Sa note ne peut pas être modifiée.', true); return; }
+    const values = { enrollment_id: enrollment.id, subject_id: subject.id, term: individualTerm, assessment_id: linkedAssessment?.id || null, assessment_label: effectiveLabel, assessment_date: date, score, score_max: max, coefficient, status: individualGradeForm.status, remarks: individualGradeForm.remarks.trim() || null };
+    setSaving(true);
+    const actor = (await client.auth.getUser()).data.user;
+    const result = editingIndividualGradeId
+      ? await client.from('student_grades').update({ ...values, updated_by: actor?.id || null }).eq('id', editingIndividualGradeId)
+      : await client.from('student_grades').insert({ ...values, created_by: actor?.id || null, updated_by: actor?.id || null });
+    setSaving(false);
+    if (result.error) { announce(`La note n’a pas été enregistrée : ${result.error.message || 'vérifiez les droits, le barème et les doublons.'}`, true); return; }
+    setEditingIndividualGradeId(null);
+    setShowIndividualGradeForm(false);
+    setIndividualGradeForm({ subject_id: '', assessment_id: '', assessment_label: '', assessment_date: new Date().toISOString().slice(0, 10), score: '', score_max: '20', coefficient: '1', status: 'entered', remarks: '' });
+    announce(editingIndividualGradeId ? 'Note modifiée avec succès.' : 'Note ajoutée à partir des valeurs saisies.');
+    await refresh();
+  }
+
+  async function deleteIndividualGrade(grade: Grade) {
+    const client = supabase();
+    if (!client || !mayEditIndividualGrades) { announce('La suppression des notes est réservée aux utilisateurs autorisés.', true); return; }
+    const linkedAssessment = grade.assessment_id ? assessments.find((item) => item.id === grade.assessment_id) : undefined;
+    if (linkedAssessment?.status === 'locked') { announce('Cette évaluation est verrouillée ; la note ne peut pas être supprimée.', true); return; }
+    if (!window.confirm(`Supprimer la note « ${grade.assessment_label} » (${grade.score}/${grade.score_max}) ? Cette suppression sera inscrite dans le journal d’audit.`)) return;
+    setSaving(true);
+    const { error } = await client.from('student_grades').delete().eq('id', grade.id);
+    setSaving(false);
+    if (error) { announce(`Suppression impossible : ${error.message || 'vérifiez les autorisations.'}`, true); return; }
+    if (editingIndividualGradeId === grade.id) setEditingIndividualGradeId(null);
+    announce('Note supprimée. L’opération est historisée dans le journal d’audit.');
+    await refresh();
+  }
+
+  function printIndividualTerm() {
+    const enrollment = selectedIndividualEnrollment;
+    if (!enrollment) return;
+    const esc = (value: unknown) => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+    const scaleValue = Number(individualRule?.report_scale || 20);
+    const rows = individualGradeRows.map((row) => `<tr><td>${esc(row.subject.name)}</td><td>${row.grades.map((grade) => `${esc(grade.assessment_label)} : ${grade.status === 'entered' ? `${esc(grade.score)}/${esc(grade.score_max)}` : esc(STATUS_LABEL[grade.status] || grade.status)} (coef. ${esc(grade.coefficient)})`).join('<br>') || '—'}</td><td>${row.average === null ? '—' : `${row.average.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}/${scaleValue}`}</td></tr>`).join('');
+    const popup = window.open('', '_blank', 'width=1000,height=800');
+    if (!popup) { announce('Autorisez les fenêtres contextuelles pour imprimer le bulletin.', true); return; }
+    popup.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Bulletin ${esc(safeName(enrollment))} — ${individualTerm}</title><style>body{font-family:Arial,sans-serif;color:#1f2937;padding:32px}h1,h2,p{text-align:center;margin:5px}table{width:100%;border-collapse:collapse;margin-top:28px}th,td{border:1px solid #cbd5e1;padding:9px;text-align:left;vertical-align:top}th{background:#f1f5f9}.average{display:flex;justify-content:space-between;border:2px solid #1f2937;padding:12px;margin-top:18px;font-weight:bold}.meta{display:flex;justify-content:space-between;gap:16px;margin-top:25px}@media print{button{display:none}}</style></head><body><h1>EPC BETHEL</h1><p>ASSEMBLÉES DE DIEU JEAN FOLLY</p><h2>BULLETIN / RELEVÉ DE NOTES — ${esc(TERMS.find((item) => item.value === individualTerm)?.label || individualTerm)}</h2><div class="meta"><div><strong>Élève :</strong> ${esc(safeName(enrollment))}<br><strong>Matricule :</strong> ${esc(enrollment.student?.student_number || '—')}</div><div><strong>Classe :</strong> ${esc(enrollment.school_class?.name || classes.find((item) => item.id === enrollment.class_id)?.name || '—')}<br><strong>Année :</strong> ${esc(enrollment.school_year?.label || years.find((item) => item.id === enrollment.school_year_id)?.label || '—')}</div></div><table><thead><tr><th>Matière</th><th>Notes enregistrées</th><th>Moyenne matière</th></tr></thead><tbody>${rows || '<tr><td colspan="3">Aucune note enregistrée pour ce trimestre.</td></tr>'}</tbody></table><div class="average"><span>Moyenne générale</span><span>${individualAverage === null ? 'Non calculable' : `${individualAverage.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}/${scaleValue}`}</span></div><p style="margin-top:32px">Ce document reflète les notes actuellement enregistrées dans l’application.</p></body></html>`);
+    popup.document.close(); popup.focus(); popup.print();
+  }
+
   function buildBulletin(enrollment: Enrollment) {
     const rule = rules.find((r) => r.school_year_id === yearId && r.class_id === enrollment.class_id) || rules.find((r) => r.school_year_id === yearId && !r.class_id);
     const reportScaleValue = Number(rule?.report_scale || 20);
@@ -360,6 +449,21 @@ export function NotesBulletinsPage() {
   const currentYear = years.find((y) => y.id === yearId);
   const currentRule = rules.find((r) => r.school_year_id === yearId && r.class_id === (classId || null)) || rules.find((r) => r.school_year_id === yearId && !r.class_id);
   const rosterForAssessment = selectedAssessment ? enrollments.filter((e) => e.school_year_id === selectedAssessment.school_year_id && e.class_id === selectedAssessment.class_id) : [];
+  const selectedIndividualEnrollment = enrollments.find((e) => e.id === selectedEnrollmentId && e.school_year_id === yearId && (!classId || e.class_id === classId));
+  const individualRule = selectedIndividualEnrollment
+    ? rules.find((r) => r.school_year_id === yearId && r.class_id === selectedIndividualEnrollment.class_id) || rules.find((r) => r.school_year_id === yearId && !r.class_id)
+    : undefined;
+  const individualGradeRows = selectedIndividualEnrollment
+    ? subjects.map((subject) => ({
+        subject,
+        grades: grades.filter((grade) => grade.enrollment_id === selectedIndividualEnrollment.id && grade.subject_id === subject.id && grade.term === individualTerm),
+        average: getSubjectAverage(selectedIndividualEnrollment.id, subject, individualTerm, individualRule),
+      })).filter((row) => row.grades.length > 0 || row.average !== null)
+    : [];
+  const individualAverage = individualGradeRows.filter((row) => row.average !== null).length
+    ? round(individualGradeRows.reduce((sum, row) => sum + (row.average === null ? 0 : Number(row.average)), 0) / individualGradeRows.filter((row) => row.average !== null).length)
+    : null;
+  const mayEditIndividualGrades = !isReadOnly && ['admin', 'direction', 'secretariat'].includes(role || '') && !currentYear?.is_closed;
 
   const tabs: { id: Tab; label: string; icon: typeof GraduationCap }[] = [
     { id: 'overview', label: 'Vue d’ensemble', icon: GraduationCap }, { id: 'entry', label: 'Saisie des notes', icon: ClipboardList },
@@ -377,10 +481,12 @@ export function NotesBulletinsPage() {
     {notice && <div className="inline-notice" role="status" style={errorNotice ? { borderColor: 'var(--danger, #b91c1c)' } : undefined}>{errorNotice ? <AlertCircle size={16}/> : <Check size={16}/>} {notice}</div>}
     <section className="panel notes-bulletins-filter-panel">
       <div className="form-grid notes-bulletins-filters">
-        <label className="form-field"><span>Année scolaire</span><select value={yearId} onChange={(e) => setYearId(e.target.value)}><option value="">Choisir une année</option>{years.map((y) => <option key={y.id} value={y.id}>{y.label}{y.is_current ? ' · En cours' : ''}{y.is_closed ? ' · Clôturée' : ''}</option>)}</select></label>
-        <label className="form-field"><span>Trimestre</span><select value={term} onChange={(e) => setTerm(e.target.value as Term)}>{TERMS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}</select></label>
+        <label className="form-field"><span>Élève</span><select value={selectedEnrollmentId} onChange={(e) => setSelectedEnrollmentId(e.target.value)}><option value="">Sélectionner un élève…</option>{studentPickerEnrollments.map((e) => <option key={e.id} value={e.id}>{safeName(e)}{e.student?.student_number ? ` · ${e.student.student_number}` : ''}</option>)}</select></label>
         <label className="form-field"><span>Classe</span><select value={classId} onChange={(e) => { setClassId(e.target.value); setAssessmentId(''); }}><option value="">Toutes les classes</option>{classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+        <label className="form-field"><span>Année scolaire</span><select value={yearId} onChange={(e) => { setYearId(e.target.value); setAssessmentId(''); }}><option value="">Choisir une année</option>{years.map((y) => <option key={y.id} value={y.id}>{y.label}{y.is_current ? ' · En cours' : ''}{y.is_closed ? ' · Clôturée' : ''}</option>)}</select></label>
+        <label className="form-field"><span>Trimestre</span><select value={term} onChange={(e) => setTerm(e.target.value as Term)}>{TERMS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}</select></label>
       </div>
+      {selectedIndividualEnrollment && <div className="notes-student-context"><div><span>Élève sélectionné</span><strong>{safeName(selectedIndividualEnrollment)}</strong><small>{selectedIndividualEnrollment.student?.student_number || 'Sans matricule'} · {selectedIndividualEnrollment.school_class?.name || classes.find((c) => c.id === selectedIndividualEnrollment.class_id)?.name || 'Classe non définie'} · {selectedIndividualEnrollment.school_year?.label || currentYear?.label || 'Année scolaire'}</small></div><div className="notes-student-context-actions"><button className="button button-secondary" onClick={() => { setIndividualTerm(term); setShowStudentDetailNotes(true); }}><BookOpen size={15}/> Gérer les notes</button></div></div>}
       {currentYear?.is_closed && <div className="inline-notice"><AlertCircle size={16}/> Cette année scolaire est clôturée. La consultation reste disponible, mais les nouvelles saisies doivent être bloquées.</div>}
       <div className="table-actions notes-bulletins-tabs">{tabs.map((item) => { const Icon = item.icon; return <button key={item.id} className={`button ${tab === item.id ? 'button-primary' : 'button-secondary'}`} onClick={() => setTab(item.id)}><Icon size={15}/>{item.label}</button>; })}</div>
     </section>
@@ -415,7 +521,7 @@ export function NotesBulletinsPage() {
       <section className="panel table-panel"><div className="panel-toolbar"><div><h2>Évaluations existantes</h2><p>{termAssessments.length} évaluation(s) dans le trimestre sélectionné.</p></div></div><div className="table-scroll"><table><thead><tr><th>Date</th><th>Classe</th><th>Matière</th><th>Évaluation</th><th>Barème</th><th>Coef.</th><th>État</th></tr></thead><tbody>{termAssessments.map((a) => <tr key={a.id}><td>{frenchDate(a.assessment_date)}</td><td>{a.school_class?.name || classes.find((c) => c.id === a.class_id)?.name || '—'}</td><td>{a.subject?.name || subjects.find((s) => s.id === a.subject_id)?.name || '—'}</td><td>{a.title}</td><td>{a.score_max}</td><td>{a.coefficient}</td><td><div className="table-actions"><span>{a.status === 'locked' ? 'Verrouillée' : a.status === 'cancelled' ? 'Annulée' : 'Ouverte'}</span>{a.status === 'open' && role === 'admin' && <button className="button button-secondary" onClick={() => void lockAssessment(a)} disabled={saving || isReadOnly}><Check size={14}/> Verrouiller</button>}</div></td></tr>)}{!termAssessments.length && <tr><td colSpan={7} className="empty-cell">Aucune évaluation créée pour ces critères.</td></tr>}</tbody></table></div></section>
     </>}
 
-    {tab === 'results' && <section className="panel table-panel"><div className="panel-toolbar"><div><h2><Users size={19}/> Résultats individuels</h2><p>Consultez les moyennes calculées à partir des notes enregistrées.</p></div><div className="student-result-picker"><label htmlFor="student-result-select">Élève à consulter</label><select id="student-result-select" aria-label="Sélectionner un élève pour consulter ses résultats" value={selectedEnrollmentId} onChange={(e) => setSelectedEnrollmentId(e.target.value)}><option value="">Sélectionner un élève…</option>{classEnrollments.map((e) => <option key={e.id} value={e.id}>{safeName(e)}{e.student?.student_number ? ` · ${e.student.student_number}` : ""}</option>)}</select></div></div>
+    {tab === 'results' && <section className="panel table-panel"><div className="panel-toolbar"><div><h2><Users size={19}/> Résultats individuels</h2><p>Consultez les moyennes calculées à partir des notes enregistrées pour l’élève sélectionné en haut de page.</p></div><div className="table-actions">{studentResults && <button className="button button-primary" onClick={() => { setIndividualTerm(term); setShowStudentDetailNotes(true); }}><BookOpen size={15}/> Ouvrir le détail complet</button>}</div></div>
       {studentResults ? <><div className="metric-strip"><div className="metric-mini"><span>Élève</span><strong>{safeName(studentResults.enrollment)}</strong></div><div className="metric-mini"><span>Moyenne générale provisoire</span><strong>{studentResults.average === null ? '—' : `${studentResults.average.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}/${scale}`}</strong></div><div className="metric-mini"><span>Matières avec note</span><strong>{studentResults.subjectsWithGrades.length}</strong></div></div><div className="table-scroll"><table><thead><tr><th>Matière</th><th>Moyenne /{scale}</th><th>Évaluations enregistrées</th><th>Détail</th></tr></thead><tbody>{studentResults.subjectsWithGrades.map(({ subject, average }) => { const sg = grades.filter((g) => g.enrollment_id === studentResults.enrollment.id && g.subject_id === subject.id && g.term === term); return <tr key={subject.id}><td><strong>{subject.name}</strong></td><td>{average}</td><td>{sg.filter((g) => g.status === 'entered').length}</td><td>{sg.map((g) => `${g.assessment_label}: ${g.status === 'entered' ? `${g.score}/${g.score_max}` : STATUS_LABEL[g.status] || g.status}`).join(' · ') || '—'}</td></tr>; })}{!studentResults.subjectsWithGrades.length && <tr><td colSpan={4} className="empty-cell">Aucune note exploitable pour cet élève et cette période.</td></tr>}</tbody></table></div><div className="modal-footer"><button className="button button-secondary" onClick={() => exportStudentReport(studentResults.enrollment)} disabled={!studentResults.subjectsWithGrades.length}><Download size={16}/> Exporter le relevé CSV</button></div></> : <div className="empty-cell">Sélectionnez un élève pour afficher ses résultats.</div>}
       <div className="table-footer">Les résultats affichés sont provisoires. Les règles de calcul et les notes disponibles déterminent la moyenne.</div>
     </section>}
@@ -440,6 +546,33 @@ export function NotesBulletinsPage() {
       <section className="panel"><div className="panel-toolbar"><div><h2><AlertCircle size={19}/> Principes de publication</h2><p>Les notes et les bulletins sont des données scolaires sensibles.</p></div></div><ul><li>Les notes manquantes et les absences ne sont pas assimilées automatiquement à zéro.</li><li>Les bulletins publiés sont conservés comme instantanés et ne sont pas recalculés silencieusement.</li><li>Les corrections après publication doivent être autorisées et traçables.</li><li>Les permissions de la base de données restent la protection principale ; masquer un bouton ne remplace pas une règle d’accès.</li></ul></section>
     </>}
 
+
+    {typeof document !== 'undefined' && showStudentDetailNotes && selectedIndividualEnrollment && createPortal(
+      <div className="modal-backdrop notes-form-backdrop notes-individual-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowStudentDetailNotes(false); setEditingIndividualGradeId(null); setShowIndividualGradeForm(false); } }}>
+        <section className="modal notes-form-modal notes-individual-modal" role="dialog" aria-modal="true" aria-labelledby="individual-notes-title">
+          <div className="modal-header"><div><span className="eyebrow">DOSSIER PÉDAGOGIQUE INDIVIDUEL</span><h2 id="individual-notes-title">Notes et résultats — {safeName(selectedIndividualEnrollment)}</h2><p>{selectedIndividualEnrollment.student?.student_number || 'Sans matricule'} · {selectedIndividualEnrollment.school_class?.name || classes.find((c) => c.id === selectedIndividualEnrollment.class_id)?.name || 'Classe'} · {selectedIndividualEnrollment.school_year?.label || currentYear?.label || 'Année scolaire'}</p></div><button className="icon-button" onClick={() => { setShowStudentDetailNotes(false); setEditingIndividualGradeId(null); setShowIndividualGradeForm(false); }} aria-label="Fermer"><X size={18}/></button></div>
+          <div className="modal-body notes-individual-body">
+            <div className="notes-term-tabs" role="tablist" aria-label="Trimestres de l’élève">{TERMS.map((item) => <button key={item.value} type="button" role="tab" aria-selected={individualTerm === item.value} className={`button ${individualTerm === item.value ? 'button-primary' : 'button-secondary'}`} onClick={() => { setIndividualTerm(item.value); setEditingIndividualGradeId(null); setShowIndividualGradeForm(false); }}>{item.label}</button>)}</div>
+            <div className="notes-individual-summary"><div><span>Moyenne générale du trimestre</span><strong>{individualAverage === null ? '—' : `${individualAverage.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}/${individualRule?.report_scale || 20}`}</strong></div><div><span>Matières avec notes</span><strong>{individualGradeRows.filter((row) => row.grades.length > 0).length}</strong></div><div><span>Notes enregistrées</span><strong>{individualGradeRows.reduce((sum, row) => sum + row.grades.length, 0)}</strong></div><button className="button button-secondary" onClick={printIndividualTerm}><Printer size={15}/> Imprimer le bulletin</button></div>
+            <div className="notes-individual-actions"><p>Les moyennes sont calculées à partir des notes réelles du trimestre sélectionné. Les bulletins publiés existants ne sont pas modifiés par l’édition des notes.</p><button className="button button-primary" disabled={!mayEditIndividualGrades} onClick={() => beginIndividualGrade()}><Plus size={15}/> Ajouter une note</button></div>
+            {!mayEditIndividualGrades && <div className="inline-notice"><AlertCircle size={15}/> Consultation uniquement : la modification est réservée à l’administration, à la direction ou au secrétariat pour une année non clôturée.</div>}
+            {showIndividualGradeForm ? <section className="notes-individual-edit-form"><div className="notes-grade-edit-title"><strong>{editingIndividualGradeId ? 'Modifier une note' : 'Nouvelle note'}</strong><button className="icon-button" onClick={() => { setEditingIndividualGradeId(null); setShowIndividualGradeForm(false); setIndividualGradeForm({ subject_id: '', assessment_id: '', assessment_label: '', assessment_date: new Date().toISOString().slice(0, 10), score: '', score_max: '20', coefficient: '1', status: 'entered', remarks: '' }); }} aria-label="Annuler l’édition"><X size={16}/></button></div><div className="form-grid notes-individual-grade-form">
+              <label className="form-field"><span>Matière *</span><select value={individualGradeForm.subject_id} onChange={(e) => setIndividualGradeForm((old) => ({ ...old, subject_id: e.target.value, assessment_id: '' }))}><option value="">Choisir une matière</option>{subjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}</option>)}</select></label>
+              <label className="form-field"><span>Évaluation existante</span><select value={individualGradeForm.assessment_id} onChange={(e) => { const item = assessments.find((assessment) => assessment.id === e.target.value); setIndividualGradeForm((old) => ({ ...old, assessment_id: item?.id || '', subject_id: item?.subject_id || old.subject_id, assessment_label: item?.title || '', assessment_date: item?.assessment_date || old.assessment_date, score_max: String(item?.score_max ?? old.score_max), coefficient: String(item?.coefficient ?? old.coefficient) })); }}><option value="">Saisie manuelle</option>{assessments.filter((assessment) => assessment.school_year_id === selectedIndividualEnrollment.school_year_id && assessment.class_id === selectedIndividualEnrollment.class_id && assessment.term === individualTerm && assessment.status !== 'cancelled').map((assessment) => <option key={assessment.id} value={assessment.id}>{assessment.subject?.name || subjects.find((subject) => subject.id === assessment.subject_id)?.name || 'Matière'} · {assessment.title}{assessment.status === 'locked' ? ' · Verrouillée' : ''}</option>)}</select></label>
+              <label className="form-field"><span>Intitulé de la note *</span><input value={individualGradeForm.assessment_label} disabled={Boolean(individualGradeForm.assessment_id)} onChange={(e) => setIndividualGradeForm((old) => ({ ...old, assessment_label: e.target.value }))} maxLength={120} placeholder="Ex. Devoir 1"/></label>
+              <label className="form-field"><span>Date *</span><input type="date" value={individualGradeForm.assessment_date} disabled={Boolean(individualGradeForm.assessment_id)} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setIndividualGradeForm((old) => ({ ...old, assessment_date: e.target.value }))}/></label>
+              <label className="form-field"><span>Note</span><input type="number" min="0" max={individualGradeForm.score_max || 1000} step="0.25" value={individualGradeForm.score} disabled={individualGradeForm.status !== 'entered'} onChange={(e) => setIndividualGradeForm((old) => ({ ...old, score: e.target.value }))} placeholder="Saisir la note"/></label>
+              <label className="form-field"><span>Barème maximum</span><input type="number" min="0.25" max="1000" step="0.25" value={individualGradeForm.score_max} disabled={Boolean(individualGradeForm.assessment_id)} onChange={(e) => setIndividualGradeForm((old) => ({ ...old, score_max: e.target.value }))}/></label>
+              <label className="form-field"><span>Coefficient</span><input type="number" min="0.1" max="20" step="0.1" value={individualGradeForm.coefficient} disabled={Boolean(individualGradeForm.assessment_id)} onChange={(e) => setIndividualGradeForm((old) => ({ ...old, coefficient: e.target.value }))}/></label>
+              <label className="form-field"><span>Statut de la note</span><select value={individualGradeForm.status} onChange={(e) => setIndividualGradeForm((old) => ({ ...old, status: e.target.value, score: e.target.value === 'entered' ? old.score : '' }))}>{Object.entries(STATUS_LABEL).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+              <label className="form-field notes-full-width"><span>Observation (facultative)</span><input value={individualGradeForm.remarks} onChange={(e) => setIndividualGradeForm((old) => ({ ...old, remarks: e.target.value }))} maxLength={500}/></label>
+            </div><div className="table-actions"><button className="button button-secondary" onClick={() => { setEditingIndividualGradeId(null); setShowIndividualGradeForm(false); setIndividualGradeForm({ subject_id: '', assessment_id: '', assessment_label: '', assessment_date: new Date().toISOString().slice(0, 10), score: '', score_max: '20', coefficient: '1', status: 'entered', remarks: '' }); }}>Annuler</button><button className="button button-primary" onClick={() => void saveIndividualGrade()} disabled={!mayEditIndividualGrades || saving || !individualGradeForm.subject_id}>{saving ? 'Enregistrement…' : editingIndividualGradeId ? 'Enregistrer les modifications' : 'Enregistrer la note'}</button></div></section> : null}
+            <div className="table-scroll notes-individual-table"><table><thead><tr><th>Matière</th><th>Notes enregistrées</th><th>Moyenne</th><th>Actions</th></tr></thead><tbody>{individualGradeRows.map((row) => <tr key={row.subject.id}><td><strong>{row.subject.name}</strong></td><td>{row.grades.length ? <div className="notes-grade-chip-list">{row.grades.map((grade) => <div className="notes-grade-chip" key={grade.id}><div><strong>{grade.assessment_label}</strong><span>{grade.status === 'entered' ? `${grade.score}/${grade.score_max}` : STATUS_LABEL[grade.status] || grade.status} · Coef. {grade.coefficient} · {frenchDate(grade.assessment_date)}{grade.remarks ? ` · ${grade.remarks}` : ''}</span></div><div className="table-actions"><button className="icon-button" aria-label={`Modifier ${grade.assessment_label}`} title="Modifier" disabled={!mayEditIndividualGrades || Boolean(grade.assessment_id && assessments.find((item) => item.id === grade.assessment_id)?.status === 'locked')} onClick={() => editIndividualGrade(grade)}><Edit3 size={15}/></button><button className="icon-button" aria-label={`Supprimer ${grade.assessment_label}`} title="Supprimer" disabled={!mayEditIndividualGrades || Boolean(grade.assessment_id && assessments.find((item) => item.id === grade.assessment_id)?.status === 'locked')} onClick={() => void deleteIndividualGrade(grade)}><Trash2 size={15}/></button></div></div>)}</div> : <span>—</span>}</td><td>{row.average === null ? '—' : `${row.average.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}/${individualRule?.report_scale || 20}`}</td><td><button className="button button-secondary" onClick={() => { beginIndividualGrade(row.subject.id); setIndividualGradeForm((old) => ({ ...old, subject_id: row.subject.id })); }} disabled={!mayEditIndividualGrades}><Plus size={14}/> Ajouter</button></td></tr>)}{!individualGradeRows.length && <tr><td colSpan={4} className="empty-cell">Aucune note enregistrée pour cet élève au trimestre sélectionné. Vous pouvez ajouter une note réelle.</td></tr>}</tbody></table></div>
+          </div>
+          <div className="modal-footer"><button className="button button-secondary" onClick={() => { setShowStudentDetailNotes(false); setEditingIndividualGradeId(null); setShowIndividualGradeForm(false); }}>Fermer</button><button className="button button-primary" onClick={printIndividualTerm}><Printer size={15}/> Imprimer le bulletin trimestriel</button></div>
+        </section>
+      </div>, document.body
+    )}
 
     {typeof document !== 'undefined' && showAssessmentForm && createPortal(
       <div className="modal-backdrop notes-form-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setShowAssessmentForm(false); }}>

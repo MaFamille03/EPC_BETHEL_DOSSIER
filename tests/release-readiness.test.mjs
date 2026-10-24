@@ -39,8 +39,8 @@ test('la configuration de paquet expose les commandes requises', () => {
 test('les migrations SQL sont présentes et numérotées sans trou', () => {
   const directory = path.join(root, 'supabase/migrations');
   const files = fs.readdirSync(directory).filter((name) => /^\d{3}_.+\.sql$/.test(name)).sort();
-  assert.equal(files.length, 23);
-  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 23 }, (_, i) => i + 1));
+  assert.equal(files.length, 24);
+  assert.deepEqual(files.map((name) => Number(name.slice(0, 3))), Array.from({ length: 24 }, (_, i) => i + 1));
 });
 
 test('les routes serveur nécessaires au parcours des comptes existent', () => {
@@ -231,10 +231,10 @@ test('le formulaire de création de compte de trésorerie est bancaire et sans b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.18.3');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.18\.3/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.18\.3/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.18\.3/m);
+  assert.equal(pkg.version, '1.19.0');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.19\.0/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.19\.0/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.19\.0/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
@@ -248,7 +248,7 @@ test('Finance scolaire regroupe les actions et explique clairement les réductio
   assert.match(source, /finance-action-group finance-action-tools/);
   assert.match(source, /Demander une réduction/);
   assert.match(source, /Demande de réduction transmise/);
-  assert.match(source, /Réductions appliquées/);
+  assert.match(source, /Total des réductions appliquées/);
   assert.match(css, /finance-action-layout/);
   assert.match(css, /height:42px;min-height:42px/);
 });
@@ -319,7 +319,7 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.18.3');
+  assert.equal(packageInfo.version, '1.19.0');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
   assert.match(source, /Échéancier de \{installmentCount\} versement/);
@@ -360,9 +360,9 @@ test('les formulaires des trois modules s’ouvrent en fenêtres superposées', 
 test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 37, 'la suite de contrôle doit contenir exactement 37 tests');
-  assert.match(read('README.md'), /37 tests hors ligne/);
-  assert.match(read('CHANGELOG.md'), /37 tests hors ligne/);
+  assert.equal(count, 40, 'la suite de contrôle doit contenir exactement 40 tests');
+  assert.match(read('README.md'), /40 tests hors ligne/);
+  assert.match(read('CHANGELOG.md'), /40 tests hors ligne/);
   assert.match(read('CHANGELOG.md'), /Tests de pré-livraison : 36 réussis sur 36/);
   assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);
   assert.doesNotMatch(read('README.md'), /12 contrôles structurels hors ligne/);
@@ -426,7 +426,7 @@ test('les paiements et dépenses proposent un compte cohérent avec le mode de r
   const migration = read('supabase/migrations/021_treasury_account_types_and_creation.sql');
   assert.match(payments, /accountsForPaymentMethod/);
   assert.match(payments, /account\.kind==='cash'/);
-  assert.match(payments, /register_student_payment_with_provider/);
+  assert.match(payments, /register_student_payment_for_fee_with_provider/);
   assert.match(payments, /mobile_money_provider/);
   assert.match(expenses, /accountsForExpenseMethod/);
   assert.match(expenses, /account\.kind==='cash'/);
@@ -484,4 +484,45 @@ test('la caisse utilise un seul registre avec comptage physique et actions manue
   assert.match(migration, /moyen de paiement d’origine/);
   assert.match(migration, /update_manual_cash_movement/);
   assert.match(migration, /delete_manual_cash_movement/);
+});
+
+
+test('la configuration des tarifs respecte la classe, l’année et les échéances', () => {
+  const migration = read('supabase/migrations/024_student_fees_tariffs_and_status.sql');
+  const manager = read('components/class-fee-tariffs-manager.tsx');
+  assert.match(migration, /create table if not exists public\.class_fee_tariffs/i);
+  assert.match(migration, /unique \(school_year_id,class_id,fee_category_id\)/i);
+  assert.match(migration, /check \(installment_count between 1 and 6\)/i);
+  assert.match(migration, /perform public\.apply_class_fee_tariffs\(v_enrollment\)/i);
+  assert.match(migration, /if exists\(select 1 from public\.student_charges c/i);
+  assert.match(manager, /Échéance \{index \+ 1\}/);
+  assert.match(manager, /apply_class_fee_tariffs/);
+});
+
+test('les réductions sont ciblées et l’abandon préserve les dettes historiques', () => {
+  const migration = read('supabase/migrations/024_student_fees_tariffs_and_status.sql');
+  const studentModule = read('components/module-page.tsx');
+  assert.match(migration, /request_enrollment_concession_scoped/i);
+  assert.match(migration, /fee_category_id uuid references public\.fee_categories/i);
+  assert.match(migration, /financial_charges_preserved',true/i);
+  assert.match(migration, /create or replace function public\.abandon_school_enrollment/i);
+  assert.match(migration, /set status='abandon'/i);
+  assert.match(migration, /student\.abandoned/i);
+  assert.match(studentModule, /enfant_pasteur/);
+  assert.match(studentModule, /reduction_particuliere/);
+  assert.match(studentModule, /abandon_school_enrollment/);
+});
+
+test('la fiche individuelle des notes permet les trois trimestres et protège les années clôturées', () => {
+  const notes = read('components/notes-bulletins-page.tsx');
+  const migration = read('supabase/migrations/024_student_fees_tariffs_and_status.sql');
+  assert.match(notes, /showStudentDetailNotes/);
+  assert.match(notes, /1er trimestre/);
+  assert.match(notes, /2e trimestre/);
+  assert.match(notes, /3e trimestre/);
+  assert.match(notes, /deleteIndividualGrade/);
+  assert.match(notes, /saveIndividualGrade/);
+  assert.match(migration, /guard_student_grade_mutation/);
+  assert.match(migration, /Les notes d’une année scolaire clôturée ne peuvent plus être modifiées/);
+  assert.match(migration, /grade\.deleted/);
 });

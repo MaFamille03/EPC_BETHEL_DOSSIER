@@ -1,3 +1,16 @@
+## 1.19.0 — Dossier élève, tarifs annuels, concessions et notes individuelles
+
+- Enrichissement du dossier élève avec adresse et coordonnées, affichage du statut d’inscription, saisie structurée des informations du responsable et inscription de l’élève avec l’année/la classe choisies.
+- Ajout d’un statut administratif d’abandon distinct des réductions : l’inscription est clôturée avec trace d’audit, tandis que les frais et le solde historiques sont conservés.
+- Ajout d’une configuration des catégories de frais et des tarifs par classe et année scolaire, avec montant et jusqu’à six échéances ; les tarifs sont copiés dans les charges au moment de l’attribution et ne changent pas rétroactivement.
+- Ajout des réductions ciblées par catégorie, avec motif, valeur fixe ou pourcentage, période de validité et historique. À l’approbation, les frais impayés admissibles sont recalculés ; les frais ayant reçu un paiement confirmé sont préservés.
+- Synthèse de Finance scolaire en grille fixe de trois colonnes : net attendu, paiements confirmés, reste à recevoir, totaux nets par catégorie et réductions réellement appliquées.
+- Formulaire d’encaissement lié à une catégorie de frais, avec solde avant versement, paiements partiels/successifs, clé d’idempotence, validation transactionnelle et reçu. Seuls les paiements validés réduisent le solde.
+- Dans Notes et bulletins, ajout d’une fiche individuelle modale avec onglets Premier, Deuxième et Troisième trimestre ; affichage des notes existantes, coefficients/moyennes, ajout/modification/suppression avec journal d’audit et impression du relevé trimestriel.
+- Nouvelle migration Supabase `024_student_fees_tariffs_and_status.sql`. Elle doit être appliquée en environnement de préproduction après sauvegarde avant d’activer les nouveaux parcours.
+- La suite locale comprend désormais 40 tests hors ligne, ciblant aussi les tarifs par classe/année, le traitement distinct des abandons, les réductions ciblées et les garde-fous sur les notes.
+- Vérifications hors ligne et syntaxiques relancées ; le typecheck/build Next.js complet reste à valider avec les dépendances npm installées et les fonctions SQL testées sur un projet Supabase de développement.
+
 ## 1.18.3 — Fenêtres superposées harmonisées dans toute l’application
 
 - Ajout d’un composant commun `ModalPortal` qui rend les fenêtres de saisie au niveau de `document.body`, évite qu’un parent à défilement les coupe et bloque le défilement de la page en arrière-plan.

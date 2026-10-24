@@ -773,3 +773,109 @@ input, select, textarea, button { max-width:100%; }
  .settings-modal-body .settings-fields-grid{grid-template-columns:minmax(0,1fr)}
  .settings-edit-modal .modal-footer,.settings-code-modal .modal-footer{padding:11px 14px 14px}
 }
+
+
+/* V1.19.0 — synthèse financière, formulaire élève et gestion individuelle des notes */
+.finance-summary-sticky {
+  position: sticky;
+  top: 78px;
+  z-index: 18;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  padding: 12px;
+  margin-top: 0;
+  margin-bottom: 18px;
+  background: var(--canvas, #f7faf7);
+  border: 1px solid #e5ece6;
+  border-radius: 14px;
+  box-shadow: 0 8px 18px rgba(24,55,34,.06);
+}
+.finance-summary-sticky .finance-summary-discounts { grid-column: 3; }
+.finance-summary-sticky .finance-summary-note { grid-column: 1 / -1; margin: 0; }
+.student-form-modal .form-section-heading,
+.student-form-modal .student-school-context,
+.student-form-modal > .modal-body > .form-footnote { grid-column: 1 / -1; }
+.student-form-modal .student-field-matricule { grid-column: span 1; }
+.student-form-modal .student-field-last-name { grid-column: span 1; }
+.student-form-modal .student-field-first-names { grid-column: span 2; }
+.student-form-modal .student-field-first-names input { min-width: 0; }
+.notes-student-context { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-top:12px; padding:10px 13px; border:1px solid #dfe9e1; border-radius:10px; background:#fff; }
+.notes-student-context>div:first-child { display:flex; flex-direction:column; min-width:0; gap:2px; }
+.notes-student-context>div:first-child>span { font-size:10px; color:#6b7b70; text-transform:uppercase; font-weight:800; letter-spacing:.06em; }
+.notes-student-context>div:first-child>strong { font-size:14px; color:#23372a; overflow-wrap:anywhere; }
+.notes-student-context>div:first-child>small { font-size:11px; color:#647468; overflow-wrap:anywhere; }
+.notes-student-context-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+.notes-individual-modal { width:min(1500px, calc(100vw - 32px)); max-height:calc(100dvh - 28px); display:flex; flex-direction:column; overflow:hidden; }
+.notes-individual-modal .modal-header, .notes-individual-modal .modal-footer { flex:0 0 auto; }
+.notes-individual-body { display:flex; flex-direction:column; gap:14px; min-height:0; overflow:auto; }
+.notes-term-tabs { display:flex; gap:8px; flex-wrap:wrap; border-bottom:1px solid #e4ebe5; padding-bottom:12px; }
+.notes-term-tabs [aria-selected="true"] { box-shadow:0 0 0 2px rgba(41,149,29,.14); }
+.notes-individual-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)) auto; gap:10px; align-items:stretch; }
+.notes-individual-summary>div { display:flex; flex-direction:column; gap:4px; min-width:0; padding:12px; border:1px solid #e4ebe5; border-radius:10px; background:#f8fbf8; }
+.notes-individual-summary>div>span { font-size:11px; color:#607064; }
+.notes-individual-summary>div>strong { font-size:19px; color:#203d28; overflow-wrap:anywhere; }
+.notes-individual-summary>.button { align-self:center; }
+.notes-individual-actions { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.notes-individual-actions p { margin:0; color:#67756a; font-size:12px; line-height:1.55; }
+.notes-individual-edit-form { border:1px solid #d8e6da; border-radius:12px; background:#f9fcf9; padding:14px; }
+.notes-grade-edit-title { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; color:#294431; }
+.notes-individual-grade-form { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.notes-individual-grade-form .notes-full-width { grid-column:1/-1; }
+.notes-individual-edit-form .table-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+.notes-individual-table { border:1px solid #e4ebe5; border-radius:10px; }
+.notes-individual-table table { min-width:760px; }
+.notes-grade-chip-list { display:flex; flex-direction:column; gap:7px; min-width:300px; }
+.notes-grade-chip { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:8px 9px; background:#f8fbf8; border:1px solid #e6ece7; border-radius:8px; }
+.notes-grade-chip>div:first-child { min-width:0; display:flex; flex-direction:column; gap:3px; }
+.notes-grade-chip strong { overflow-wrap:anywhere; }
+.notes-grade-chip span { font-size:11px; color:#647468; overflow-wrap:anywhere; }
+.notes-grade-chip .table-actions { flex:0 0 auto; }
+.notes-grade-chip .icon-button { width:32px; height:32px; }
+@media(max-width:1180px) {
+  .finance-summary-sticky { top:74px; }
+  .finance-summary-grid.finance-summary-sticky { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media(max-width:760px) {
+  .finance-summary-sticky { position:sticky; top:68px; z-index:18; max-height:min(42vh,360px); overflow-y:auto; overscroll-behavior:contain; grid-template-columns:repeat(2,minmax(0,1fr)); padding:9px; gap:8px; }
+  .finance-summary-sticky .finance-summary-discounts { grid-column:2; }
+  .notes-student-context { align-items:flex-start; flex-direction:column; }
+  .notes-student-context-actions { width:100%; justify-content:stretch; }
+  .notes-student-context-actions .button { flex:1; justify-content:center; }
+  .notes-individual-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .notes-individual-summary>.button { grid-column:1/-1; justify-self:stretch; justify-content:center; }
+  .notes-individual-grade-form { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .notes-individual-actions { align-items:stretch; flex-direction:column; }
+  .notes-individual-actions .button { justify-content:center; }
+}
+@media(max-width:620px) {
+  .student-form-modal .student-field-matricule,
+  .student-form-modal .student-field-last-name,
+  .student-form-modal .student-field-first-names { grid-column:1/-1; }
+  .notes-individual-modal { width:calc(100vw - 12px); max-height:calc(100dvh - 12px); }
+  .notes-individual-modal .modal-header { padding:13px; }
+  .notes-individual-modal .modal-header h2 { font-size:17px; }
+  .notes-individual-body { padding:12px; }
+  .notes-term-tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
+  .notes-term-tabs .button { padding:0 5px; font-size:11px; justify-content:center; }
+  .notes-individual-grade-form { grid-template-columns:minmax(0,1fr); }
+  .notes-individual-grade-form .notes-full-width { grid-column:auto; }
+  .notes-individual-modal .modal-footer { padding:10px 12px; }
+  .notes-individual-modal .modal-footer .button { flex:1; justify-content:center; }
+  .finance-summary-sticky .finance-summary-card { padding:11px; }
+  .finance-summary-sticky .finance-summary-card strong { font-size:16px; }
+}
+
+
+/* V1.19.0 — details financiers explicites avant un nouvel encaissement */
+.payment-student-context { display:flex; flex-direction:column; gap:4px; padding:10px 12px; border:1px solid #dce9df; border-radius:9px; background:#f8fbf8; margin-bottom:12px; }
+.payment-student-context span { color:#65766a; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
+.payment-student-context strong { color:#243d2b; font-size:12px; overflow-wrap:anywhere; }
+.fee-payment-balance-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; padding:12px; margin:10px 0 14px; border:1px solid #dce9df; border-radius:10px; background:#f8fbf8; }
+.fee-payment-balance-summary>div { min-width:0; display:flex; flex-direction:column; gap:5px; padding:9px; border:1px solid #e4ece5; border-radius:8px; background:#fff; }
+.fee-payment-balance-summary>div span { font-size:10px; color:#68786c; line-height:1.4; }
+.fee-payment-balance-summary>div strong { font-size:14px; color:#233d2a; overflow-wrap:anywhere; }
+.fee-payment-balance-summary .fee-payment-balance-remaining { border-color:#c8dfce; background:#f0f8f2; }
+.fee-payment-balance-summary .fee-payment-balance-remaining strong { color:#0c6900; font-size:16px; }
+.fee-payment-balance-summary>p { grid-column:1/-1; margin:0; color:#6b796e; font-size:11px; line-height:1.5; }
+@media(max-width:700px) { .fee-payment-balance-summary { grid-template-columns:repeat(2,minmax(0,1fr)); padding:9px; gap:7px; } .fee-payment-balance-summary>p { grid-column:1/-1; } }
+@media(max-width:420px) { .fee-payment-balance-summary { grid-template-columns:minmax(0,1fr); } }

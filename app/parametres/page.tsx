@@ -6,6 +6,7 @@ import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { useEPCAccess } from '@/components/access-context';
 import { ClassesManager } from '@/components/classes-manager';
 import { SchoolYearsManager } from '@/components/school-years-manager';
+import { ClassFeeTariffsManager } from '@/components/class-fee-tariffs-manager';
 import { Building2, Save, RefreshCw, CheckCircle2, AlertCircle, ShieldCheck, KeyRound, Eye, EyeOff, X } from 'lucide-react';
 import { ModalPortal } from '@/components/modal-portal';
 
@@ -158,6 +159,7 @@ function SettingsContent() {
         </form>
       </section>
     </div></ModalPortal>}
+    <ClassFeeTariffsManager />
     <SchoolYearsManager />
     <ClassesManager />
   </>;
