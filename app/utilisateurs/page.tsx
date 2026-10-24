@@ -2,7 +2,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
-import { UserPlus, RefreshCw, ShieldCheck, Mail, UserRound, CheckCircle2, AlertCircle, LockKeyhole } from 'lucide-react';
+import { ModalPortal } from '@/components/modal-portal';
+import { UserPlus, RefreshCw, ShieldCheck, Mail, UserRound, CheckCircle2, AlertCircle, LockKeyhole, X } from 'lucide-react';
 
 type Role = 'admin' | 'observateur' | 'modification';
 type EditableRole = Exclude<Role, 'admin'>;
@@ -16,6 +17,7 @@ export default function UsersPage() {
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
   const [form, setForm] = useState({ email: '', full_name: '' });
+  const [showInvite, setShowInvite] = useState(false);
 
   const load = useCallback(async () => {
     const client = supabase();
@@ -50,6 +52,7 @@ export default function UsersPage() {
       if (!response.ok) throw new Error(json.error || 'Invitation impossible');
       setNotice(`Invitation envoyée à ${form.email}. Le compte démarre en lecture seule ; tu pourras ajuster son rôle après son inscription.`);
       setForm({ email: '', full_name: '' });
+      setShowInvite(false);
       await load();
     } catch (e) { setError(e instanceof Error ? e.message : 'Invitation impossible'); }
     finally { setSaving(false); }
@@ -81,14 +84,19 @@ export default function UsersPage() {
     {!isSupabaseConfigured() && <div className="inline-notice"><ShieldCheck size={16}/> Mode aperçu : la connexion aux données doit être activée pour gérer les comptes.</div>}
     {error && <div className="inline-notice"><AlertCircle size={16}/>{error}</div>}
     {notice && <div className="inline-notice"><CheckCircle2 size={16}/>{notice}</div>}
-    <section className="panel form-panel"><div className="panel-heading"><div><h2>Inviter un utilisateur</h2><p>Invitez un membre de l’équipe par e-mail. Chaque nouveau compte commence en lecture seule et peut être ajusté ensuite.</p></div><UserPlus size={22}/></div>
-      <form className="admin-invite-form" onSubmit={invite}>
-        <label className="form-field"><span>Nom complet</span><input required maxLength={120} value={form.full_name} onChange={e => setForm({ ...form, full_name: e.target.value })} placeholder="Nom et prénoms"/></label>
-        <label className="form-field"><span>Adresse e-mail</span><input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value.trim() })} placeholder="prenom@exemple.com"/></label>
-        <button className="button button-primary" disabled={saving || !isSupabaseConfigured()}>{saving ? 'Envoi…' : <><Mail size={16}/> Envoyer l’invitation</>}</button>
-      </form>
+    <section className="panel form-panel"><div className="panel-heading"><div><h2>Inviter un utilisateur</h2><p>Invitez un membre de l’équipe par e-mail. Chaque nouveau compte commence en lecture seule et peut être ajusté ensuite.</p></div><button type="button" className="button button-primary" onClick={() => { setError(''); setShowInvite(true); }} disabled={!isSupabaseConfigured()}><UserPlus size={16}/> Inviter un utilisateur</button></div>
       <p className="form-footnote"><strong>Information pour l’administrateur</strong><span>Le code d’inscription est un réglage distinct du mot de passe utilisé pour se connecter.</span></p>
     </section>
+    {showInvite && <ModalPortal><div className="modal-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !saving) setShowInvite(false); }}><section className="modal user-invite-modal" role="dialog" aria-modal="true" aria-labelledby="invite-user-title">
+      <div className="modal-header"><div><span className="eyebrow">ADMINISTRATION</span><h2 id="invite-user-title">Inviter un utilisateur</h2><p>Le nouvel utilisateur recevra un e-mail d’invitation et commencera en lecture seule.</p></div><button type="button" className="icon-button" onClick={() => setShowInvite(false)} disabled={saving} aria-label="Fermer"><X size={18}/></button></div>
+      <form onSubmit={invite}>
+        <div className="modal-body"><label className="form-field"><span>Nom complet *</span><input required maxLength={120} value={form.full_name} onChange={e => setForm({ ...form, full_name: e.target.value })} placeholder="Nom et prénoms" autoFocus/></label>
+        <label className="form-field"><span>Adresse e-mail *</span><input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value.trim() })} placeholder="prenom@exemple.com"/></label>
+        {error && <div className="inline-notice"><AlertCircle size={16}/>{error}</div>}
+        <p className="form-footnote">Après son inscription, vous pourrez lui attribuer le rôle Lecture seule ou Modification.</p></div>
+        <div className="modal-footer"><button type="button" className="button button-secondary" onClick={() => setShowInvite(false)} disabled={saving}>Annuler</button><button type="submit" className="button button-primary" disabled={saving || !isSupabaseConfigured()}>{saving ? 'Envoi…' : <><Mail size={16}/> Envoyer l’invitation</>}</button></div>
+      </form>
+    </section></div></ModalPortal>}
     <section className="panel table-panel"><div className="panel-toolbar"><div><h2>Comptes enregistrés</h2><p>{rows.length} compte{rows.length > 1 ? 's' : ''} chargé{rows.length > 1 ? 's' : ''}</p></div></div>
       <div className="table-scroll"><table><thead><tr><th>Utilisateur</th><th>Autorisation</th><th>État du compte</th><th>Inscription</th><th>Actions</th></tr></thead><tbody>
         {rows.map(row => {

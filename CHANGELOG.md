@@ -1,3 +1,14 @@
+## 1.18.3 — Fenêtres superposées harmonisées dans toute l’application
+
+- Ajout d’un composant commun `ModalPortal` qui rend les fenêtres de saisie au niveau de `document.body`, évite qu’un parent à défilement les coupe et bloque le défilement de la page en arrière-plan.
+- Harmonisation des fenêtres de classes, années scolaires, dépenses, achats, patrimoine, mouvements de caisse, comptage physique, transferts internes et création de compte bancaire.
+- Le formulaire d’import Excel des élèves et le formulaire d’invitation d’un utilisateur s’ouvrent désormais dans une fenêtre superposée.
+- Les formulaires des paramètres de l’établissement (coordonnées officielles et code d’accès aux inscriptions) s’ouvrent eux aussi en fenêtre superposée ; la page Paramètres affiche un aperçu des coordonnées.
+- Le rapprochement bancaire place l’import CSV, la sélection de la ligne et la validation du rapprochement dans une fenêtre modale ; la liste des relevés reste sur la page d’origine.
+- Les formulaires déjà superposés de Gestion des élèves, Finance scolaire, Encaissements et Notes et bulletins conservent leur fonctionnement.
+- Aucun changement au schéma Supabase ni aux règles métier de la comptabilité scolaire.
+- Vérifications hors ligne : 37/37 tests réussis ; précontrôle structurel : 11 contrôles réussis, 1 avertissement concernant l’absence de `package-lock.json`. Le typecheck complet et le build Next.js restent à valider avec les dépendances installées.
+
 ## 1.18.2 — Formulaires superposés façon UserForm
 
 - Les formulaires de création/modification des élèves, de création des frais scolaires, de détail des échéanciers et d’encaissement sont rendus directement sous `document.body` au moyen de portails React. La page source reste visible en arrière-plan et n’est pas déplacée vers le formulaire.

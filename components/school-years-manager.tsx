@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CalendarDays, CheckCircle2, Edit3, Plus, RefreshCw, Save, X, AlertCircle } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { useEPCAccess } from '@/components/access-context';
+import { ModalPortal } from '@/components/modal-portal';
 
 type SchoolYear = { id: string; label: string; starts_on: string; ends_on: string; is_current: boolean; is_closed: boolean };
 type YearForm = { label: string; starts_on: string; ends_on: string; is_current: boolean };
@@ -99,7 +100,7 @@ export function SchoolYearsManager() {
         </tbody>
       </table>
     </div>
-    {showForm && !isReadOnly && <div className="modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
+    {showForm && !isReadOnly && <ModalPortal><div className="modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
       <section className="modal" role="dialog" aria-modal="true" aria-labelledby="year-modal-title">
         <div className="modal-header"><div><span className="eyebrow">CALENDRIER SCOLAIRE</span><h2 id="year-modal-title">{editingId ? 'Modifier une année scolaire' : 'Créer une année scolaire'}</h2></div><button type="button" className="icon-button" onClick={() => setShowForm(false)} aria-label="Fermer"><X size={18}/></button></div>
         <form onSubmit={save}>
@@ -115,6 +116,6 @@ export function SchoolYearsManager() {
           <div className="modal-footer"><button type="button" className="button button-secondary" onClick={() => setShowForm(false)}>Annuler</button><button type="submit" className="button button-primary" disabled={saving}><Save size={16}/>{saving ? 'Enregistrement…' : 'Enregistrer'}</button></div>
         </form>
       </section>
-    </div>}
+    </div></ModalPortal>}
   </section>;
 }

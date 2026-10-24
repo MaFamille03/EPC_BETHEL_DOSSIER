@@ -231,10 +231,10 @@ test('le formulaire de création de compte de trésorerie est bancaire et sans b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.18.2');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.18\.2/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.18\.2/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.18\.2/m);
+  assert.equal(pkg.version, '1.18.3');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.18\.3/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.18\.3/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.18\.3/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
@@ -296,13 +296,14 @@ test('la migration Notes applique les contrôles RLS et ne crée pas de politiqu
 });
 
 
-test('Import Excel affiche des libellés Déplier/Réplier visibles', () => {
+test('Import Excel s’ouvre dans une fenêtre superposée sans déplacer la page', () => {
   const source = read('components/student-import.tsx');
   const css = read('app/globals.css');
-  assert.match(source, /isImportPanelOpen\?'Réplier':'Déplier'/);
+  assert.match(source, /onClick=\{\(\) => \{ setError\(''\); setIsImportPanelOpen\(true\); \}\}/);
+  assert.match(source, /<ModalPortal>/);
+  assert.match(source, /className=\"modal student-import-modal\" role=\"dialog\" aria-modal=\"true\"/);
   assert.match(source, /student-import-toggle-label/);
-  assert.match(css, /\.student-import-toggle-label\{/);
-  assert.doesNotMatch(css, /student-import-details>summary:after\{content:'[＋+−-]'/);
+  assert.match(css, /\.student-import-modal/);
   assert.match(source, /Télécharger le modèle Excel/);
 });
 
@@ -318,7 +319,7 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.18.2');
+  assert.equal(packageInfo.version, '1.18.3');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
   assert.match(source, /Échéancier de \{installmentCount\} versement/);
@@ -340,6 +341,7 @@ test('les formulaires des trois modules s’ouvrent en fenêtres superposées', 
   const modulePage = read('components/module-page.tsx');
   const paymentsPage = read('components/payments-page.tsx');
   const notesPage = read('components/notes-bulletins-page.tsx');
+  const settingsPage = read('app/parametres/page.tsx');
   const css = read('app/globals.css');
   assert.match(modulePage, /showForm&&!isReadOnly&&typeof document!=='undefined'&&createPortal/);
   assert.match(modulePage, /showStudentDetail&&studentDetail&&typeof document!=='undefined'&&createPortal/);
@@ -349,6 +351,8 @@ test('les formulaires des trois modules s’ouvrent en fenêtres superposées', 
   assert.match(notesPage, /showGradeEntryForm && selectedAssessment && createPortal/);
   assert.match(notesPage, /showRuleForm && createPortal/);
   assert.match(notesPage, /showSubjectForm && createPortal/);
+  assert.match(settingsPage, /showSchoolForm && !isReadOnly && <ModalPortal>/);
+  assert.match(settingsPage, /showAdminCodeForm && isAdmin && <ModalPortal>/);
   assert.match(css, /\.modal-backdrop\{position:fixed;inset:0/);
   assert.match(css, /\.notes-form-backdrop\{z-index:140/);
 });

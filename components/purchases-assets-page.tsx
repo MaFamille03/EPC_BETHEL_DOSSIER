@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useEPCAccess } from '@/components/access-context';
 import { Plus, RefreshCw, Search, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ModalPortal } from '@/components/modal-portal';
 
 type Item = Record<string, any>;
 const money = (v: any) => `${new Intl.NumberFormat('fr-FR').format(Number(v || 0))} FCFA`;
@@ -254,7 +255,7 @@ export function PurchasesPage() {
         {visible.length === 0 && <tr><td colSpan={headers.length} className="empty-cell">{busy ? 'Chargement…' : 'Aucun enregistrement. Les données réelles apparaîtront après connexion et création.'}</td></tr>}
       </tbody></table></div></section>
 
-      {modal && !isReadOnly && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setModal(false); }}><section className="modal">
+      {modal && !isReadOnly && <ModalPortal><div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setModal(false); }}><section className="modal">
         <div className="modal-header"><div><span className="eyebrow">GESTION DES ACHATS</span><h2>{tab === 'suppliers' ? 'Nouveau fournisseur' : tab === 'orders' ? 'Créer un bon de commande' : tab === 'receipts' ? 'Enregistrer une réception' : 'Créer une demande d’achat'}</h2></div><button className="icon-button" onClick={() => setModal(false)} aria-label="Fermer">×</button></div>
         <div className="modal-body">
           {tab === 'suppliers' ? <>{[['name','Nom du fournisseur','text'],['phone','Téléphone','tel'],['email','Adresse e-mail','email'],['address','Adresse','text'],['registration_reference','N° contribuable / référence','text'],['payment_terms','Conditions de paiement','text'],['notes','Notes','text']].map(([key,label,type]) => <label className="form-field" key={key}><span>{label}</span><input type={type} value={form[key] || ''} onChange={(event) => setForm({ ...form, [key]: event.target.value })}/></label>)}</>
@@ -279,7 +280,7 @@ export function PurchasesPage() {
           <p className="form-footnote">Une commande doit provenir d’une demande approuvée. Les réceptions mettent à jour les quantités reçues ; le règlement passe par Dépenses afin d’éviter les doublons de trésorerie.</p>
         </div>
         <div className="modal-footer"><button className="button button-secondary" onClick={() => setModal(false)}>Annuler</button><button className="button button-primary" onClick={() => void submit()} disabled={busy || !connected}>{busy ? 'Enregistrement…' : 'Enregistrer'}</button></div>
-      </section></div>}
+      </section></div></ModalPortal>}
     </div>
   );
 }
@@ -444,7 +445,7 @@ export function AssetsPage() {
       {!visible.length && <tr><td colSpan={headers.length} className="empty-cell">{busy ? 'Chargement…' : 'Aucun enregistrement trouvé.'}</td></tr>}
     </tbody></table></div></section>
 
-    {modal && !isReadOnly && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !busy) setModal(false); }}><section className="modal">
+    {modal && !isReadOnly && <ModalPortal><div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !busy) setModal(false); }}><section className="modal">
       <div className="modal-header"><div><span className="eyebrow">PATRIMOINE</span><h2>{tab === 'assets' ? (editingAssetId ? 'Modifier la fiche d’inventaire' : 'Ajouter un bien') : tab === 'maintenance' ? 'Enregistrer une maintenance' : 'Transférer un bien'}</h2></div><button className="icon-button" onClick={() => setModal(false)} aria-label="Fermer" disabled={busy}>×</button></div>
       <div className="modal-body">
         {tab === 'assets' ? <>
@@ -467,6 +468,6 @@ export function AssetsPage() {
         <p className="form-footnote">Les changements d’emplacement créent un mouvement historique. Les maintenances en cours synchronisent le statut du bien ; les réceptions d’immobilisations créent automatiquement des fiches d’inventaire.</p>
       </div>
       <div className="modal-footer"><button className="button button-secondary" onClick={() => setModal(false)} disabled={busy}>Annuler</button><button className="button button-primary" disabled={busy || !connected} onClick={() => void submit()}>{busy ? 'Enregistrement…' : 'Enregistrer'}</button></div>
-    </section></div>}
+    </section></div></ModalPortal>}
   </div>;
 }

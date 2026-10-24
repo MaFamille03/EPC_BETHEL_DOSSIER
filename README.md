@@ -1,7 +1,7 @@
 # EPC BETHEL — Application de gestion scolaire
 
 **Établissement :** EPC BETHEL ASSEMBLÉES DE DIEU JEAN FOLLY  
-**Version courante :** 1.18.2  
+**Version courante :** 1.18.3  
 **Stack :** Next.js 15, React 19, TypeScript, Supabase/PostgreSQL
 
 ## État de livraison

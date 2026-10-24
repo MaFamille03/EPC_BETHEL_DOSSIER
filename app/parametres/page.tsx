@@ -6,7 +6,8 @@ import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { useEPCAccess } from '@/components/access-context';
 import { ClassesManager } from '@/components/classes-manager';
 import { SchoolYearsManager } from '@/components/school-years-manager';
-import { Building2, Save, RefreshCw, CheckCircle2, AlertCircle, ShieldCheck, KeyRound, Eye, EyeOff } from 'lucide-react';
+import { Building2, Save, RefreshCw, CheckCircle2, AlertCircle, ShieldCheck, KeyRound, Eye, EyeOff, X } from 'lucide-react';
+import { ModalPortal } from '@/components/modal-portal';
 
 type SchoolSettings = { school_name: string; phone: string; email: string; address: string };
 const initialSchool: SchoolSettings = {
@@ -19,12 +20,14 @@ function SettingsContent() {
   const [school, setSchool] = useState<SchoolSettings>(initialSchool);
   const [loading, setLoading] = useState(false);
   const [savingSchool, setSavingSchool] = useState(false);
+  const [showSchoolForm, setShowSchoolForm] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
   const [adminCode, setAdminCode] = useState('');
   const [showAdminCode, setShowAdminCode] = useState(false);
   const [codeConfigured, setCodeConfigured] = useState<boolean | null>(null);
   const [savingCode, setSavingCode] = useState(false);
+  const [showAdminCodeForm, setShowAdminCodeForm] = useState(false);
   const [codeNotice, setCodeNotice] = useState('');
   const [codeError, setCodeError] = useState('');
   const connected = isSupabaseConfigured();
@@ -73,7 +76,7 @@ function SettingsContent() {
       const response = await fetch('/api/admin/registration-code', { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ code: normalizedCode }) });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || 'Enregistrement du code impossible.');
-      setCodeConfigured(true); setAdminCode(''); setCodeNotice('Code enregistré. Pour votre sécurité, il ne sera plus affiché.');
+      setCodeConfigured(true); setAdminCode(''); setCodeNotice('Code enregistré. Pour votre sécurité, il ne sera plus affiché.'); setShowAdminCodeForm(false);
     } catch (e) { setCodeError(e instanceof Error ? e.message : 'Erreur lors de l’enregistrement.'); }
     finally { setSavingCode(false); }
   }
@@ -92,6 +95,7 @@ function SettingsContent() {
     setSavingSchool(false);
     if (saveError) { setError(`Enregistrement impossible : un problème est survenu. Contactez l’administrateur.`); return; }
     setNotice('Coordonnées de l’établissement enregistrées.');
+    setShowSchoolForm(false);
   }
 
   return <>
@@ -105,31 +109,55 @@ function SettingsContent() {
 
     <section className="panel settings-panel">
       <div className="panel-heading"><div><h2><Building2 size={19}/> Identité de l’établissement</h2><p>Ces informations peuvent apparaître sur les reçus et les rapports.</p></div></div>
-      <form className="settings-form" onSubmit={saveSchool}>
-        <label className="form-field"><span>Nom officiel *</span><input required maxLength={180} disabled={isReadOnly} value={school.school_name} onChange={e => setSchool({ ...school, school_name: e.target.value })}/></label>
-        <div className="settings-fields-grid">
-          <label className="form-field"><span>Téléphone</span><input disabled={isReadOnly} value={school.phone} onChange={e => setSchool({ ...school, phone: e.target.value })} placeholder="+225…"/></label>
-          <label className="form-field"><span>Adresse e-mail</span><input type="email" disabled={isReadOnly} value={school.email} onChange={e => setSchool({ ...school, email: e.target.value })} placeholder="contact@epcbethel.ci"/></label>
-        </div>
-        <label className="form-field"><span>Adresse physique</span><textarea rows={2} disabled={isReadOnly} value={school.address} onChange={e => setSchool({ ...school, address: e.target.value })} placeholder="Adresse de l’établissement"/></label>
-        {!isReadOnly && <button type="submit" className="button button-primary" disabled={savingSchool || !connected}><Save size={16}/>{savingSchool ? 'Enregistrement…' : 'Enregistrer les coordonnées'}</button>}
-        {isReadOnly && <p className="form-footnote">Votre niveau d’accès permet de consulter les paramètres, mais pas de les modifier.</p>}
-      </form>
+      <div className="settings-current-values">
+        <div><span>Nom officiel</span><strong>{school.school_name || 'Non renseigné'}</strong></div>
+        <div><span>Téléphone</span><strong>{school.phone || 'Non renseigné'}</strong></div>
+        <div><span>Adresse e-mail</span><strong>{school.email || 'Non renseignée'}</strong></div>
+        <div><span>Adresse physique</span><strong>{school.address || 'Non renseignée'}</strong></div>
+      </div>
+      {!isReadOnly && <button type="button" className="button button-primary" onClick={() => { setError(''); setShowSchoolForm(true); }}><Building2 size={16}/> Modifier les coordonnées</button>}
+      {isReadOnly && <p className="form-footnote">Votre niveau d’accès permet de consulter les paramètres, mais pas de les modifier.</p>}
     </section>
 
     {isAdmin && <section className="panel settings-panel">
       <div className="panel-heading"><div><h2><KeyRound size={19}/> Utilisateurs et autorisations</h2><p>Définissez ici le code utilisé pour autoriser les nouvelles inscriptions. Ce code n’est pas votre mot de passe de connexion.</p></div></div>
       <div className="settings-form">
         <div className="inline-notice"><ShieldCheck size={16}/><span>{codeConfigured === null ? 'Vérification du code d’accès…' : codeConfigured ? 'Un code d’accès est actuellement configuré.' : 'Aucun code d’accès n’a encore été défini. Les nouvelles inscriptions restent bloquées jusqu’à sa création.'}</span></div>
-        {codeNotice && <div className="inline-notice"><CheckCircle2 size={16}/>{codeNotice}</div>}
-        {codeError && <div className="inline-notice" role="alert"><AlertCircle size={16}/>{codeError}</div>}
-        <form className="settings-form" onSubmit={saveAdminCode}>
-          <label className="form-field"><span>{codeConfigured ? 'Nouveau code d’accès (6 à 8 chiffres)' : 'Code d’accès initial (6 à 8 chiffres)'}</span><div className="input-with-icon"><KeyRound size={17}/><input type={showAdminCode ? 'text' : 'password'} autoComplete="new-password" minLength={6} maxLength={8} inputMode="numeric" pattern="[0-9]{6,8}" value={adminCode} onChange={e => setAdminCode(e.target.value.replace(/\D/g, '').slice(0, 8))} placeholder="Ex. : 48271635" required/><button type="button" className="password-toggle" onClick={() => setShowAdminCode(v => !v)} aria-label={showAdminCode ? 'Masquer le code' : 'Afficher le code'}>{showAdminCode ? <EyeOff size={16}/> : <Eye size={16}/>}</button></div></label>
-          <p className="form-footnote">Choisissez un code numérique de 6 à 8 chiffres. Il sert uniquement à autoriser les nouvelles inscriptions, pas à vous connecter. Il est stocké sous forme de condensat salé et ne peut pas être relu depuis l’application. Communiquez-le uniquement aux personnes autorisées.</p>
-          <button type="submit" className="button button-primary" disabled={savingCode || !connected}><Save size={16}/>{savingCode ? 'Enregistrement…' : codeConfigured ? 'Remplacer le code d’accès' : 'Définir le code initial'}</button>
-        </form>
+        {codeNotice && !showAdminCodeForm && <div className="inline-notice"><CheckCircle2 size={16}/>{codeNotice}</div>}
+        {codeError && !showAdminCodeForm && <div className="inline-notice" role="alert"><AlertCircle size={16}/>{codeError}</div>}
+        <button type="button" className="button button-primary" onClick={() => { setAdminCode(''); setCodeError(''); setCodeNotice(''); setShowAdminCodeForm(true); }}><KeyRound size={16}/>{codeConfigured ? 'Modifier le code d’accès' : 'Définir le code d’accès'}</button>
       </div>
     </section>}
+    {showSchoolForm && !isReadOnly && <ModalPortal><div className="modal-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !savingSchool) setShowSchoolForm(false); }}>
+      <section className="modal settings-edit-modal" role="dialog" aria-modal="true" aria-labelledby="school-settings-modal-title">
+        <div className="modal-header"><div><span className="eyebrow">ADMINISTRATION</span><h2 id="school-settings-modal-title">Modifier les coordonnées</h2><p>Ces informations seront reprises sur les reçus et les rapports officiels.</p></div><button type="button" className="icon-button" onClick={() => setShowSchoolForm(false)} disabled={savingSchool} aria-label="Fermer"><X size={18}/></button></div>
+        <form className="settings-modal-form" onSubmit={saveSchool}>
+          <div className="modal-body settings-modal-body">
+            {error && <div className="inline-notice settings-modal-wide" role="alert"><AlertCircle size={16}/>{error}</div>}
+            <label className="form-field settings-modal-wide"><span>Nom officiel *</span><input required maxLength={180} value={school.school_name} onChange={e => setSchool({ ...school, school_name: e.target.value })}/></label>
+            <div className="settings-fields-grid settings-modal-wide">
+              <label className="form-field"><span>Téléphone</span><input value={school.phone} onChange={e => setSchool({ ...school, phone: e.target.value })} placeholder="+225…"/></label>
+              <label className="form-field"><span>Adresse e-mail</span><input type="email" value={school.email} onChange={e => setSchool({ ...school, email: e.target.value })} placeholder="contact@epcbethel.ci"/></label>
+            </div>
+            <label className="form-field settings-modal-wide"><span>Adresse physique</span><textarea rows={2} value={school.address} onChange={e => setSchool({ ...school, address: e.target.value })} placeholder="Adresse de l’établissement"/></label>
+          </div>
+          <div className="modal-footer"><button type="button" className="button button-secondary" onClick={() => setShowSchoolForm(false)} disabled={savingSchool}>Annuler</button><button type="submit" className="button button-primary" disabled={savingSchool || !connected}><Save size={16}/>{savingSchool ? 'Enregistrement…' : 'Enregistrer les coordonnées'}</button></div>
+        </form>
+      </section>
+    </div></ModalPortal>}
+    {showAdminCodeForm && isAdmin && <ModalPortal><div className="modal-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !savingCode) setShowAdminCodeForm(false); }}>
+      <section className="modal settings-code-modal" role="dialog" aria-modal="true" aria-labelledby="admin-code-modal-title">
+        <div className="modal-header"><div><span className="eyebrow">SÉCURITÉ DES INSCRIPTIONS</span><h2 id="admin-code-modal-title">{codeConfigured ? 'Modifier le code d’accès' : 'Définir le code d’accès'}</h2><p>Ce code autorise les nouvelles inscriptions ; il ne remplace pas votre mot de passe.</p></div><button type="button" className="icon-button" onClick={() => setShowAdminCodeForm(false)} disabled={savingCode} aria-label="Fermer"><X size={18}/></button></div>
+        <form className="settings-modal-form" onSubmit={saveAdminCode}>
+          <div className="modal-body settings-modal-body settings-code-body">
+            {codeError && <div className="inline-notice settings-modal-wide" role="alert"><AlertCircle size={16}/>{codeError}</div>}
+            <label className="form-field settings-modal-wide"><span>{codeConfigured ? 'Nouveau code d’accès (6 à 8 chiffres)' : 'Code d’accès initial (6 à 8 chiffres)'}</span><div className="input-with-icon"><KeyRound size={17}/><input type={showAdminCode ? 'text' : 'password'} autoComplete="new-password" minLength={6} maxLength={8} inputMode="numeric" pattern="[0-9]{6,8}" value={adminCode} onChange={e => setAdminCode(e.target.value.replace(/\D/g, '').slice(0, 8))} placeholder="Ex. : 48271635" required/><button type="button" className="password-toggle" onClick={() => setShowAdminCode(v => !v)} aria-label={showAdminCode ? 'Masquer le code' : 'Afficher le code'}>{showAdminCode ? <EyeOff size={16}/> : <Eye size={16}/>}</button></div></label>
+            <p className="form-footnote settings-modal-wide">Choisissez un code numérique de 6 à 8 chiffres. Il sert uniquement à autoriser les nouvelles inscriptions, pas à vous connecter. Il est stocké sous forme de condensat salé et ne peut pas être relu depuis l’application. Communiquez-le uniquement aux personnes autorisées.</p>
+          </div>
+          <div className="modal-footer"><button type="button" className="button button-secondary" onClick={() => setShowAdminCodeForm(false)} disabled={savingCode}>Annuler</button><button type="submit" className="button button-primary" disabled={savingCode || !connected}><Save size={16}/>{savingCode ? 'Enregistrement…' : codeConfigured ? 'Remplacer le code d’accès' : 'Définir le code initial'}</button></div>
+        </form>
+      </section>
+    </div></ModalPortal>}
     <SchoolYearsManager />
     <ClassesManager />
   </>;

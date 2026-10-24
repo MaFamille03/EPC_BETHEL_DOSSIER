@@ -717,3 +717,59 @@ input, select, textarea, button { max-width:100%; }
   .settings-summary-grid{grid-template-columns:minmax(0,1fr);gap:8px;padding:12px}
   .notes-grade-table-scroll{max-height:calc(100dvh - 230px)}
 }
+
+/* V1.18.3 — uniform dialogs: render forms over the active page and keep the page fixed. */
+.student-import-open{display:flex;align-items:center;gap:12px;flex:1 1 320px;min-width:0;min-height:54px;padding:0;border:0;background:transparent;text-align:left;flex-wrap:wrap;color:inherit}
+.student-import-open:hover .student-import-toggle-label{border-color:#6fa47b}
+.student-import-open:focus-visible{outline:2px solid #398454;outline-offset:3px;border-radius:6px}
+.student-import-modal,.bank-reconciliation-modal{width:min(980px,calc(100vw - 36px));max-height:calc(100dvh - 32px);display:flex;flex-direction:column;overflow:hidden}
+.student-import-modal .modal-header,.bank-reconciliation-modal .modal-header{flex:0 0 auto}
+.student-import-modal .modal-header p,.bank-reconciliation-modal .modal-header p{margin:6px 0 0;color:#7b887e;font-size:11px;line-height:1.5}
+.student-import-modal-body{display:block!important;min-height:0;overflow:auto;overscroll-behavior:contain}
+.student-import-modal-body .student-import-content{padding-top:0}
+.student-import-modal .modal-footer,.bank-reconciliation-modal .modal-footer{flex:0 0 auto}
+.bank-reconciliation-body{grid-template-columns:repeat(2,minmax(0,1fr));min-height:0;overflow-y:auto;overscroll-behavior:contain;align-content:start}
+.bank-reconciliation-wide,.bank-reconciliation-section{grid-column:1/-1}
+.bank-reconciliation-section{padding-top:4px;border-top:1px solid #edf1ed}
+.bank-reconciliation-section h3{margin:12px 0 4px;font:800 13px Manrope,sans-serif;color:#294b34}
+.bank-reconciliation-section p{margin:0;color:#7c897f;font-size:11px;line-height:1.5}
+.user-invite-modal{width:min(600px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:hidden;display:flex;flex-direction:column}
+.user-invite-modal>form{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.user-invite-modal .modal-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));min-height:0;overflow:auto}
+.user-invite-modal .form-footnote,.user-invite-modal .inline-notice{grid-column:1/-1}
+@media(max-width:700px){
+ .student-import-modal,.bank-reconciliation-modal{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:12px}
+ .student-import-modal .modal-header,.bank-reconciliation-modal .modal-header{padding:15px 14px 12px}
+ .student-import-modal-body,.bank-reconciliation-body{padding:14px;grid-template-columns:minmax(0,1fr)}
+ .bank-reconciliation-wide,.bank-reconciliation-section{grid-column:auto}
+ .student-import-modal .modal-footer,.bank-reconciliation-modal .modal-footer{padding:11px 14px 14px}
+ .user-invite-modal .modal-header{padding:15px 14px 12px}
+ .user-invite-modal .modal-body{grid-template-columns:minmax(0,1fr);padding:14px}
+ .user-invite-modal .form-footnote,.user-invite-modal .inline-notice{grid-column:auto}
+}
+
+/* V1.18.3 — les formulaires d'administration se lancent également en fenêtres superposées. */
+.settings-current-values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 22px;margin:22px 0 20px}
+.settings-current-values>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.settings-current-values span{font-size:11px;color:#849087}
+.settings-current-values strong{font-size:12px;line-height:1.5;font-weight:600;overflow-wrap:anywhere;color:#2c4434}
+.settings-panel>.button{margin-top:4px}
+.settings-edit-modal{width:min(720px,calc(100vw - 32px));max-height:calc(100dvh - 32px);display:flex;flex-direction:column;overflow:hidden}
+.settings-code-modal{width:min(620px,calc(100vw - 32px));max-height:calc(100dvh - 32px);display:flex;flex-direction:column;overflow:hidden}
+.settings-edit-modal>.modal-header,.settings-code-modal>.modal-header{flex:0 0 auto}
+.settings-edit-modal .modal-header p,.settings-code-modal .modal-header p{margin:6px 0 0;color:#7b887e;font-size:11px;line-height:1.5}
+.settings-modal-form{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.settings-modal-form .modal-footer{flex:0 0 auto}
+.settings-modal-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;min-height:0;overflow:auto;overscroll-behavior:contain;align-content:start}
+.settings-modal-wide{grid-column:1/-1}
+.settings-modal-body .settings-fields-grid{margin:0}
+.settings-code-body{grid-template-columns:minmax(0,1fr)}
+@media(max-width:700px){
+ .settings-current-values{grid-template-columns:minmax(0,1fr);gap:12px;margin:18px 0}
+ .settings-edit-modal,.settings-code-modal{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:12px}
+ .settings-edit-modal .modal-header,.settings-code-modal .modal-header{padding:15px 14px 12px}
+ .settings-modal-body{grid-template-columns:minmax(0,1fr);padding:14px;gap:13px}
+ .settings-modal-wide{grid-column:auto}
+ .settings-modal-body .settings-fields-grid{grid-template-columns:minmax(0,1fr)}
+ .settings-edit-modal .modal-footer,.settings-code-modal .modal-footer{padding:11px 14px 14px}
+}

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { CheckCircle2, Edit3, Plus, RefreshCw, Save, X, BookOpen, AlertCircle } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { useEPCAccess } from '@/components/access-context';
+import { ModalPortal } from '@/components/modal-portal';
 
 type SchoolClass = { id: string; code: string; name: string; level_order: number; is_active: boolean };
 type ClassForm = { code: string; name: string; level_order: string; is_active: boolean };
@@ -87,7 +88,7 @@ export function ClassesManager() {
         </tbody>
       </table>
     </div>
-    {showForm && !isReadOnly && <div className="modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
+    {showForm && !isReadOnly && <ModalPortal><div className="modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
       <section className="modal" role="dialog" aria-modal="true" aria-labelledby="class-modal-title">
         <div className="modal-header"><div><span className="eyebrow">RÉFÉRENTIEL SCOLAIRE</span><h2 id="class-modal-title">{editingId ? 'Modifier la classe' : 'Créer une classe'}</h2></div><button type="button" className="icon-button" onClick={() => setShowForm(false)} aria-label="Fermer"><X size={18}/></button></div>
         <form onSubmit={save}>
@@ -103,6 +104,6 @@ export function ClassesManager() {
           <div className="modal-footer"><button type="button" className="button button-secondary" onClick={() => setShowForm(false)}>Annuler</button><button type="submit" className="button button-primary" disabled={saving}><Save size={16}/>{saving ? 'Enregistrement…' : 'Enregistrer'}</button></div>
         </form>
       </section>
-    </div>}
+    </div></ModalPortal>}
   </section>;
 }
