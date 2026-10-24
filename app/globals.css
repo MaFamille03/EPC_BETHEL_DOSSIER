@@ -939,3 +939,174 @@ input, select, textarea, button { max-width:100%; }
  .finance-summary-grid.finance-summary-sticky{top:64px}
  .finance-summary-sticky .finance-summary-card strong{font-size:11px}
 }
+
+/* EPC BETHEL V1.21.1 — densité d’interface : espaces réduits sans sacrifier la lisibilité. */
+:root{--ui-gap-tight:6px;--ui-gap-regular:10px;--ui-panel-padding:14px}
+.sidebar{padding:17px 13px 10px}
+.brand{padding-bottom:16px;gap:9px}
+.school-chip{margin-bottom:16px;height:37px}
+.nav-group{margin-bottom:16px}
+.nav-label{margin-bottom:5px;padding:0 10px}
+.nav-link{padding:8px 10px;gap:10px;margin:1px 0}
+.help-card{padding:9px;margin-bottom:9px;gap:8px}
+.user-card{padding-top:9px}
+.topbar{height:60px;padding:0 24px}
+.topbar-actions{gap:12px}
+.page-content{padding:20px 24px 12px}
+.demo-banner{margin-bottom:14px;padding:8px 11px;line-height:1.4}
+.page-heading{gap:12px;margin-bottom:16px}
+.eyebrow{margin-bottom:5px}
+.page-heading h1{font-size:24px;line-height:1.2;margin:0 0 4px}
+.page-heading p{line-height:1.45}
+.heading-actions{gap:7px}
+.button{min-height:34px;padding:0 12px;gap:6px}
+.welcome-card{min-height:178px;padding:20px 24px;margin-bottom:20px;border-radius:12px}
+.welcome-tag{margin-bottom:9px}
+.welcome-copy h2{font-size:24px;line-height:1.25;margin-bottom:5px}
+.welcome-copy p{line-height:1.45;margin-bottom:12px}
+.welcome-art{width:145px;height:145px;margin-right:28px}
+.art-circle{width:104px;height:104px;border-radius:30px}
+.art-label{padding:7px 9px}
+.section-heading{margin-bottom:10px;gap:10px}
+.section-heading h2,.panel-heading h2{margin-bottom:2px;line-height:1.3}
+.stats-grid{gap:10px;margin-bottom:16px}
+.stat-card{padding:12px 13px 11px;min-height:0}
+.stat-top{margin-bottom:9px}
+.stat-icon{width:32px;height:32px;border-radius:8px}
+.stat-label{margin-bottom:3px}
+.dashboard-grid{gap:12px;margin-bottom:12px}
+.panel{border-radius:10px}
+.panel-heading{gap:8px}
+.panel-toolbar{gap:10px;padding:13px 14px}
+.table-toolbar,.module-workspace .table-toolbar{gap:8px;margin:8px 0}
+.table-search{height:33px}
+.table-footer{padding:9px 12px}
+thead{background:#f8faf8}
+th{padding:9px 12px;font-size:9px;letter-spacing:.045em}
+td{padding:9px 12px;font-size:11px}
+.module-workspace .data-card th{padding:9px 12px;font-size:10px}
+.module-workspace .data-card td{padding:9px 12px;font-size:12px;line-height:1.35}
+.form-panel,.settings-panel,.import-panel{padding:14px;margin-bottom:14px}
+.panel-heading{margin-bottom:11px}
+.settings-panel{gap:11px}
+.settings-panel .panel-heading{margin-bottom:9px}
+.settings-panel .settings-form,.settings-form{row-gap:10px;column-gap:12px}
+.settings-form{margin-top:12px}
+.form-grid{gap:10px 12px}
+.form-field{gap:4px}
+.form-field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.form-field textarea,.form-field select{min-height:36px;padding:7px 9px;font-size:12px;border-radius:7px}
+.form-field textarea{line-height:1.4}
+.form-field>span{line-height:1.3}
+.input-with-icon{height:39px;gap:8px;padding:0 10px;border-radius:8px}
+.inline-notice{gap:8px;min-height:0;padding:9px 11px;margin:8px 0;line-height:1.45}
+.settings-panel .inline-notice{min-height:0;padding:9px 11px;gap:8px;line-height:1.45}
+.form-footnote{line-height:1.45;margin-top:3px}
+.report-filter-panel{padding:13px;margin-bottom:13px}
+.report-filters-grid{gap:10px}
+.report-filters-grid .form-field>span{margin-bottom:4px}
+.report-filters-grid input,.report-filters-grid select{height:36px;padding:0 9px}
+.notes-bulletins-filter-panel{padding:10px 12px;margin-bottom:0;border-radius:10px}
+.notes-bulletins-filters{gap:10px}
+.notes-bulletins-filters .form-field{gap:4px}
+.notes-bulletins-filters select{height:36px;padding:0 9px;border-radius:7px}
+.modal-backdrop{padding:12px}
+.modal{border-radius:12px}
+.modal-header{padding:15px 18px 12px}
+.modal-header h2{font-size:17px;line-height:1.25}
+.modal-body{padding:14px 18px;gap:10px}
+.modal-footer{padding:11px 18px 13px;gap:8px}
+.modal-footer .button{min-height:34px}
+.student-form-modal .form-section-heading{margin-top:3px;padding-bottom:6px}
+.student-school-context{margin:0 0 5px;padding:9px 11px}
+.notes-individual-body{gap:10px}
+.notes-term-tabs{gap:6px;padding-bottom:8px}
+.notes-individual-summary{gap:8px}
+.notes-individual-edit-form{padding:11px;border-radius:10px}
+.notes-grade-edit-title{margin-bottom:8px}
+.notes-individual-grade-form{gap:9px}
+.notes-grade-table-scroll th{padding:8px 9px}
+.notes-grade-table-scroll td{padding:7px 9px}
+.notes-grade-chip-list{gap:5px}
+.notes-grade-chip{gap:8px;padding:6px 8px}
+.payment-student-context{padding:8px 10px;margin-bottom:9px}
+.fee-payment-balance-summary{padding:9px;gap:7px;margin:8px 0 10px}
+.fee-payment-balance-summary>div{gap:3px;padding:7px}
+.annual-payment-schedule-panel{margin:10px 0 12px;padding:11px;border-radius:10px}
+.annual-payment-schedule-heading{gap:10px}
+.annual-payment-schedule-heading h3{margin-bottom:3px}
+.annual-schedule-status{margin-top:8px;padding:7px 9px;gap:7px}
+.annual-schedule-dates{gap:5px;margin-top:7px}
+.annual-schedule-dates>div{gap:3px;padding:6px}
+.annual-schedule-actions{gap:6px;margin-top:8px}
+.annual-schedule-modal-body{gap:10px}
+.annual-schedule-date-fields{gap:9px}
+.tariff-annual-schedule-readonly{gap:6px;padding:9px}
+.tariff-annual-schedule-readonly>div{gap:5px}
+.tariff-annual-schedule-readonly>div>span{padding:5px 6px}
+.finance-filter-bar{gap:8px}
+.finance-filter-bar label{gap:4px}
+.finance-filter-bar label select{height:36px}
+.profile-popover-role{padding:9px 8px}
+.profile-popover-links a,.profile-popover-links button{padding:8px}
+.app-footer{padding-top:12px;margin-top:16px}
+@media(max-width:1180px){
+ .page-content{padding:18px 20px 12px}
+ .topbar{padding:0 20px}
+ .stats-grid{gap:9px}
+ .stat-card{padding:11px}
+ .welcome-card{padding:18px 20px}
+}
+@media(max-width:900px){
+ .topbar{height:58px}
+ .page-content{padding:16px 17px 10px}
+ .page-heading{margin-bottom:14px}
+ .welcome-card{min-height:160px;margin-bottom:16px}
+ .welcome-art{margin-right:12px;width:120px;height:120px}
+ .dashboard-grid{gap:10px;margin-bottom:10px}
+ .panel-toolbar{padding:11px 12px}
+ .form-panel,.settings-panel,.import-panel{padding:12px;margin-bottom:12px}
+}
+@media(max-width:760px){
+ .topbar{padding:0 14px}
+ .page-content{padding:14px 12px 9px}
+ .page-heading{gap:9px;margin-bottom:12px}
+ .page-heading h1{font-size:22px}
+ .heading-actions{gap:6px;flex-wrap:wrap}
+ .welcome-card{min-height:0;padding:17px 16px;margin-bottom:14px}
+ .welcome-copy h2{font-size:21px}
+ .welcome-copy p{margin-bottom:9px}
+ .welcome-art{width:84px;height:84px;margin-right:0}
+ .art-circle{width:68px;height:68px;border-radius:20px}
+ .art-label{right:-8px;padding:5px 7px;font-size:8px}
+ .stats-grid{gap:8px;margin-bottom:12px}
+ .stat-card{padding:9px}
+ .stat-top{margin-bottom:7px}
+ .stat-icon{width:28px;height:28px}
+ .section-heading{margin-bottom:8px}
+ .dashboard-grid{gap:9px;margin-bottom:9px}
+ .panel-toolbar{padding:10px 11px}
+ .form-grid,.settings-form{gap:9px}
+ .modal-backdrop{padding:6px}
+ .modal-header{padding:12px 13px 10px}
+ .modal-body{padding:11px 13px;gap:9px}
+ .modal-footer{padding:9px 13px 11px}
+ .form-panel,.settings-panel,.import-panel{padding:11px;margin-bottom:10px}
+ .settings-panel{gap:9px}
+ .settings-panel .settings-form,.settings-form{row-gap:9px}
+ .table-footer{padding:8px 10px;gap:8px}
+}
+@media(max-width:480px){
+ .page-content{padding:12px 9px 8px}
+ .page-heading h1{font-size:20px}
+ .welcome-card{padding:14px 12px}
+ .welcome-art{display:none}
+ .stats-grid{gap:7px}
+ .stat-card{padding:8px}
+ .stat-label{font-size:10px;line-height:1.3}
+ .stat-top{margin-bottom:5px}
+ .section-heading h2,.panel-heading h2{font-size:14px}
+ .modal-header h2{font-size:16px}
+ .modal-body{padding:10px}
+ .modal-footer{padding:9px 10px}
+}

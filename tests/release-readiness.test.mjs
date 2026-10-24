@@ -258,8 +258,8 @@ test('le formulaire de création de compte de trésorerie est bancaire et sans b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.21.0');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.21\.0/);
+  assert.equal(pkg.version, '1.21.1');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.21\.1/);
   assert.match(read('CHANGELOG.md'), /^## 1\.21\.0/m);
   assert.ok(!exists('INSTALLATION_RAPIDE.txt'));
   assert.ok(exists('supabase/setup/INSTALLATION_COMPLETE.sql'));
@@ -346,7 +346,7 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.21.0');
+  assert.equal(packageInfo.version, '1.21.1');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
   assert.match(source, /create_student_charge_with_annual_schedule/);

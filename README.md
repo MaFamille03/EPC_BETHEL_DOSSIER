@@ -1,6 +1,6 @@
 # EPC BETHEL — Gestion scolaire et financière
 
-**Version courante :** 1.21.0
+**Version courante :** 1.21.1
 **Stack :** Next.js 15, React 19, TypeScript, Supabase/PostgreSQL.
 **Déploiement :** GitHub + Vercel.
 

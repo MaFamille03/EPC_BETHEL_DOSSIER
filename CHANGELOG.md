@@ -1,3 +1,9 @@
+## 1.21.1 — Densité et harmonisation de l’interface
+
+- Réduction des espacements verticaux et horizontaux dans la navigation, les tableaux de bord, les panneaux, les formulaires, les tableaux et les fenêtres modales.
+- Harmonisation des hauteurs de champs et boutons pour afficher davantage d’informations sans sacrifier la lisibilité.
+- Ajustements spécifiques pour tablette et mobile afin de conserver une mise en page compacte et utilisable.
+
 ## 1.21.0 — Transfert administrateur et installation SQL consolidée
 
 - Ajout d’un écran **Paramètres → Profil administrateur** permettant de transférer le rôle à un compte actif dont l’adresse e-mail est confirmée.
