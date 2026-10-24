@@ -1,3 +1,10 @@
+## 1.19.2 — Correction du chargement des soldes de frais dans le formulaire d’encaissement
+
+- Remplace l’appel à `.finally()` sur le résultat PromiseLike de Supabase par deux branches `.then()` (succès et erreur), compatibles avec son type de retour.
+- Réinitialise l’état de chargement lorsque le formulaire est fermé ou qu’aucune inscription n’est sélectionnée.
+- En cas d’échec réseau, vide la liste des soldes, affiche un message utile et désactive l’indicateur de chargement.
+- La suite de cette livraison comprend désormais 42 tests hors ligne, dont un test de régression vérifiant l’absence de `.finally()` sur ce résultat Supabase.
+
 ## 1.19.1 — Correction du build Vercel lors de l’enregistrement des catégories de frais
 
 - Correction de l’erreur TypeScript dans `components/class-fee-tariffs-manager.tsx` : les données envoyées lors de la modification d’une catégorie sont maintenant définies séparément de celles envoyées lors de sa création. Cela évite de transmettre à Supabase une union de types contenant les champs `code` et `kind` dans le chemin de mise à jour.

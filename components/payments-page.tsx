@@ -64,17 +64,26 @@ export function PaymentsPage() {
   useEffect(()=>{const allowed=accountsForPaymentMethod(accounts,form.method);if(!allowed.some(account=>account.id===form.account_id)){const next=allowed[0]?.id||'';setForm(current=>current.account_id===next?current:{...current,account_id:next});}},[accounts,form.method,form.account_id]);
   useEffect(()=>{
     const client=supabase();
-    if(!showForm||!form.enrollment_id||!client){setFeeBalances([]);return;}
+    if(!showForm||!form.enrollment_id||!client){setFeeBalances([]);setLoadingFeeBalances(false);return;}
     let cancelled=false;setLoadingFeeBalances(true);
-    void client.rpc('get_enrollment_fee_balances',{p_enrollment_id:form.enrollment_id}).then(({data,error})=>{
-      if(cancelled)return;
-      if(error){setFeeBalances([]);setNotice('Impossible de charger les soldes par catégorie de frais. Vérifiez que la migration 024 est appliquée.');}
-      else {
-        const rows=(data||[]).map((row:any)=>({id:row.fee_category_id,label:`${row.fee_name} · reste ${money(Number(row.balance_due||0))}`,balance:Number(row.balance_due||0),kind:row.fee_kind,code:row.fee_code,gross_due:Number(row.gross_due||0),discount_total:Number(row.discount_total||0),net_due:Number(row.net_due||0),paid_total:Number(row.paid_total||0)})).filter((row:Option)=>Number(row.balance||0)>0);
-        setFeeBalances(rows);
-        setForm(current=>({ ...current, fee_category_id:rows.some((row:Option)=>row.id===current.fee_category_id)?current.fee_category_id:(rows[0]?.id||''), amount:'' }));
+    void client.rpc('get_enrollment_fee_balances',{p_enrollment_id:form.enrollment_id}).then(
+      ({data,error})=>{
+        if(cancelled)return;
+        if(error){setFeeBalances([]);setNotice('Impossible de charger les soldes par catégorie de frais. Vérifiez que la migration 024 est appliquée.');}
+        else {
+          const rows=(data||[]).map((row:any)=>({id:row.fee_category_id,label:`${row.fee_name} · reste ${money(Number(row.balance_due||0))}`,balance:Number(row.balance_due||0),kind:row.fee_kind,code:row.fee_code,gross_due:Number(row.gross_due||0),discount_total:Number(row.discount_total||0),net_due:Number(row.net_due||0),paid_total:Number(row.paid_total||0)})).filter((row:Option)=>Number(row.balance||0)>0);
+          setFeeBalances(rows);
+          setForm(current=>({ ...current, fee_category_id:rows.some((row:Option)=>row.id===current.fee_category_id)?current.fee_category_id:(rows[0]?.id||''), amount:'' }));
+        }
+        setLoadingFeeBalances(false);
+      },
+      ()=>{
+        if(cancelled)return;
+        setFeeBalances([]);
+        setNotice('Impossible de charger les soldes par catégorie de frais. Vérifiez votre connexion et que la migration 024 est appliquée.');
+        setLoadingFeeBalances(false);
       }
-    }).finally(()=>{if(!cancelled)setLoadingFeeBalances(false);});
+    );
     return ()=>{cancelled=true;};
   },[showForm,form.enrollment_id]);
   const selectedFeeBalance=feeBalances.find((row)=>row.id===form.fee_category_id);

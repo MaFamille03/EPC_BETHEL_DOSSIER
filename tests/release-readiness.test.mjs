@@ -231,10 +231,10 @@ test('le formulaire de création de compte de trésorerie est bancaire et sans b
 
 test('la version courante et les guides d’installation sont cohérents', () => {
   const pkg = JSON.parse(read('package.json'));
-  assert.equal(pkg.version, '1.19.1');
-  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.19\.1/);
-  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.19\.1/);
-  assert.match(read('CHANGELOG.md'), /^## 1\.19\.1/m);
+  assert.equal(pkg.version, '1.19.2');
+  assert.match(read('README.md'), /\*\*Version courante :\*\*\s*1\.19\.2/);
+  assert.match(read('INSTALLATION_RAPIDE.txt'), /VERSION 1\.19\.2/);
+  assert.match(read('CHANGELOG.md'), /^## 1\.19\.2/m);
   assert.match(read('RAPPORT_ETAPE_9_COHERENCE.md'), /\*\*Version contrôlée :\*\*\s*1\.9\.4/);
 });
 
@@ -319,7 +319,7 @@ test('Finance scolaire explique les versements et garde des boutons uniformes', 
   const css = read('app/globals.css');
   const migration = read('supabase/migrations/019_finance_scolaire_reductions_echeanciers.sql');
   const packageInfo = JSON.parse(read('package.json'));
-  assert.equal(packageInfo.version, '1.19.1');
+  assert.equal(packageInfo.version, '1.19.2');
   assert.match(source, /Demandes de réduction/);
   assert.match(source, /Gérer les réductions/);
   assert.match(source, /Échéancier de \{installmentCount\} versement/);
@@ -367,9 +367,9 @@ test('les corps de création et de mise à jour des catégories de frais sont s�
 test('le nombre de tests documenté correspond à la suite de pré-livraison', () => {
   const testSource = read('tests/release-readiness.test.mjs');
   const count = (testSource.match(/^test\(/gm) || []).length;
-  assert.equal(count, 41, 'la suite de contrôle doit contenir exactement 41 tests');
-  assert.match(read('README.md'), /41 tests hors ligne/);
-  assert.match(read('CHANGELOG.md'), /40 tests hors ligne/);
+  assert.equal(count, 42, 'la suite de contrôle doit contenir exactement 42 tests');
+  assert.match(read('README.md'), /42 tests hors ligne/);
+  assert.match(read('CHANGELOG.md'), /42 tests hors ligne/);
   assert.match(read('CHANGELOG.md'), /Tests de pré-livraison : 36 réussis sur 36/);
   assert.match(read('ETAPE_10_NOTES_BULLETINS.md'), /23 tests structurels hors ligne/);
   assert.doesNotMatch(read('README.md'), /12 contrôles structurels hors ligne/);
@@ -426,6 +426,13 @@ test('le type Mobile Money est migré et la création de comptes est auditée c�
   assert.match(treasury, /provider_name/);
 });
 
+
+test('le chargement des soldes d’encaissement est compatible avec PromiseLike Supabase', () => {
+  const payments = read('components/payments-page.tsx');
+  assert.match(payments, /get_enrollment_fee_balances'[\s\S]*?\.then\([\s\S]*?setLoadingFeeBalances\(false\)/);
+  assert.match(payments, /setLoadingFeeBalances\(false\);return;/);
+  assert.doesNotMatch(payments, /get_enrollment_fee_balances'[\s\S]*?\.finally\(/);
+});
 
 test('les paiements et dépenses proposent un compte cohérent avec le mode de règlement', () => {
   const payments = read('components/payments-page.tsx');
